@@ -12,36 +12,16 @@
  */
 package org.sonatype.nexus.proxy.wastebasket;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.ApplicationDirectories;
-import org.sonatype.nexus.common.property.SystemPropertiesHelper;
-import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageException;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.item.RepositoryItemUid;
-import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
 import org.sonatype.nexus.proxy.storage.local.LocalRepositoryStorage;
-import org.sonatype.nexus.proxy.walker.AffirmativeStoreWalkerFilter;
-import org.sonatype.nexus.proxy.walker.DefaultWalkerContext;
-import org.sonatype.nexus.proxy.walker.Walker;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
-
-import com.google.common.annotations.VisibleForTesting;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Named
 @Singleton
@@ -49,132 +29,29 @@ public class DefaultWastebasket
     extends ComponentSupport
     implements Wastebasket
 {
-  private static final String DEFAULT_DELETE_OPERATION_KEY = DefaultWastebasket.class.getName() + ".defaultDeleteOperation";
-
-  private static final String TRASH_PATH_PREFIX = "/.nexus/trash";
-
-  protected static final long ALL = -1L;
-
-  private final ApplicationDirectories applicationDirectories;
-
-  private Walker walker;
-
-  private final RepositoryRegistry repositoryRegistry;
-
-  private DeleteOperation deleteOperation;
-
-  @Inject
-  public DefaultWastebasket(final ApplicationDirectories applicationDirectories,
-                            final Walker walker,
-                            final RepositoryRegistry repositoryRegistry)
-  {
-    this.applicationDirectories = checkNotNull(applicationDirectories);
-    this.walker = walker;
-    this.repositoryRegistry = repositoryRegistry;
-    this.deleteOperation = getDefaultDeleteOperation();
-  }
-
-  protected DeleteOperation getDefaultDeleteOperation() {
-    final String defaultOperationString = SystemPropertiesHelper.getString(
-        DEFAULT_DELETE_OPERATION_KEY, DeleteOperation.MOVE_TO_TRASH.name());
-    try {
-      return DeleteOperation.valueOf(defaultOperationString);
-    }
-    catch (Exception e) {
-      // report and ignore
-      log.warn("Bad value {}={}", DEFAULT_DELETE_OPERATION_KEY, defaultOperationString, e);
-      return DeleteOperation.MOVE_TO_TRASH;
-    }
-  }
-
-  protected Walker getWalker() {
-    return walker;
-  }
-
-  @VisibleForTesting
-  void setWalker(final Walker walker) {
-    this.walker = walker;
-  }
-
-  protected RepositoryRegistry getRepositoryRegistry() {
-    return repositoryRegistry;
-  }
-
-  // ==
-
-  // ==============================
-  // Wastebasket iface
-
   @Override
   public DeleteOperation getDeleteOperation() {
-    return deleteOperation;
+    return null;
   }
 
   @Override
   public void setDeleteOperation(final DeleteOperation deleteOperation) {
-    this.deleteOperation = deleteOperation;
+
   }
 
   @Override
   public Long getTotalSize() {
-    Long totalSize = null;
-
-    for (Repository repository : getRepositoryRegistry().getRepositories()) {
-      Long repoWBSize = getSize(repository);
-
-      if (repoWBSize != null) {
-        totalSize += repoWBSize;
-      }
-    }
-
-    return totalSize;
+    return null;
   }
 
   @Override
-  public void purgeAll()
-      throws IOException
-  {
-    purgeAll(ALL);
+  public void purgeAll() throws IOException {
+
   }
 
   @Override
-  public void purgeAll(final long age)
-      throws IOException
-  {
-    for (Repository repository : getRepositoryRegistry().getRepositories()) {
-      purge(repository, age);
-    }
+  public void purgeAll(final long age) throws IOException {
 
-    // NEXUS-4078: deleting "legacy" trash too for now
-    // NEXUS-4468 legacy was not being cleaned up
-    final File basketFile = applicationDirectories.getWorkDirectory(AbstractRepositoryFolderCleaner.GLOBAL_TRASH_KEY);
-
-    // check for existence, is this needed at all?
-    if (basketFile.isDirectory()) {
-      final long limitDate = System.currentTimeMillis() - age;
-      Files.walkFileTree(basketFile.toPath(), new SimpleFileVisitor<Path>()
-      {
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-            throws IOException
-        {
-          if (age == ALL || file.toFile().lastModified() < limitDate) {
-            Files.delete(file);
-          }
-          return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-            throws IOException
-        {
-          if (!basketFile.equals(dir.toFile()) && dir.toFile().list().length == 0) {
-            Files.delete(dir);
-          }
-          return FileVisitResult.CONTINUE;
-        }
-      });
-    }
   }
 
   @Override
@@ -183,64 +60,20 @@ public class DefaultWastebasket
   }
 
   @Override
-  public void purge(final Repository repository)
-      throws IOException
-  {
-    purge(repository, ALL);
+  public void purge(final Repository repository) throws IOException {
+
   }
 
   @Override
-  public void purge(final Repository repository, final long age)
-      throws IOException
-  {
-    ResourceStoreRequest req = new ResourceStoreRequest(getTrashPath(repository, RepositoryItemUid.PATH_ROOT));
-    // NEXUS-4642 shall not delete the directory, since causes a problem if this has been symlinked to another
-    // directory.
-    // walker and walk and changes for age
-    if (repository.getLocalStorage().containsItem(repository, req)) {
-      req.setRequestGroupLocalOnly(true);
-      req.setRequestLocalOnly(true);
-      DefaultWalkerContext ctx = new DefaultWalkerContext(repository, req, new AffirmativeStoreWalkerFilter());
-      ctx.getProcessors().add(new WastebasketWalker(age));
-      getWalker().walk(ctx);
-    }
+  public void purge(final Repository repository, final long age) throws IOException {
+
   }
 
   @Override
   public void delete(final LocalRepositoryStorage ls, final Repository repository, final ResourceStoreRequest request)
       throws LocalStorageException
   {
-    final DeleteOperation operation;
-    if (request.getRequestContext().containsKey(DeleteOperation.DELETE_OPERATION_CTX_KEY)) {
-      operation = (DeleteOperation) request.getRequestContext().get(DeleteOperation.DELETE_OPERATION_CTX_KEY);
-    }
-    else {
-      operation = getDeleteOperation();
-    }
 
-    delete(ls, repository, request, operation);
-  }
-
-  private void delete(final LocalRepositoryStorage ls, final Repository repository,
-                      final ResourceStoreRequest request, final DeleteOperation type)
-      throws LocalStorageException
-  {
-    try {
-      if (DeleteOperation.MOVE_TO_TRASH.equals(type)) {
-        ResourceStoreRequest trashed =
-            new ResourceStoreRequest(getTrashPath(repository, request.getRequestPath()));
-        ls.moveItem(repository, request, trashed);
-      }
-
-      ls.shredItem(repository, request);
-    }
-    catch (ItemNotFoundException e) {
-      // silent
-    }
-    catch (UnsupportedStorageOperationException e) {
-      // yell
-      throw new LocalStorageException("Delete operation is unsupported!", e);
-    }
   }
 
   @Override
@@ -248,50 +81,6 @@ public class DefaultWastebasket
                           final ResourceStoreRequest request)
       throws LocalStorageException
   {
-    try {
-      ResourceStoreRequest trashed =
-          new ResourceStoreRequest(getTrashPath(repository, request.getRequestPath()));
-      ResourceStoreRequest untrashed =
-          new ResourceStoreRequest(getUnTrashPath(repository, request.getRequestPath()));
-
-      if (!ls.containsItem(repository, untrashed)) {
-        ls.moveItem(repository, trashed, untrashed);
-        return true;
-      }
-    }
-    catch (ItemNotFoundException e) {
-      // silent
-    }
-    catch (UnsupportedStorageOperationException e) {
-      // yell
-      throw new LocalStorageException("Undelete operation is unsupported!", e);
-    }
-
     return false;
-  }
-
-  protected String getTrashPath(final Repository repository, final String path) {
-    if (path.startsWith(TRASH_PATH_PREFIX)) {
-      return path;
-    }
-    else if (path.startsWith(RepositoryItemUid.PATH_SEPARATOR)) {
-      return TRASH_PATH_PREFIX + path;
-    }
-    else {
-      return TRASH_PATH_PREFIX + RepositoryItemUid.PATH_SEPARATOR + path;
-    }
-  }
-
-  protected String getUnTrashPath(final Repository repository, final String path) {
-    String result = path;
-    if (result.startsWith(TRASH_PATH_PREFIX)) {
-      result = result.substring(TRASH_PATH_PREFIX.length(), result.length());
-    }
-
-    if (!result.startsWith(RepositoryItemUid.PATH_ROOT)) {
-      result = RepositoryItemUid.PATH_ROOT + result;
-    }
-
-    return result;
   }
 }
