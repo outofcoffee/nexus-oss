@@ -24,17 +24,13 @@ import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.StorageException;
 import org.sonatype.nexus.proxy.access.AccessManager;
 import org.sonatype.nexus.proxy.access.Action;
-import org.sonatype.nexus.proxy.attributes.AttributesHandler;
-import org.sonatype.nexus.proxy.cache.PathCache;
 import org.sonatype.nexus.proxy.item.RepositoryItemUid;
 import org.sonatype.nexus.proxy.item.StorageCollectionItem;
 import org.sonatype.nexus.proxy.item.StorageItem;
-import org.sonatype.nexus.proxy.item.uid.RepositoryItemUidAttributeManager;
 import org.sonatype.nexus.proxy.registry.ContentClass;
 import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
 import org.sonatype.nexus.proxy.storage.local.LocalRepositoryStorage;
 import org.sonatype.nexus.proxy.storage.local.LocalStorageContext;
-import org.sonatype.nexus.proxy.targets.TargetSet;
 import org.sonatype.nexus.proxy.walker.WalkerFilter;
 
 /**
@@ -114,11 +110,6 @@ public interface Repository
   ContentClass getRepositoryContentClass();
 
   /**
-   * Gets the target set for request.
-   */
-  TargetSet getTargetsForRequest(ResourceStoreRequest request);
-
-  /**
    * Checks is there at all any target for the given request.
    */
   boolean hasAnyTargetsForRequest(ResourceStoreRequest request);
@@ -127,11 +118,6 @@ public interface Repository
    * Creates an UID within this Repository.
    */
   RepositoryItemUid createUid(String path);
-
-  /**
-   * Returns the repository ItemUidAttributeManager.
-   */
-  RepositoryItemUidAttributeManager getRepositoryItemUidAttributeManager();
 
   /**
    * Will return the proper Action that will occur on "write" operation: create (if nothing exists on the given path)
@@ -172,13 +158,6 @@ public interface Repository
   void setNotFoundCacheTimeToLive(int notFoundCacheTimeToLive);
 
   /**
-   * Gets the not found cache.
-   *
-   * @return the not found cache
-   */
-  PathCache getNotFoundCache();
-
-  /**
    * Maintains NFC.
    */
   void maintainNotFoundCache(ResourceStoreRequest request)
@@ -213,11 +192,6 @@ public interface Repository
    * @since 2.0
    */
   MimeRulesSource getMimeRulesSource();
-
-  /**
-   * Returns the attribute handler used by repository.
-   */
-  AttributesHandler getAttributesHandler();
 
   /**
    * Returns the local URL of this repository, if any.
@@ -346,8 +320,6 @@ public interface Repository
    * Sets the write policy for the repo. See {@link RepositoryWritePolicy}. This does not affect the in-repository
    * caching using LocalStorage. It just says, that from the "outer" perspective, this repo behaves like read-only
    * repository, and deployment is disabled for example.
-   *
-   * @param val the val
    */
   void setWritePolicy(RepositoryWritePolicy writePolicy);
 
@@ -423,13 +395,6 @@ public interface Repository
    * @since 2.1
    */
   boolean expireNotFoundCaches(ResourceStoreRequest request, WalkerFilter filter);
-
-  /**
-   * Returns the meta data manager instance of this repository.
-   *
-   * @since 2.1
-   */
-  RepositoryMetadataManager getRepositoryMetadataManager();
 
   /**
    * Evicts items that were last used before timestamp.

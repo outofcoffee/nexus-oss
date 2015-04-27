@@ -14,22 +14,17 @@ package org.sonatype.nexus.proxy.walker;
 
 import org.sonatype.nexus.proxy.item.StorageCollectionItem;
 import org.sonatype.nexus.proxy.item.StorageItem;
-import org.sonatype.nexus.proxy.item.uid.IsHiddenAttribute;
 
 public class DefaultStoreWalkerFilter
     implements WalkerFilter
 {
-  public boolean shouldProcess(WalkerContext context, StorageItem item) {
-    return !isHidden(context, item);
+  @Override
+  public boolean shouldProcess(final WalkerContext context, final StorageItem item) {
+    return false;
   }
 
-  public boolean shouldProcessRecursively(WalkerContext context, StorageCollectionItem coll) {
-    return !isHidden(context, coll);
-  }
-
-  // ==
-
-  protected boolean isHidden(WalkerContext context, StorageItem item) {
-    return item.getRepositoryItemUid().getBooleanAttributeValue(IsHiddenAttribute.class);
+  @Override
+  public boolean shouldProcessRecursively(final WalkerContext context, final StorageCollectionItem coll) {
+    return false;
   }
 }

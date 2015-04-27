@@ -48,7 +48,7 @@ public interface ShadowRepository
    * Sets the master.
    */
   void setMasterRepository(Repository repository)
-      throws IncompatibleMasterRepositoryException;
+      throws Exception;
 
   /**
    * Triggers syncing with master repository.

@@ -32,7 +32,6 @@ import org.sonatype.nexus.proxy.access.Action;
 import org.sonatype.nexus.proxy.item.StorageItem;
 import org.sonatype.nexus.proxy.item.StorageLinkItem;
 import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
-import org.sonatype.nexus.proxy.targets.TargetSet;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 /**
@@ -143,11 +142,6 @@ public class DefaultRepositoryRouter
   public Collection<StorageItem> list(final ResourceStoreRequest request)
       throws ItemNotFoundException, IllegalOperationException, StorageException, AccessDeniedException
   {
-    return null;
-  }
-
-  @Override
-  public TargetSet getTargetsForRequest(final ResourceStoreRequest request) {
     return null;
   }
 }

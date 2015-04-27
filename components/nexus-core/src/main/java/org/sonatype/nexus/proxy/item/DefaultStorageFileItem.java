@@ -15,133 +15,184 @@ package org.sonatype.nexus.proxy.item;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.sonatype.nexus.proxy.RequestContext;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
+import org.sonatype.nexus.proxy.attributes.Attributes;
 import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.router.RepositoryRouter;
-
-import com.google.common.base.Strings;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Default implementation of {@link StorageFileItem}.
  */
 public class DefaultStorageFileItem
-    extends AbstractStorageItem
     implements StorageFileItem
 {
-  /**
-   * The input stream.
-   */
-  private transient ContentLocator contentLocator;
-
-  /**
-   * File content length.
-   * 
-   * @deprecated Field left in place for legacy upgrades, to have XStream able to read up serialized item and then have
-   *             {@link #upgrade()} to happen. The actual value comes from {@link ContentLocator#getLength()}!
-   */
-  @Deprecated
-  private long length;
-
-  /**
-   * File content MIME type.
-   * 
-   * @deprecated Field left in place for legacy upgrades, to have XStream able to read up serialized item and then have
-   *             {@link #upgrade()} to happen. The actual value comes from {@link ContentLocator#getMimeType()}!
-   */
-  @Deprecated
-  private String mimeType;
-
   public DefaultStorageFileItem(Repository repository, ResourceStoreRequest request, boolean canRead,
                                 boolean canWrite, ContentLocator contentLocator)
   {
-    super(repository, request, canRead, canWrite);
-    setContentLocator(contentLocator);
-  }
-
-  public DefaultStorageFileItem(RepositoryRouter router, ResourceStoreRequest request, boolean canRead,
-                                boolean canWrite, ContentLocator contentLocator)
-  {
-    super(router, request, canRead, canWrite);
-    setContentLocator(contentLocator);
   }
 
   @Override
   public long getLength() {
-    return getContentLocator().getLength();
+    return 0;
   }
 
   @Override
   public String getMimeType() {
-    return getContentLocator().getMimeType();
+    return null;
   }
 
   @Override
   public boolean isReusableStream() {
-    return getContentLocator().isReusable();
+    return false;
   }
 
   @Override
-  public InputStream getInputStream()
-      throws IOException
-  {
-    return getContentLocator().getContent();
+  public InputStream getInputStream() throws IOException {
+    return null;
   }
 
   @Override
-  public long getModified() {
-    if (isContentGenerated()) {
-      return System.currentTimeMillis();
-    }
-    else {
-      return super.getModified();
-    }
-  }
+  public void setContentLocator(final ContentLocator locator) {
 
-  @Override
-  public void setContentLocator(ContentLocator locator) {
-    this.contentLocator = checkNotNull(locator);
   }
 
   @Override
   public ContentLocator getContentLocator() {
-    return contentLocator;
+    return null;
   }
 
   @Override
   public String getContentGeneratorId() {
-    if (isContentGenerated()) {
-      return getRepositoryItemAttributes().get(ContentGenerator.CONTENT_GENERATOR_ID);
-    }
-    else {
-      return null;
-    }
+    return null;
   }
 
   @Override
-  public void setContentGeneratorId(String contentGeneratorId) {
-    if (Strings.isNullOrEmpty(contentGeneratorId)) {
-      getRepositoryItemAttributes().remove(ContentGenerator.CONTENT_GENERATOR_ID);
-    }
-    else {
-      getRepositoryItemAttributes().put(ContentGenerator.CONTENT_GENERATOR_ID, contentGeneratorId);
-    }
+  public void setContentGeneratorId(final String contentGeneratorId) {
+
   }
 
   @Override
   public boolean isContentGenerated() {
-    return getRepositoryItemAttributes().containsKey(ContentGenerator.CONTENT_GENERATOR_ID);
+    return false;
   }
 
-  // ==
+  @Override
+  public ResourceStoreRequest getResourceStoreRequest() {
+    return null;
+  }
 
   @Override
-  public String toString() {
-    if (isContentGenerated()) {
-      return String.format("%s (file, contentGenerator=%s)", super.toString(), getContentGeneratorId());
-    }
-    else {
-      return String.format("%s (file)", super.toString());
-    }
+  public RepositoryItemUid getRepositoryItemUid() {
+    return null;
+  }
+
+  @Override
+  public void setRepositoryItemUid(final RepositoryItemUid repositoryItemUid) {
+
+  }
+
+  @Override
+  public String getRepositoryId() {
+    return null;
+  }
+
+  @Override
+  public long getCreated() {
+    return 0;
+  }
+
+  @Override
+  public long getModified() {
+    return 0;
+  }
+
+  @Override
+  public long getStoredLocally() {
+    return 0;
+  }
+
+  @Override
+  public void setStoredLocally(final long ts) {
+
+  }
+
+  @Override
+  public long getRemoteChecked() {
+    return 0;
+  }
+
+  @Override
+  public void setRemoteChecked(final long ts) {
+
+  }
+
+  @Override
+  public long getLastRequested() {
+    return 0;
+  }
+
+  @Override
+  public void setLastRequested(final long ts) {
+
+  }
+
+  @Override
+  public boolean isVirtual() {
+    return false;
+  }
+
+  @Override
+  public boolean isReadable() {
+    return false;
+  }
+
+  @Override
+  public boolean isWritable() {
+    return false;
+  }
+
+  @Override
+  public boolean isExpired() {
+    return false;
+  }
+
+  @Override
+  public void setExpired(final boolean expired) {
+
+  }
+
+  @Override
+  public String getPath() {
+    return null;
+  }
+
+  @Override
+  public String getName() {
+    return null;
+  }
+
+  @Override
+  public String getParentPath() {
+    return null;
+  }
+
+  @Override
+  public int getPathDepth() {
+    return 0;
+  }
+
+  @Override
+  public String getRemoteUrl() {
+    return null;
+  }
+
+  @Override
+  public Attributes getRepositoryItemAttributes() {
+    return null;
+  }
+
+  @Override
+  public RequestContext getItemContext() {
+    return null;
   }
 }

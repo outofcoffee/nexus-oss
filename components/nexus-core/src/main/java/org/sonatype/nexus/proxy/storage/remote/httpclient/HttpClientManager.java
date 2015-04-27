@@ -17,13 +17,6 @@ import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 
 import org.apache.http.client.HttpClient;
 
-/**
- * Component responsible for maintaining HTTP Client instances for Proxy repositories, used by singleton
- * {@link HttpClientRemoteStorage}.
- *
- * @author cstamas
- * @since 2.2
- */
 public interface HttpClientManager
 {
   /**

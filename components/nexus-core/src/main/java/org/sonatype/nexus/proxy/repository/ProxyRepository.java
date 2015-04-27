@@ -104,16 +104,6 @@ public interface ProxyRepository
   public void setFileTypeValidation(boolean doValidate);
 
   /**
-   * Gets the RepositoryStatusCheckMode.
-   */
-  RepositoryStatusCheckMode getRepositoryStatusCheckMode();
-
-  /**
-   * Sets the RepositoryStatusCheckMode.
-   */
-  void setRepositoryStatusCheckMode(RepositoryStatusCheckMode mode);
-
-  /**
    * Returns true if this ProxyRepository should "auto block" itself when the remote repository has transport (or
    * other) problems, like bad remoteUrl is set.
    */

@@ -67,17 +67,8 @@ public interface StorageFileItem
    */
   ContentLocator getContentLocator();
 
-  /**
-   * Returns the ID of the {@link ContentGenerator} used to generate content for this item. This method returns
-   * {@code null} if method {@link #isContentGenerated()} returns {@code false}, hence, if the item is not generated.
-   */
   String getContentGeneratorId();
 
-  /**
-   * Sets the {@link ContentGenerator} to be used to generate content for this item. Passed in value might be
-   * {@code null}, in which case you "demote", remove an associated generator from this file item. If non null, the
-   * {@link ContentGenerator} with given ID will be used to generate content.
-   */
   void setContentGeneratorId(String contentGeneratorId);
 
   /**

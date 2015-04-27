@@ -21,39 +21,10 @@ import javax.annotation.Nullable;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.item.StorageItem;
 import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.scheduling.CancelableSupport;
-import org.sonatype.nexus.scheduling.TaskInterruptedException;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultWalkerContext
     implements WalkerContext
 {
-  private final Repository resourceStore;
-
-  private final WalkerFilter walkerFilter;
-
-  private final ResourceStoreRequest request;
-
-  private final WalkerThrottleController throttleController;
-
-  private final TraversalType traversalType;
-
-  private final boolean processCollections;
-
-  private final Map<String, Object> context;
-
-  private final List<WalkerProcessor> processors;
-
-  private Throwable stopCause;
-
-  private Comparator<StorageItem> itemComparator;
-
-  private volatile boolean running;
-
   public DefaultWalkerContext(final Repository store, final ResourceStoreRequest request) {
     this(store, request, null);
   }
@@ -78,100 +49,71 @@ public class DefaultWalkerContext
                               final TraversalType traversalType,
                               final boolean processCollections)
     {
-    this.resourceStore = checkNotNull(store);
-    this.request =checkNotNull(request);
-    this.walkerFilter = filter;
-    this.running = true;
-    if (request.getRequestContext().containsKey(WalkerThrottleController.CONTEXT_KEY, false)) {
-      this.throttleController =
-          (WalkerThrottleController) request.getRequestContext().get(WalkerThrottleController.CONTEXT_KEY, false);
-    }
-    else {
-      this.throttleController = WalkerThrottleController.NO_THROTTLING;
-    }
-    this.traversalType = checkNotNull(traversalType);
-    this.processCollections = processCollections;
-    this.context = Maps.newHashMap();
-    this.processors = Lists.newArrayList();
-  }
 
-  @Override
-  public boolean isLocalOnly() {
-    return request.isRequestLocalOnly();
-  }
-
-  @Override
-  public Map<String, Object> getContext() {
-    return context;
-  }
-
-  @Override
-  public List<WalkerProcessor> getProcessors() {
-    return processors;
-  }
-
-  @Override
-  public WalkerFilter getFilter() {
-    return walkerFilter;
-  }
-
-  @Override
-  public Repository getRepository() {
-    return resourceStore;
   }
 
   @Override
   public TraversalType getTraversalType() {
-    return traversalType;
+    return null;
   }
 
   @Override
   public boolean isProcessCollections() {
-    return processCollections;
+    return false;
   }
 
   @Override
   public ResourceStoreRequest getResourceStoreRequest() {
-    return request;
+    return null;
+  }
+
+  @Override
+  public boolean isLocalOnly() {
+    return false;
+  }
+
+  @Override
+  public Map<String, Object> getContext() {
+    return null;
+  }
+
+  @Override
+  public List<WalkerProcessor> getProcessors() {
+    return null;
+  }
+
+  @Override
+  public void stop(final Throwable cause) {
+
   }
 
   @Override
   public boolean isStopped() {
-    try {
-      CancelableSupport.checkCancellation();
-    }
-    catch (TaskInterruptedException e) {
-      if (stopCause == null) {
-        stopCause = e;
-      }
-      running = false;
-    }
-    return !running;
+    return false;
   }
 
   @Override
   public Throwable getStopCause() {
-    return stopCause;
+    return null;
   }
 
   @Override
-  public void stop(Throwable cause) {
-    running = false;
-    stopCause = cause;
+  public WalkerFilter getFilter() {
+    return null;
+  }
+
+  @Override
+  public Repository getRepository() {
+    return null;
   }
 
   @Override
   public WalkerThrottleController getThrottleController() {
-    return this.throttleController;
+    return null;
   }
 
   @Override
   public Comparator<StorageItem> getItemComparator() {
-    return itemComparator;
+    return null;
   }
-
-  public void setItemComparator(final Comparator<StorageItem> itemComparator) {
-    this.itemComparator = itemComparator;
-  }
-
 }

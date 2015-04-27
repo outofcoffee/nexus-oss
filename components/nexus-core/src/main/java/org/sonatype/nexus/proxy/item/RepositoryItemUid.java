@@ -12,7 +12,6 @@
  */
 package org.sonatype.nexus.proxy.item;
 
-import org.sonatype.nexus.proxy.item.uid.Attribute;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.utils.PathUtils;
 
@@ -91,19 +90,4 @@ public interface RepositoryItemUid
    * at all, simply last invocation) also releases the lazily created lock.
    */
   RepositoryItemUidLock getLock();
-
-  /**
-   * Gets an "attribute" from this UID.
-   */
-  <T extends Attribute<?>> T getAttribute(Class<T> attr);
-
-  /**
-   * Gets the value of the attribute from this UID, or null if no attribute found.
-   */
-  <A extends Attribute<V>, V> V getAttributeValue(Class<A> attr);
-
-  /**
-   * Gets the value of the attribute from this UID, or null if no attribute found.
-   */
-  <A extends Attribute<Boolean>> boolean getBooleanAttributeValue(Class<A> attr);
 }

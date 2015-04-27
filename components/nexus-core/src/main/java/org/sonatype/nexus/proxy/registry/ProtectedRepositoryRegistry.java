@@ -12,16 +12,12 @@
  */
 package org.sonatype.nexus.proxy.registry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.access.NexusItemAuthorizer;
 import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
@@ -32,135 +28,53 @@ public class ProtectedRepositoryRegistry
     extends ComponentSupport
     implements RepositoryRegistry
 {
-  private final RepositoryRegistry defaultRepositoryRegistry;
+  @Override
+  public void addRepository(final Repository repository) {
 
-  private final NexusItemAuthorizer nexusItemAuthorizer;
-
-  @Inject
-  public ProtectedRepositoryRegistry(final RepositoryRegistry defaultRepositoryRegistry,
-                                     final NexusItemAuthorizer nexusItemAuthorizer)
-  {
-    this.defaultRepositoryRegistry = defaultRepositoryRegistry;
-    this.nexusItemAuthorizer = nexusItemAuthorizer;
   }
 
-  public void addRepository(Repository repository) {
-    this.defaultRepositoryRegistry.addRepository(repository);
+  @Override
+  public void removeRepository(final String repoId) throws NoSuchRepositoryException {
+
   }
 
-  public List<String> getGroupsOfRepository(String repositoryId) {
-    return this.defaultRepositoryRegistry.getGroupsOfRepository(repositoryId);
+  @Override
+  public void removeRepositorySilently(final String repoId) throws NoSuchRepositoryException {
+
   }
 
-  public List<GroupRepository> getGroupsOfRepository(Repository repository) {
-    return this.defaultRepositoryRegistry.getGroupsOfRepository(repository);
-  }
-
+  @Override
   public List<Repository> getRepositories() {
-    return this.filterRepositoriesList(this.defaultRepositoryRegistry.getRepositories());
+    return null;
   }
 
-  public <T> List<T> getRepositoriesWithFacet(Class<T> f) {
-    return this.filterRepositoriesList(this.defaultRepositoryRegistry.getRepositoriesWithFacet(f), f);
+  @Override
+  public <T> List<T> getRepositoriesWithFacet(final Class<T> f) {
+    return null;
   }
 
-  public Repository getRepository(String repoId)
-      throws NoSuchRepositoryException
-  {
-    Repository repository = this.defaultRepositoryRegistry.getRepository(repoId);
-    this.checkAccessToRepository(repository.getId());
-    return repository;
+  @Override
+  public Repository getRepository(final String repoId) throws NoSuchRepositoryException {
+    return null;
   }
 
-  public <T> T getRepositoryWithFacet(String repoId, Class<T> f)
-      throws NoSuchRepositoryException
-  {
-    T repository = this.defaultRepositoryRegistry.getRepositoryWithFacet(repoId, f);
-    this.checkAccessToRepository(repository, f);
-    return repository;
+  @Override
+  public <T> T getRepositoryWithFacet(final String repoId, final Class<T> f) throws NoSuchRepositoryException {
+    return null;
   }
 
-  public void removeRepository(String repoId)
-      throws NoSuchRepositoryException
-  {
-    this.checkAccessToRepository(repoId);
-    this.defaultRepositoryRegistry.removeRepository(repoId);
+  @Override
+  public boolean repositoryIdExists(final String repositoryId) {
+    return false;
   }
 
-  public void removeRepositorySilently(String repoId)
-      throws NoSuchRepositoryException
-  {
-    this.checkAccessToRepository(repoId);
-    this.defaultRepositoryRegistry.removeRepositorySilently(repoId);
+  @Override
+  public List<String> getGroupsOfRepository(final String repositoryId) {
+    return null;
   }
 
-  public boolean repositoryIdExists(String repositoryId) {
-    return this.defaultRepositoryRegistry.repositoryIdExists(repositoryId);
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T> List<T> filterRepositoriesList(List<T> repositories, Class<T> facetClass) {
-    // TODO: there has to be a better way to check to see if one class implements/extends another class
-    if (this.isRepository(facetClass)) {
-      return (List<T>) this.filterRepositoriesList((List<Repository>) repositories);
-    }
-    else {
-      this.log.debug(
-          "Failed to cast Repository facet class: " + facetClass
-              + " to repository, this list will not be filtered based on the users permissions.");
-      return repositories;
-    }
-  }
-
-  private List<Repository> filterRepositoriesList(List<Repository> repositories) {
-    // guard against npe
-    if (repositories == null) {
-      return null;
-    }
-
-    List<Repository> filteredRepositories = new ArrayList<Repository>();
-
-    for (Repository repository : repositories) {
-      if (this.nexusItemAuthorizer.isViewable(NexusItemAuthorizer.VIEW_REPOSITORY_KEY, repository.getId())) {
-        filteredRepositories.add(repository);
-      }
-    }
-
-    return filteredRepositories;
-  }
-
-  private void checkAccessToRepository(String repositoryId)
-      throws NoSuchRepositoryAccessException
-  {
-    if (!this.nexusItemAuthorizer.isViewable(NexusItemAuthorizer.VIEW_REPOSITORY_KEY, repositoryId)) {
-      throw new NoSuchRepositoryAccessException(repositoryId);
-    }
-  }
-
-  private <T> void checkAccessToRepository(T repository, Class facetClass)
-      throws NoSuchRepositoryAccessException
-  {
-    if (this.isRepository(facetClass)) {
-      this.checkAccessToRepository(((Repository) repository).getId());
-    }
-    else {
-      this.log.debug(
-          "Failed to cast Repository facet class: " + facetClass
-              + " to repository, repository cannot be filtered based on the users permissions.");
-    }
-  }
-
-  public static class NoSuchRepositoryAccessException
-      extends NoSuchRepositoryException
-  {
-    public NoSuchRepositoryAccessException(String repoId) {
-      super(repoId);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private boolean isRepository(Class facetClass) {
-    List<Class> interfaces = Arrays.asList(facetClass.getInterfaces());
-    return interfaces.contains(Repository.class) || Repository.class.equals(facetClass);
+  @Override
+  public List<GroupRepository> getGroupsOfRepository(final Repository repository) {
+    return null;
   }
 }

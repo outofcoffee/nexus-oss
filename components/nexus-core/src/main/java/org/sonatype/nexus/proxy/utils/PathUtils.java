@@ -19,7 +19,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.sonatype.nexus.proxy.item.RepositoryItemUid;
-import org.sonatype.nexus.proxy.walker.ParentOMatic;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
@@ -60,12 +59,6 @@ public class PathUtils
     return elementsOf(path).size();
   }
 
-  /**
-   * Splits the passed in path into path elements. Note: this code was originally in
-   * {@link ParentOMatic#getPathElements} method!
-   *
-   * @return list of path elements.
-   */
   public static List<String> elementsOf(final String path) {
     final List<String> result = Lists.newArrayList();
     final String[] elems = path.split("/");

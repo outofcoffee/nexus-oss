@@ -14,7 +14,6 @@ package org.sonatype.nexus.proxy.access;
 
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.targets.TargetSet;
 
 /**
  * Authorizes the Repository requests against permissions.
@@ -24,22 +23,6 @@ import org.sonatype.nexus.proxy.targets.TargetSet;
 public interface NexusItemAuthorizer
 {
   public static final String VIEW_REPOSITORY_KEY = "repository";
-
-  /**
-   * Authorizes TargetSet.
-   *
-   * @deprecated Use {@link #authorizePath(Repository, ResourceStoreRequest, Action)} method instead.
-   */
-  @Deprecated
-  public boolean authorizePath(TargetSet matched, Action action);
-
-  /**
-   * Returns groups for target set.
-   *
-   * @deprecated Use {@link #authorizePath(Repository, ResourceStoreRequest, Action)} method instead.
-   */
-  @Deprecated
-  public TargetSet getGroupsTargetSet(Repository repository, ResourceStoreRequest request);
 
   /**
    * Authorizes a repository level path against an action. Use when you have a repository path, ie. filtering of

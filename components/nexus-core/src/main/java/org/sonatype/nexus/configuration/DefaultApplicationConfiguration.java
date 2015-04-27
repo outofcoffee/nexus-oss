@@ -31,7 +31,6 @@ import org.sonatype.nexus.events.Veto;
 import org.sonatype.nexus.jmx.reflect.ManagedAttribute;
 import org.sonatype.nexus.jmx.reflect.ManagedObject;
 import org.sonatype.nexus.jmx.reflect.ManagedOperation;
-import org.sonatype.nexus.proxy.cache.CacheManager;
 import org.sonatype.nexus.proxy.storage.local.DefaultLocalStorageContext;
 import org.sonatype.nexus.proxy.storage.local.LocalStorageContext;
 import org.sonatype.nexus.proxy.storage.remote.DefaultRemoteStorageContext;
@@ -67,11 +66,6 @@ public class DefaultApplicationConfiguration
     extends ComponentSupport
     implements ApplicationConfiguration
 {
-  /**
-   * Only to have UTs work
-   */
-  private final CacheManager cacheManager;
-
   private final BeanLocator beanLocator;
 
   private final EventBus eventBus;
@@ -104,8 +98,7 @@ public class DefaultApplicationConfiguration
   private File configurationDirectory;
 
   @Inject
-  public DefaultApplicationConfiguration(final CacheManager cacheManager,
-                                         final BeanLocator beanLocator,
+  public DefaultApplicationConfiguration(final BeanLocator beanLocator,
                                          final EventBus eventBus,
                                          final @Named("file") ApplicationConfigurationSource configurationSource,
                                          final Provider<GlobalRemoteConnectionSettings> globalRemoteConnectionSettingsProvider,
@@ -114,7 +107,6 @@ public class DefaultApplicationConfiguration
                                          final @Named("nexus-uber") ClassLoader uberClassLoader,
                                          final ApplicationDirectories applicationDirectories)
   {
-    this.cacheManager = checkNotNull(cacheManager);
     this.beanLocator = checkNotNull(beanLocator);
     this.eventBus = checkNotNull(eventBus);
     this.configurationSource = checkNotNull(configurationSource);

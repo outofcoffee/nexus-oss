@@ -14,9 +14,7 @@ package org.sonatype.nexus.proxy.repository;
 
 import java.util.List;
 
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.StorageException;
 import org.sonatype.nexus.proxy.item.StorageItem;
 
 /**
@@ -39,13 +37,13 @@ public interface GroupRepository
    * Sets the members of this group.
    */
   void setMemberRepositoryIds(List<String> repositories)
-      throws NoSuchRepositoryException, InvalidGroupingException;
+      throws Exception;
 
   /**
    * Adds a member to this group.
    */
   void addMemberRepositoryId(String repositoryId)
-      throws NoSuchRepositoryException, InvalidGroupingException;
+      throws Exception;
 
   /**
    * Removes a member from this group.
@@ -79,10 +77,6 @@ public interface GroupRepository
    */
   List<String> getTransitiveMemberRepositoryIds();
 
-  /**
-   * Returns the list of available items in the group for same path. The resulting list keeps the order of reposes
-   * queried for path. Never returns {@code null}, if nothing found, {@link GroupItemNotFoundException} is thrown.
-   */
   List<StorageItem> doRetrieveItems(ResourceStoreRequest request)
-      throws GroupItemNotFoundException, StorageException;
+      throws Exception;
 }

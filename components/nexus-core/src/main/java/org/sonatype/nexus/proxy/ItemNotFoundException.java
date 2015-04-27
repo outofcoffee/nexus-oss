@@ -13,7 +13,6 @@
 package org.sonatype.nexus.proxy;
 
 import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.router.RepositoryRouter;
 import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
 import org.sonatype.sisu.goodies.common.FormatTemplate;
 import org.sonatype.sisu.goodies.common.SimpleFormat;
@@ -89,13 +88,6 @@ public class ItemNotFoundException
 
   // ==
 
-  /**
-   * Reason of item not found when no repository is involved. Usually ther IS one, so you should use
-   * {@link ItemNotFoundInRepositoryReason} instead. This one is used in places like {@link RepositoryRouter}, where
-   * the "targeted" repository is still unknown or similar places.
-   *
-   * @since 2.5
-   */
   public static class ItemNotFoundReason
   {
     private final FormatTemplate message;

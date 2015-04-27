@@ -17,7 +17,6 @@ import javax.inject.Singleton;
 
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.targets.TargetSet;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 /**
@@ -29,16 +28,6 @@ public class DefaultNexusItemAuthorizer
     extends ComponentSupport
     implements NexusItemAuthorizer
 {
-  @Override
-  public boolean authorizePath(final TargetSet matched, final Action action) {
-    return false;
-  }
-
-  @Override
-  public TargetSet getGroupsTargetSet(final Repository repository, final ResourceStoreRequest request) {
-    return null;
-  }
-
   @Override
   public boolean authorizePath(final Repository repository, final ResourceStoreRequest request, final Action action) {
     return false;
