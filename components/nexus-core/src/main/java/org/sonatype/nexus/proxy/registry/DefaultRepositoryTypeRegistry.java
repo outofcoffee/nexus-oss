@@ -12,190 +12,68 @@
  */
 package org.sonatype.nexus.proxy.registry;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.proxy.repository.Repository;
-
-import com.google.common.collect.Multimap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Singleton
 @Named
 public class DefaultRepositoryTypeRegistry
     implements RepositoryTypeRegistry
 {
-  private final static Logger logger = LoggerFactory.getLogger(DefaultRepositoryTypeRegistry.class);
-
-  private final Map<String, ContentClass> contentClasses;
-
-  private Multimap<Class<? extends Repository>, RepositoryTypeDescriptor> repositoryTypeDescriptorsMap;
-
-  @Inject
-  public DefaultRepositoryTypeRegistry(final Map<String, ContentClass> contentClasses) {
-    this.contentClasses = checkNotNull(contentClasses);
-    //
-    //Multimap<Class<? extends Repository>, RepositoryTypeDescriptor> result = ArrayListMultimap.create();
-    //// fill in the defaults
-    //Class<? extends Repository> role = null;
-    //role = Repository.class;
-    //result.put(role, new RepositoryTypeDescriptor(role, M1Repository.ID, "repositories",
-    //    RepositoryTypeDescriptor.UNLIMITED_INSTANCES));
-    //result.put(role, new RepositoryTypeDescriptor(role, M2Repository.ID, "repositories",
-    //    RepositoryTypeDescriptor.UNLIMITED_INSTANCES));
-    //role = ShadowRepository.class;
-    //result.put(role, new RepositoryTypeDescriptor(role, M1LayoutedM2ShadowRepository.ID, "shadows",
-    //    RepositoryTypeDescriptor.UNLIMITED_INSTANCES));
-    //result.put(role, new RepositoryTypeDescriptor(role, M2LayoutedM1ShadowRepository.ID, "shadows",
-    //    RepositoryTypeDescriptor.UNLIMITED_INSTANCES));
-    //role = GroupRepository.class;
-    //result.put(role, new RepositoryTypeDescriptor(role, M1GroupRepository.ID, "groups",
-    //    RepositoryTypeDescriptor.UNLIMITED_INSTANCES));
-    //result.put(role, new RepositoryTypeDescriptor(role, M2GroupRepository.ID, "groups",
-    //    RepositoryTypeDescriptor.UNLIMITED_INSTANCES));
-    //logger.info("Registered default repository types.");
-    //this.repositoryTypeDescriptorsMap = result;
-  }
-
-  protected Multimap<Class<? extends Repository>, RepositoryTypeDescriptor> getRepositoryTypeDescriptors() {
-    return repositoryTypeDescriptorsMap;
-  }
-
   @Override
   public Set<RepositoryTypeDescriptor> getRegisteredRepositoryTypeDescriptors() {
-    return Collections.unmodifiableSet(new HashSet<RepositoryTypeDescriptor>(getRepositoryTypeDescriptors().values()));
+    return null;
   }
 
   @Override
-  public boolean registerRepositoryTypeDescriptors(RepositoryTypeDescriptor d) {
-    boolean added = getRepositoryTypeDescriptors().put(d.getRole(), d);
-
-    if (added) {
-      if (d.getRepositoryMaxInstanceCount() == RepositoryTypeDescriptor.UNLIMITED_INSTANCES) {
-        logger.info("Registered Repository type " + d.toString() + ".");
-      }
-      else {
-        logger.info("Registered Repository type " + d.toString() + " with maximal instance limit set to "
-            + d.getRepositoryMaxInstanceCount() + ".");
-      }
-    }
-
-    return added;
+  public boolean registerRepositoryTypeDescriptors(final RepositoryTypeDescriptor d) {
+    return false;
   }
 
   @Override
-  public boolean unregisterRepositoryTypeDescriptors(RepositoryTypeDescriptor d) {
-    boolean removed = getRepositoryTypeDescriptors().remove(d.getRole(), d);
-
-    if (removed) {
-      logger.info("Unregistered repository type " + d.toString());
-    }
-
-    return removed;
-  }
-
-  @Override
-  public Map<String, ContentClass> getContentClasses() {
-    return Collections.unmodifiableMap(new HashMap<String, ContentClass>(contentClasses));
-  }
-
-  @Override
-  public Set<String> getCompatibleContentClasses(ContentClass contentClass) {
-    Set<String> compatibles = new HashSet<String>();
-
-    for (ContentClass cc : contentClasses.values()) {
-      if (cc.isCompatible(contentClass) || contentClass.isCompatible(cc)) {
-        compatibles.add(cc.getId());
-      }
-    }
-
-    return compatibles;
+  public boolean unregisterRepositoryTypeDescriptors(final RepositoryTypeDescriptor d) {
+    return false;
   }
 
   @Override
   public Set<Class<? extends Repository>> getRepositoryRoles() {
-    Set<RepositoryTypeDescriptor> rtds = getRegisteredRepositoryTypeDescriptors();
-
-    HashSet<Class<? extends Repository>> result = new HashSet<Class<? extends Repository>>(rtds.size());
-
-    for (RepositoryTypeDescriptor rtd : rtds) {
-      result.add(rtd.getRole());
-    }
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  @Override
-  public Set<String> getExistingRepositoryHints(Class<? extends Repository> role) {
-    if (!getRepositoryTypeDescriptors().containsKey(role)) {
-      return Collections.emptySet();
-    }
-
-    HashSet<String> result = new HashSet<String>();
-
-    for (RepositoryTypeDescriptor rtd : getRepositoryTypeDescriptors().get(role)) {
-      result.add(rtd.getHint());
-    }
-
-    return result;
-  }
-
-  @Override
-  public RepositoryTypeDescriptor getRepositoryTypeDescriptor(Class<? extends Repository> role, String hint) {
-    if (!getRepositoryTypeDescriptors().containsKey(role)) {
-      return null;
-    }
-
-    for (RepositoryTypeDescriptor rtd : getRepositoryTypeDescriptors().get(role)) {
-      if (rtd.getHint().equals(hint)) {
-        return rtd;
-      }
-    }
-
     return null;
   }
 
   @Override
-  @Deprecated
-  public RepositoryTypeDescriptor getRepositoryTypeDescriptor(String role, String hint) {
-    Class<? extends Repository> roleClass = null;
-
-    for (Class<? extends Repository> registeredClass : getRepositoryTypeDescriptors().keySet()) {
-      if (registeredClass.getName().equals(role)) {
-        roleClass = registeredClass;
-
-        break;
-      }
-    }
-
-    if (roleClass == null) {
-      return null;
-    }
-
-    for (RepositoryTypeDescriptor rtd : getRepositoryTypeDescriptors().get(roleClass)) {
-      if (rtd.getHint().equals(hint)) {
-        return rtd;
-      }
-    }
-
+  public Set<String> getExistingRepositoryHints(final Class<? extends Repository> role) {
     return null;
   }
 
   @Override
-  public ContentClass getRepositoryContentClass(Class<? extends Repository> role, String hint) {
-    if (getRepositoryRoles().contains(role)) {
-      return contentClasses.get(hint);
-    }
+  public RepositoryTypeDescriptor getRepositoryTypeDescriptor(final Class<? extends Repository> role,
+                                                              final String hint)
+  {
+    return null;
+  }
+
+  @Override
+  public RepositoryTypeDescriptor getRepositoryTypeDescriptor(final String role, final String hint) {
+    return null;
+  }
+
+  @Override
+  public Map<String, ContentClass> getContentClasses() {
+    return null;
+  }
+
+  @Override
+  public Set<String> getCompatibleContentClasses(final ContentClass contentClass) {
+    return null;
+  }
+
+  @Override
+  public ContentClass getRepositoryContentClass(final Class<? extends Repository> role, final String hint) {
     return null;
   }
 }

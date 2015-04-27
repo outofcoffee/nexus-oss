@@ -12,18 +12,12 @@
  */
 package org.sonatype.nexus.proxy.repository;
 
-import javax.inject.Inject;
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
-import org.sonatype.nexus.proxy.registry.RepositoryTypeDescriptor;
-import org.sonatype.nexus.proxy.registry.RepositoryTypeRegistry;
-import org.sonatype.nexus.web.BaseUrlHolder;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Named
 @Singleton
@@ -31,47 +25,21 @@ public class RepositoryURLBuilderImpl
     extends ComponentSupport
     implements RepositoryURLBuilder
 {
-  private final RepositoryRegistry repositoryRegistry;
-
-  private final RepositoryTypeRegistry repositoryTypeRegistry;
-
-  @Inject
-  public RepositoryURLBuilderImpl(final RepositoryRegistry repositoryRegistry,
-                                  final RepositoryTypeRegistry repositoryTypeRegistry)
-  {
-    this.repositoryRegistry = checkNotNull(repositoryRegistry);
-    this.repositoryTypeRegistry = checkNotNull(repositoryTypeRegistry);
-  }
-
+  @Nullable
   @Override
   public String getRepositoryContentUrl(final String repositoryId) throws NoSuchRepositoryException {
-    return getRepositoryContentUrl(repositoryRegistry.getRepository(repositoryId));
+    return null;
   }
 
+  @Nullable
   @Override
   public String getRepositoryContentUrl(final Repository repository) {
-    RepositoryTypeDescriptor rtd =
-        repositoryTypeRegistry.getRepositoryTypeDescriptor(repository.getProviderRole(), repository.getProviderHint());
-
-    String baseUrl;
-    try {
-      baseUrl = BaseUrlHolder.get();
-    }
-    catch (IllegalStateException e) {
-      log.warn(e.toString());
-      return null;
-    }
-
-    return String.format("%s/content/%s/%s", baseUrl, rtd.getPrefix(), repository.getPathPrefix());
+    return null;
   }
 
+  @Nullable
   @Override
   public String getExposedRepositoryContentUrl(final Repository repository) {
-    if (!repository.isExposed()) {
-      return null;
-    }
-    else {
-      return getRepositoryContentUrl(repository);
-    }
+    return null;
   }
 }

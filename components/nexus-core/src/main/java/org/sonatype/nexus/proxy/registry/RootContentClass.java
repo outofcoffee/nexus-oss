@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 @Singleton
 @Named(RootContentClass.ID)
 public class RootContentClass
-    extends AbstractIdContentClass
+    implements ContentClass
 {
   public static final String ID = "any";
 
@@ -26,25 +26,21 @@ public class RootContentClass
 
   @Override
   public String getId() {
-    return ID;
+    return null;
   }
 
   @Override
   public String getName() {
-    return NAME;
+    return null;
   }
 
-  ;
-
   @Override
-  public boolean isCompatible(ContentClass contentClass) {
-    //root is compatible with all !
-    return true;
+  public boolean isCompatible(final ContentClass contentClass) {
+    return false;
   }
 
   @Override
   public boolean isGroupable() {
-    //you can't create repos w/ 'root' type content, so groupable isn't an option
     return false;
   }
 }

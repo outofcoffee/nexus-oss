@@ -12,7 +12,6 @@
  */
 package org.sonatype.nexus.proxy.access;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -30,23 +29,10 @@ import org.sonatype.nexus.proxy.repository.Repository;
 public class DefaultAccessManager
     implements AccessManager
 {
-  private final NexusItemAuthorizer nexusItemAuthorizer;
-
-  @Inject
-  public DefaultAccessManager(final NexusItemAuthorizer nexusItemAuthorizer) {
-    this.nexusItemAuthorizer = nexusItemAuthorizer;
-  }
-
-  public void decide(Repository repository, ResourceStoreRequest request, Action action)
+  @Override
+  public void decide(final Repository repository, final ResourceStoreRequest request, final Action action)
       throws AccessDeniedException
   {
-    //only bother checking item authorizer if there is no flag in request stating authorization
-    //has been taken care of
-    if (!request.getRequestContext().containsKey(AccessManager.REQUEST_AUTHORIZED)
-        && !nexusItemAuthorizer.authorizePath(repository, request, action)) {
-      // deny the access
-      throw new AccessDeniedException("Access denied on repository ID='" + repository.getId() + "', path='"
-          + request.getRequestPath() + "', action='" + action + "'!");
-    }
+
   }
 }

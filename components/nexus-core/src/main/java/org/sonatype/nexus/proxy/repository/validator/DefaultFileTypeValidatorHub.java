@@ -12,15 +12,10 @@
  */
 package org.sonatype.nexus.proxy.repository.validator;
 
-import java.util.Map;
-
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.proxy.item.StorageFileItem;
 import org.sonatype.nexus.proxy.item.StorageItem;
-import org.sonatype.nexus.proxy.repository.validator.FileTypeValidator.FileTypeValidity;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 @Named
@@ -29,37 +24,8 @@ public class DefaultFileTypeValidatorHub
     extends ComponentSupport
     implements FileTypeValidatorHub
 {
-
-  private final Map<String, FileTypeValidator> fileTypeValidators;
-
-  @Inject
-  public DefaultFileTypeValidatorHub(final Map<String, FileTypeValidator> fileTypeValidators) {
-    this.fileTypeValidators = fileTypeValidators;
-  }
-
   @Override
   public boolean isExpectedFileType(final StorageItem item) {
-    if (item instanceof StorageFileItem) {
-      StorageFileItem file = (StorageFileItem) item;
-
-      for (Map.Entry<String, FileTypeValidator> fileTypeValidatorEntry : fileTypeValidators.entrySet()) {
-        FileTypeValidity validity = fileTypeValidatorEntry.getValue().isExpectedFileType(file);
-
-        if (FileTypeValidity.INVALID.equals(validity)) {
-          log.info("File item {} evaluated as INVALID during file type validation (validator={})",
-              file.getRepositoryItemUid().toString(), fileTypeValidatorEntry.getKey());
-          // fail fast
-          return false;
-        }
-      }
-
-      // return true if not failed for now
-      // later we might get this better
-      return true;
-    }
-    else {
-      // we check files only, so say true here
-      return true;
-    }
+    return false;
   }
 }

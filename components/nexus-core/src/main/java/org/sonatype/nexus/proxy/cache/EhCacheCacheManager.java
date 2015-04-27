@@ -12,17 +12,10 @@
  */
 package org.sonatype.nexus.proxy.cache;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.events.NexusStoppedEvent;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
-import org.sonatype.sisu.goodies.eventbus.EventBus;
-
-import com.google.common.eventbus.Subscribe;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The Class EhCacheCacheManager is a thin wrapper around EhCache, just to make things going.
@@ -35,26 +28,8 @@ public class EhCacheCacheManager
     extends ComponentSupport
     implements CacheManager
 {
-  private final net.sf.ehcache.CacheManager cacheManager;
-
-  public static final String SINGLE_PATH_CACHE_NAME = "nx-repository-path-cache";
-
-  @Inject
-  public EhCacheCacheManager(final EventBus eventBus, final net.sf.ehcache.CacheManager cacheManager) {
-    eventBus.register(this);
-    this.cacheManager = checkNotNull(cacheManager);
-  }
-
-  public synchronized PathCache getPathCache(String cache) {
-    if (!cacheManager.cacheExists(SINGLE_PATH_CACHE_NAME)) {
-      cacheManager.addCache(SINGLE_PATH_CACHE_NAME);
-    }
-
-    return new EhCachePathCache(cache, cacheManager.getEhcache(SINGLE_PATH_CACHE_NAME));
-  }
-
-  @Subscribe
-  public void on(final NexusStoppedEvent event) {
-    cacheManager.shutdown();
+  @Override
+  public PathCache getPathCache(final String cache) {
+    return null;
   }
 }
