@@ -17,7 +17,6 @@ import java.io.InputStream;
 
 import org.sonatype.nexus.proxy.RequestContext;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.attributes.Attributes;
 import org.sonatype.nexus.proxy.repository.Repository;
 
 /**
@@ -86,10 +85,6 @@ public class DefaultStorageFileItem
     return null;
   }
 
-  @Override
-  public void setRepositoryItemUid(final RepositoryItemUid repositoryItemUid) {
-
-  }
 
   @Override
   public String getRepositoryId() {
@@ -107,38 +102,8 @@ public class DefaultStorageFileItem
   }
 
   @Override
-  public long getStoredLocally() {
-    return 0;
-  }
-
-  @Override
-  public void setStoredLocally(final long ts) {
-
-  }
-
-  @Override
-  public long getRemoteChecked() {
-    return 0;
-  }
-
-  @Override
-  public void setRemoteChecked(final long ts) {
-
-  }
-
-  @Override
   public long getLastRequested() {
     return 0;
-  }
-
-  @Override
-  public void setLastRequested(final long ts) {
-
-  }
-
-  @Override
-  public boolean isVirtual() {
-    return false;
   }
 
   @Override
@@ -172,22 +137,7 @@ public class DefaultStorageFileItem
   }
 
   @Override
-  public String getParentPath() {
-    return null;
-  }
-
-  @Override
-  public int getPathDepth() {
-    return 0;
-  }
-
-  @Override
   public String getRemoteUrl() {
-    return null;
-  }
-
-  @Override
-  public Attributes getRepositoryItemAttributes() {
     return null;
   }
 

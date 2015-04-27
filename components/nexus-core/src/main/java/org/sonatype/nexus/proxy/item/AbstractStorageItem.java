@@ -14,7 +14,6 @@ package org.sonatype.nexus.proxy.item;
 
 import org.sonatype.nexus.proxy.RequestContext;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.attributes.Attributes;
 import org.sonatype.nexus.proxy.repository.Repository;
 
 /**
@@ -23,21 +22,6 @@ import org.sonatype.nexus.proxy.repository.Repository;
 public abstract class AbstractStorageItem
     implements StorageItem
 {
-
-  public Attributes getRepositoryItemAttributes() {
-    return null;
-  }
-
-  public void upgrade() {
-  }
-
-  // ==
-
-  /**
-   * Default constructor, needed for XStream.
-   * 
-   * @deprecated This constructor is here for legacy reasons, do not use it!
-   */
   @Deprecated
   private AbstractStorageItem() {
   }
@@ -61,11 +45,6 @@ public abstract class AbstractStorageItem
   }
 
   @Override
-  public void setRepositoryItemUid(final RepositoryItemUid repositoryItemUid) {
-
-  }
-
-  @Override
   public String getRepositoryId() {
     return null;
   }
@@ -81,38 +60,8 @@ public abstract class AbstractStorageItem
   }
 
   @Override
-  public long getStoredLocally() {
-    return 0;
-  }
-
-  @Override
-  public void setStoredLocally(final long ts) {
-
-  }
-
-  @Override
-  public long getRemoteChecked() {
-    return 0;
-  }
-
-  @Override
-  public void setRemoteChecked(final long ts) {
-
-  }
-
-  @Override
   public long getLastRequested() {
     return 0;
-  }
-
-  @Override
-  public void setLastRequested(final long ts) {
-
-  }
-
-  @Override
-  public boolean isVirtual() {
-    return false;
   }
 
   @Override
@@ -143,16 +92,6 @@ public abstract class AbstractStorageItem
   @Override
   public String getName() {
     return null;
-  }
-
-  @Override
-  public String getParentPath() {
-    return null;
-  }
-
-  @Override
-  public int getPathDepth() {
-    return 0;
   }
 
   @Override

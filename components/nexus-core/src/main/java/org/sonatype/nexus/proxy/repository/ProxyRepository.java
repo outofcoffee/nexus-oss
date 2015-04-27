@@ -12,13 +12,7 @@
  */
 package org.sonatype.nexus.proxy.repository;
 
-import java.util.Map;
-
-import org.sonatype.nexus.proxy.LocalStorageException;
 import org.sonatype.nexus.proxy.RemoteStorageException;
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.item.AbstractStorageItem;
-import org.sonatype.nexus.proxy.storage.remote.RemoteRepositoryStorage;
 import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 
 /**
@@ -29,68 +23,10 @@ import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 public interface ProxyRepository
     extends Repository
 {
-  void expireProxyCaches(ResourceStoreRequest request);
-
-  /**
-   * Gets remote status.
-   */
-  RemoteStatus getRemoteStatus(ResourceStoreRequest request, boolean forceCheck);
-
-  /**
-   * Returns the current remote status retain time. Does not change or step it's value.
-   */
-  long getCurrentRemoteStatusRetainTime();
-
-  /**
-   * Steps and returns the new current remote status retain time. It does change the underlying NumberSequence (if
-   * needed). Also, this method tops the change, and will not increase the NumberSequence over some limit.
-   */
-  long getNextRemoteStatusRetainTime();
-
   /**
    * Gets proxy mode.
    */
   ProxyMode getProxyMode();
-
-  /**
-   * Sets proxy mode.
-   */
-  void setProxyMode(ProxyMode val);
-
-  /**
-   * Gets the item max age in (in minutes).
-   *
-   * @return the item max age in (in minutes)
-   */
-  int getItemMaxAge();
-
-  /**
-   * Sets the item max age in (in minutes).
-   *
-   * @param itemMaxAge the new item max age in (in minutes).
-   */
-  void setItemMaxAge(int itemMaxAge);
-
-  /**
-   * Gets the content validation setting.
-   */
-  public boolean isFileTypeValidation();
-
-  /**
-   * Sets the content validation setting.
-   */
-  public void setFileTypeValidation(boolean doValidate);
-
-  /**
-   * Returns true if this ProxyRepository should "auto block" itself when the remote repository has transport (or
-   * other) problems, like bad remoteUrl is set.
-   */
-  boolean isAutoBlockActive();
-
-  /**
-   * Sets the ProxyRepository autoBlock feature active or inactive.
-   */
-  void setAutoBlockActive(boolean val);
 
   /**
    * Returns the remote URL of this repository, if any.
@@ -108,65 +44,7 @@ public interface ProxyRepository
       throws RemoteStorageException;
 
   /**
-   * Gets the remote connections settings. Delegates to RemoteStorageContext.
-   */
-  RemoteConnectionSettings getRemoteConnectionSettings();
-
-  /**
-   * Set remote connection settings. Delegates to RemoteStorageContext.
-   */
-  void setRemoteConnectionSettings(RemoteConnectionSettings settings);
-
-  /**
-   * Gets remote authentication settings. Delegates to RemoteStorageContext.
-   */
-  RemoteAuthenticationSettings getRemoteAuthenticationSettings();
-
-  /**
-   * Sets remote authentication settings. Delegates to RemoteStorageContext.
-   */
-  void setRemoteAuthenticationSettings(RemoteAuthenticationSettings settings);
-
-  /**
-   * Returns is the "aging" applied to the items in this proxy repository. If false, then this proxy will not apply
-   * "aging" to items, and will always go for remote to check for change.
-   */
-  boolean isItemAgingActive();
-
-  /**
-   * Sets the "aging" algorithm status.
-   */
-  void setItemAgingActive(boolean value);
-
-  // --
-
-  /**
    * Returns repository specific remote connection context.
    */
   RemoteStorageContext getRemoteStorageContext();
-
-  /**
-   * Returns the remoteStorage of the repository. Per repository instance may exists.
-   */
-  RemoteRepositoryStorage getRemoteStorage();
-
-  /**
-   * Sets the remote storage of the repository. May be null if this is a Local repository only. Per repository
-   * instance may exists.
-   *
-   * @param storage the storage
-   */
-  void setRemoteStorage(RemoteRepositoryStorage storage);
-
-  /**
-   * Returns the list of defined item content validators.
-   */
-  Map<String, ItemContentValidator> getItemContentValidators();
-
-  /**
-   * Caches an item.
-   */
-  AbstractStorageItem doCacheItem(AbstractStorageItem item)
-      throws LocalStorageException;
-
 }

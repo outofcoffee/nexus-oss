@@ -19,20 +19,7 @@ import org.apache.http.client.HttpClient;
 
 public interface HttpClientManager
 {
-  /**
-   * Creates specifically configured {@link HttpClient} instance for given {@link ProxyRepository} repository. Note:
-   * {@link RemoteStorageContext} is passed in as 2nd parameter, as this call happens usually during context update
-   * triggered by stale context. The call {@link ProxyRepository#getRemoteStorageContext()} would cause endless loop
-   * in this case. If calling this method outside of context update step, the previous call is fine and will not
-   * loop.
-   *
-   * @return the pre-configured {@link HttpClient} to be used.
-   */
   HttpClient create(final ProxyRepository proxyRepository, final RemoteStorageContext ctx);
 
-  /**
-   * Releases the {@link HttpClient} for given {@link ProxyRepository}.
-   * To be called whenever the instance needs to be dropped or recreated.
-   */
   void release(final ProxyRepository proxyRepository, final RemoteStorageContext ctx);
 }

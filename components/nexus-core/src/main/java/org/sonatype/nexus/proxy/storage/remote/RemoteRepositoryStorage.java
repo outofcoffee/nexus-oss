@@ -40,77 +40,27 @@ public interface RemoteRepositoryStorage
    */
   String getVersion();
 
-  /**
-   * Check remote storage for reachability.
-   *
-   * @return true, if available (reachable)
-   * @throws RemoteStorageException the storage exception
-   */
   boolean isReachable(ProxyRepository repository, ResourceStoreRequest request)
       throws RemoteAccessException, RemoteStorageException;
 
-  /**
-   * Gets the absolute url from base.
-   *
-   * @return the absolute url from base
-   * @throws RemoteStorageException when the repository in question has wrong/malformed URL set
-   */
   URL getAbsoluteUrlFromBase(ProxyRepository repository, ResourceStoreRequest request)
       throws RemoteStorageException;
 
-  /**
-   * Validate that the URL that defines storage location is valid.
-   */
   void validateStorageUrl(String url)
       throws RemoteStorageException;
 
-  /**
-   * Check remote storage if contains item.
-   *
-   * @return true, if successful
-   * @throws RemoteStorageException the storage exception
-   */
   boolean containsItem(ProxyRepository repository, ResourceStoreRequest request)
       throws RemoteAccessException, RemoteStorageException;
 
-  /**
-   * Check remote storage if contains item newer then newerThen.
-   *
-   * @return true, if successful
-   * @throws RemoteStorageException the storage exception
-   */
   boolean containsItem(long newerThen, ProxyRepository repository, ResourceStoreRequest request)
       throws RemoteAccessException, RemoteStorageException;
 
-  /**
-   * Retrieve item unconditionally.
-   *
-   * @return the abstract storage item
-   * @throws ItemNotFoundException  the item not found exception
-   * @throws RemoteStorageException the storage exception
-   */
   AbstractStorageItem retrieveItem(ProxyRepository repository, ResourceStoreRequest request, String baseUrl)
       throws ItemNotFoundException, RemoteAccessException, RemoteStorageException;
 
-  /**
-   * Store item.
-   *
-   * @param item the item
-   * @throws UnsupportedStorageOperationException
-   *                                the unsupported storage operation exception
-   * @throws RemoteStorageException the storage exception
-   */
   void storeItem(ProxyRepository repository, StorageItem item)
       throws UnsupportedStorageOperationException, RemoteAccessException, RemoteStorageException;
 
-  /**
-   * Delete item.
-   *
-   * @throws ItemNotFoundException  the item not found exception
-   * @throws UnsupportedStorageOperationException
-   *                                the unsupported storage operation exception
-   * @throws RemoteStorageException the storage exception
-   */
   void deleteItem(ProxyRepository repository, ResourceStoreRequest request)
       throws ItemNotFoundException, UnsupportedStorageOperationException, RemoteAccessException,
              RemoteStorageException;
