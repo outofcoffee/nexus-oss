@@ -15,12 +15,8 @@ package org.sonatype.nexus.configuration.model;
 import org.sonatype.nexus.configuration.ApplicationConfiguration;
 import org.sonatype.nexus.configuration.ExternalConfiguration;
 import org.sonatype.nexus.configuration.validator.ApplicationValidationResponse;
-import org.sonatype.nexus.proxy.item.RepositoryItemUid;
-import org.sonatype.nexus.proxy.repository.LocalStatus;
-import org.sonatype.nexus.validation.ValidationMessage;
 import org.sonatype.nexus.validation.ValidationResponse;
 
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -129,67 +125,6 @@ public class CRepositoryCoreConfiguration
 
   @Override
   public ValidationResponse doValidateChanges(CRepository changedConfiguration) {
-    CRepository cfg = changedConfiguration;
-
-    ValidationResponse response = new ApplicationValidationResponse();
-
-    // ID
-    if (StringUtils.isBlank(cfg.getId())) {
-      response.addError(new ValidationMessage("id", "Repository ID must not be blank!"));
-    }
-    else if (!cfg.getId().matches(REPOSITORY_ID_PATTERN)) {
-      response.addError(new ValidationMessage("id",
-          "Only letters, digits, underscores, hyphens, and dots are allowed in Repository ID"));
-    }
-
-    // ID not 'all'
-    if ("all".equals(cfg.getId())) {
-      response.addError(new ValidationMessage("id", "Repository ID can't be 'all', reserved word"));
-    }
-
-    // Name
-    if (StringUtils.isBlank(cfg.getName())) {
-      response.addWarning(new ValidationMessage("id", "Repository with ID='" + cfg.getId()
-          + "' has no name, defaulted it's name to it's ID."));
-
-      cfg.setName(cfg.getId());
-
-      response.setModified(true);
-    }
-
-    // LocalStatus
-    try {
-      LocalStatus.valueOf(cfg.getLocalStatus());
-    }
-    catch (Exception e) {
-      response.addError(new ValidationMessage("localStatus", "LocalStatus of repository with ID=\""
-          + cfg.getId() + "\" has unacceptable value \"" + cfg.getLocalStatus() + "\"! (Allowed values are: \""
-          + LocalStatus.IN_SERVICE + "\" and \"" + LocalStatus.OUT_OF_SERVICE + "\")", e));
-    }
-
-    // indexable
-    if (cfg.isIndexable() && (!"maven2".equals(cfg.getProviderHint()))) {
-      response.addWarning(new ValidationMessage("indexable", "Indexing isn't supported for \""
-          + cfg.getProviderHint() + "\" repositories, only Maven2 repositories are indexable!"));
-
-      cfg.setIndexable(false);
-
-      response.setModified(true);
-    }
-
-    // proxy repo URL (if set) -- it must end with a slash (true for Maven1/2 reposes!)
-    // TODO: This is temporary solution until we cleanup config framework.
-    // This check below should happen in _maven specific_ configuration validation, not here in core
-    // This breaks other plugins as OBR and any future one. So, as a fix, we "limit" this
-    // to "maven2"/"maven1" providers only for now, to keep OBR plugin unaffected.
-    // TODO: THIS CHECK SHOULD BE INJECTED BY PROVIDER WHO PROVIDES MAVEN2 Repositories!
-    if ("maven2".equals(cfg.getProviderHint()) || "maven1".equals(cfg.getProviderHint())) {
-      if (cfg.getRemoteStorage() != null && cfg.getRemoteStorage().getUrl() != null
-          && !cfg.getRemoteStorage().getUrl().endsWith(RepositoryItemUid.PATH_SEPARATOR)) {
-        cfg.getRemoteStorage().setUrl(cfg.getRemoteStorage().getUrl() + RepositoryItemUid.PATH_SEPARATOR);
-      }
-    }
-
-    return response;
+    return new ApplicationValidationResponse();
   }
 }

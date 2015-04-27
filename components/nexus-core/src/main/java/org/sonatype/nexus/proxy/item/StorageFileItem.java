@@ -21,58 +21,22 @@ import java.io.InputStream;
 public interface StorageFileItem
     extends StorageItem
 {
-  /**
-   * The digest sha1 key used in item context and attributes.
-   */
   public static final String DIGEST_SHA1_KEY = "digest.sha1";
 
-  /**
-   * The digest md5 key used in item context and attributes. @deprecated MD5 is deprecated, use SHA1.
-   */
   @Deprecated
   public static final String DIGEST_MD5_KEY = "digest.md5";
 
-  /**
-   * Returns the file content length in bytes, or {@link ContentLocator#UNKNOWN_LENGTH} if unknown. Shortcut method for
-   * {@link ContentLocator#getLength()}.
-   */
   long getLength();
 
-  /**
-   * Returns the MIME type of the file content, never {@code null}. Shortcut method for
-   * {@link ContentLocator#getMimeType()}.
-   */
   String getMimeType();
 
-  /**
-   * Returns {@code true} if this item's content might be requested multiple times (by calling {@link #getInputStream()}
-   * for example). Shortcut method for {@link ContentLocator#isReusable()}.
-   */
   boolean isReusableStream();
 
-  /**
-   * Returns the content as opened ready to read input stream. It has to be closed by the caller explicitly. Shortcut
-   * method for {@link ContentLocator#getContent()}.
-   */
   InputStream getInputStream() throws IOException;
-
-  /**
-   * Sets the {@link ContentLocator} (that provides the actual content of this file). Passed in value cannot be
-   * {@code null}.
-   */
-  void setContentLocator(ContentLocator locator);
-
-  /**
-   * Returns the {@link ContentLocator} of this file item, never {@code null}.
-   */
-  ContentLocator getContentLocator();
 
   String getContentGeneratorId();
 
   void setContentGeneratorId(String contentGeneratorId);
 
-  /**
-   * Returns {@code true} if this file item content is generated content (is not static, coming from storage).
-   */
   boolean isContentGenerated();
 }

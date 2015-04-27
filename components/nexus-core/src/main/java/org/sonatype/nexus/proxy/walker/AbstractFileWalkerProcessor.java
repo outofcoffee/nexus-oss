@@ -37,6 +37,7 @@ public abstract class AbstractFileWalkerProcessor
       throws Exception
   {
   }
+
   @Override
   public final void processItem(WalkerContext context, StorageItem item)
       throws Exception

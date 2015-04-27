@@ -12,11 +12,6 @@
  */
 package org.sonatype.nexus.proxy.repository;
 
-import java.util.List;
-
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.item.StorageItem;
-
 /**
  * A group repository is simply as it's name says, a repository that is backed by a group of other repositories. There
  * is one big constraint, they are READ ONLY. Usually, if you try a write/delete operation against this kind of
@@ -28,55 +23,4 @@ import org.sonatype.nexus.proxy.item.StorageItem;
 public interface GroupRepository
     extends Repository
 {
-  /**
-   * Returns the unmodifiable ID list of the members of this group.
-   */
-  List<String> getMemberRepositoryIds();
-
-  /**
-   * Sets the members of this group.
-   */
-  void setMemberRepositoryIds(List<String> repositories)
-      throws Exception;
-
-  /**
-   * Adds a member to this group.
-   */
-  void addMemberRepositoryId(String repositoryId)
-      throws Exception;
-
-  /**
-   * Removes a member from this group.
-   */
-  void removeMemberRepositoryId(String repositoryId);
-
-  /**
-   * Returns the unmodifiable list of Repositories that are group members in this GroupRepository. The repo order
-   * within list is repo rank (the order how they will be processed), so processing is possible by simply iterating
-   * over resulting list.
-   *
-   * @return a List<Repository>
-   */
-  List<Repository> getMemberRepositories();
-
-  /**
-   * Returns the unmodifiable list of Transitive Repositories that are group members in this GroupRepository. This
-   * method differs from {@link #getMemberRepositories()} by resolving all inner groups member as well. <b>The
-   * resulting list won't contain any GroupRepository.</b>
-   *
-   * @return a List<Repository>
-   */
-  List<Repository> getTransitiveMemberRepositories();
-
-  /**
-   * Returns the unmodifiable ID list of the transitive members of this group. This method differs from
-   * {@link #getMemberRepositoryIds()} by resolving all inner groups member as well. <b>The resulting list won't
-   * contain any GroupRepository.</b>
-   *
-   * @return a List<Repository>
-   */
-  List<String> getTransitiveMemberRepositoryIds();
-
-  List<StorageItem> doRetrieveItems(ResourceStoreRequest request)
-      throws Exception;
 }

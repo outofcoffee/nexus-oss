@@ -22,8 +22,6 @@ public interface StorageItem
 {
   ResourceStoreRequest getResourceStoreRequest();
 
-  RepositoryItemUid getRepositoryItemUid();
-
   String getRepositoryId();
 
   long getCreated();

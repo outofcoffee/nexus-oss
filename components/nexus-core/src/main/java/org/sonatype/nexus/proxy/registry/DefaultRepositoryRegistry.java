@@ -18,7 +18,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
@@ -81,15 +80,5 @@ public class DefaultRepositoryRegistry
   @Override
   public boolean repositoryIdExists(final String repositoryId) {
     return false;
-  }
-
-  @Override
-  public List<String> getGroupsOfRepository(final String repositoryId) {
-    return null;
-  }
-
-  @Override
-  public List<GroupRepository> getGroupsOfRepository(final Repository repository) {
-    return null;
   }
 }

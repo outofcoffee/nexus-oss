@@ -22,23 +22,5 @@ import org.sonatype.nexus.proxy.repository.Repository;
  */
 public interface NexusItemAuthorizer
 {
-  public static final String VIEW_REPOSITORY_KEY = "repository";
-
-  /**
-   * Authorizes a repository level path against an action. Use when you have a repository path, ie. filtering of
-   * search results or feeds with links to repository.
-   */
   boolean authorizePath(Repository repository, ResourceStoreRequest request, Action action);
-
-  /**
-   * A shorthand for "view" permission.
-   */
-  boolean isViewable(String objectType, String objectId);
-
-
-  /**
-   * Used to authorize a simple permission string.
-   */
-  boolean authorizePermission(String permission);
-
 }

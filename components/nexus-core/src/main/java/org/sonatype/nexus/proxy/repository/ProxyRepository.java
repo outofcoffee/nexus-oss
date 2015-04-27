@@ -12,7 +12,6 @@
  */
 package org.sonatype.nexus.proxy.repository;
 
-import org.sonatype.nexus.proxy.RemoteStorageException;
 import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 
 /**
@@ -23,28 +22,9 @@ import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 public interface ProxyRepository
     extends Repository
 {
-  /**
-   * Gets proxy mode.
-   */
   ProxyMode getProxyMode();
 
-  /**
-   * Returns the remote URL of this repository, if any.
-   *
-   * @return remote url of this repository, null otherwise.
-   */
   String getRemoteUrl();
 
-  /**
-   * Sets the remote url.
-   *
-   * @param url the new remote url
-   */
-  void setRemoteUrl(String url)
-      throws RemoteStorageException;
-
-  /**
-   * Returns repository specific remote connection context.
-   */
   RemoteStorageContext getRemoteStorageContext();
 }

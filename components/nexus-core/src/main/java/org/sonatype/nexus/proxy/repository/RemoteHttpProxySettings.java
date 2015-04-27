@@ -19,40 +19,18 @@ package org.sonatype.nexus.proxy.repository;
  */
 public interface RemoteHttpProxySettings
 {
-
-  /**
-   * @return true if proxy settings are enabled (hostname != null)
-   */
   boolean isEnabled();
 
-  /**
-   * @return proxy server host name (or IP)
-   */
   String getHostname();
 
-  /**
-   * @param hostname proxy server host name (or IP)
-   */
   void setHostname(String hostname);
 
-  /**
-   * @return proxy server port
-   */
   int getPort();
 
-  /**
-   * @param port proxy server port
-   */
   void setPort(int port);
 
-  /**
-   * @return proxy server credentials (if required, null otherwise)
-   */
   RemoteAuthenticationSettings getProxyAuthentication();
 
-  /**
-   * @param proxyAuthentication proxy server credentials (if required, null otherwise)
-   */
   void setProxyAuthentication(RemoteAuthenticationSettings proxyAuthentication);
 
 }

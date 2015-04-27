@@ -32,14 +32,4 @@ public class DefaultNexusItemAuthorizer
   public boolean authorizePath(final Repository repository, final ResourceStoreRequest request, final Action action) {
     return false;
   }
-
-  @Override
-  public boolean isViewable(final String objectType, final String objectId) {
-    return false;
-  }
-
-  @Override
-  public boolean authorizePermission(final String permission) {
-    return false;
-  }
 }

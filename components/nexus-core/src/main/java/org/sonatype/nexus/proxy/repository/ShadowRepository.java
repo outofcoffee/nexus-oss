@@ -12,46 +12,7 @@
  */
 package org.sonatype.nexus.proxy.repository;
 
-import org.sonatype.nexus.proxy.registry.ContentClass;
-
-/**
- * A Shadow Repository is a special repository type that usually points to a master repository and transforms it in
- * some
- * way (look at Maven1 to Maven2 layout changing repo).
- *
- * @author cstamas
- */
 public interface ShadowRepository
     extends Repository
 {
-  /**
-   * The content class that is expected to have the repository set as master for this ShadowRepository.
-   */
-  ContentClass getMasterRepositoryContentClass();
-
-  /**
-   * Gets sync at startup.
-   */
-  boolean isSynchronizeAtStartup();
-
-  /**
-   * Sets sync at start.
-   */
-  void setSynchronizeAtStartup(boolean value);
-
-  /**
-   * Returns the master.
-   */
-  Repository getMasterRepository();
-
-  /**
-   * Sets the master.
-   */
-  void setMasterRepository(Repository repository)
-      throws Exception;
-
-  /**
-   * Triggers syncing with master repository.
-   */
-  void synchronizeWithMaster();
 }

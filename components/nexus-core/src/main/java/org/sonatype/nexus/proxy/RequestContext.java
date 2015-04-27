@@ -14,12 +14,8 @@ package org.sonatype.nexus.proxy;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Stack;
 
 import org.sonatype.nexus.proxy.item.StorageItem;
-import org.sonatype.nexus.proxy.repository.GroupRepository;
-import org.sonatype.nexus.proxy.repository.ProxyRepository;
 
 import com.google.common.collect.Maps;
 import org.codehaus.plexus.util.StringUtils;
@@ -31,69 +27,27 @@ import org.codehaus.plexus.util.StringUtils;
  */
 public class RequestContext
 {
-  /**
-   * Context URL of the original resource requested on the incoming connector.
-   */
   public static final String CTX_REQUEST_URL = "request.url";
 
-  /**
-   * Context flag to mark that request entered on the incoming connector, is external.
-   */
   public static final String CTX_REQUEST_IS_EXTERNAL = "request.external";
 
-  /**
-   * Context flag to mark a request local only. For {@link ProxyRepository} instances: do not attempt remote access
-   * at all, else: no effect.
-   */
   public static final String CTX_LOCAL_ONLY_FLAG = "request.localOnly";
 
-  /**
-   * Context flag to mark a request remote only. For {@link ProxyRepository} instances: force remote access -- might
-   * still serve local if cache is fresh, else: no effect.
-   */
   public static final String CTX_REMOTE_ONLY_FLAG = "request.remoteOnly";
 
-  /**
-   * Context flag to mark a request local only. For {@link GroupRepository} instances: do not "dive" into members,
-   * else: no effect.
-   */
   public static final String CTX_GROUP_LOCAL_ONLY_FLAG = "request.groupLocalOnly";
 
-  /**
-   * Context flag to mark a request group members only. For {@link GroupRepository} instances: do not look in local
-   * storage, only into into members, else: no effect.
-   */
   public static final String CTX_GROUP_MEMEBRS_ONLY_FLAG = "request.groupMembersOnly";
 
-  /**
-   * Context flag to mark a request be processed as the item would be expired. For {@link ProxyRepository} instances:
-   * do check remote for newer but take into account local cache content, else: no effect.
-   */
   public static final String CTX_AS_EXPIRED_FLAG = "request.asExpired";
 
-  /**
-   * Context key for condition "if-modified-since"
-   */
   public static final String CTX_CONDITION_IF_MODIFIED_SINCE = "request.condition.ifModifiedSince";
 
-  /**
-   * Context key for condition "if-none-match"
-   */
   public static final String CTX_CONDITION_IF_NONE_MATCH = "request.condition.ifNoneMatch";
-
-  /**
-   * Context key to mark request as used for auth check only, so repo impl will know there is no work required (i.e.
-   * interpolation, etc.)
-   */
-  public static final String CTX_AUTH_CHECK_ONLY = "request.auth.check.only";
 
   private RequestContext parent;
 
   private final HashMap<String, Object> delegate;
-
-  public RequestContext() {
-    this(null);
-  }
 
   public RequestContext(RequestContext parent) {
     setParentContext(parent);
@@ -399,31 +353,6 @@ public class RequestContext
   public void setRequestIsExternal(boolean external) {
     put(CTX_REQUEST_IS_EXTERNAL, external);
   }
-
-  // ==
-
-  /**
-   * Returns a new map instance that contains flattened RequestContext as it is "viewed" by callers (overlaid in
-   * proper order).
-   */
-  public Map<String, Object> flatten() {
-    final HashMap<String, Object> result = new HashMap<String, Object>();
-    RequestContext ctx = this;
-    final Stack<RequestContext> stack = new Stack<RequestContext>();
-    while (ctx != null) {
-      stack.push(ctx);
-      ctx = ctx.getParentContext();
-    }
-    while (!stack.isEmpty()) {
-      ctx = stack.pop();
-      for (Map.Entry<String, Object> entry : ctx.delegate.entrySet()) {
-        result.put(entry.getKey(), entry.getValue());
-      }
-    }
-    return result;
-  }
-
-  // ==
 
   @Override
   public String toString() {

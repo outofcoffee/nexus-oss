@@ -30,31 +30,12 @@ public class ItemNotFoundException
 
   // ==
 
-  /**
-   * Creates a new instance of {@link ItemNotFoundReason}.
-   *
-   * @param request The request that causes {@link ItemNotFoundException}.
-   * @param message The reasoning message template (use {@code %s} as place holder). See {@link SimpleFormat}.
-   * @param params  The parameters to fill place holders in message with content. See {@link SimpleFormat}.
-   * @return the newly created reason.
-   * @since 2.5
-   */
   public static ItemNotFoundReason reasonFor(final ResourceStoreRequest request, final String message,
                                              final Object... params)
   {
     return new ItemNotFoundReason(SimpleFormat.template(message, params), request);
   }
 
-  /**
-   * Creates a new instance of {@link ItemNotFoundInRepositoryReason}.
-   *
-   * @param request    The request that causes {@link ItemNotFoundException}.
-   * @param repository The repository within {@link ItemNotFoundException} is to be thrown.
-   * @param message    The reasoning message template (use {@code %s} as place holder). See {@link SimpleFormat}.
-   * @param params     The parameters to fill place holders in message with content. See {@link SimpleFormat}.
-   * @return the newly created reason.
-   * @since 2.5
-   */
   public static ItemNotFoundInRepositoryReason reasonFor(final ResourceStoreRequest request,
                                                          final Repository repository, final String message,
                                                          final Object... params)
@@ -62,17 +43,6 @@ public class ItemNotFoundException
     return new ItemNotFoundInRepositoryReason(SimpleFormat.template(message, params), request, repository);
   }
 
-  // ==
-
-  /**
-   * Legacy support. Not to be used in any current code!
-   *
-   * @return reason.
-   * @since 2.5
-   * @deprecated Used for legacy support, new code should NOT use this method. See other methods:
-   *             {@link #reasonFor(ResourceStoreRequest, String, Object...)} and
-   *             {@link #reasonFor(ResourceStoreRequest, Repository, String, Object...)}
-   */
   @Deprecated
   private static ItemNotFoundReason legacySupport(final String message, final ResourceStoreRequest request,
                                                   final Repository repository)
@@ -111,13 +81,6 @@ public class ItemNotFoundException
       return message.toString();
     }
 
-    /**
-     * Returns the request (originals detached clone, see {@link ResourceStoreRequest#cloneAndDetach()} method)
-     * that
-     * resulted in {@link ItemNotFoundException}.
-     *
-     * @return the request that resulted in {@link ItemNotFoundException}, never {@code null}.
-     */
     public ResourceStoreRequest getResourceStoreRequest() {
       return resourceStoreRequest;
     }
@@ -146,11 +109,6 @@ public class ItemNotFoundException
       this.repository = checkNotNull(repository);
     }
 
-    /**
-     * Returns the involved {@link Repository} instance.
-     *
-     * @return the repository in which {@link ItemNotFoundException} occurred.
-     */
     public Repository getRepository() {
       return repository;
     }

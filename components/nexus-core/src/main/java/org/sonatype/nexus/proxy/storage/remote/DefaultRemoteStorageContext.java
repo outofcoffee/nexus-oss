@@ -16,7 +16,6 @@ import org.sonatype.nexus.proxy.repository.DefaultRemoteConnectionSettings;
 import org.sonatype.nexus.proxy.repository.RemoteAuthenticationSettings;
 import org.sonatype.nexus.proxy.repository.RemoteConnectionSettings;
 import org.sonatype.nexus.proxy.repository.RemoteProxySettings;
-import org.sonatype.nexus.proxy.storage.AbstractStorageContext;
 import org.sonatype.nexus.proxy.storage.StorageContext;
 
 /**
@@ -25,11 +24,45 @@ import org.sonatype.nexus.proxy.storage.StorageContext;
  * @author cstamas
  */
 public class DefaultRemoteStorageContext
-    extends AbstractStorageContext
     implements RemoteStorageContext
 {
   public DefaultRemoteStorageContext(final StorageContext parent) {
-    super(parent);
+
+  }
+
+  @Override
+  public int getGeneration() {
+    return 0;
+  }
+
+  @Override
+  public int incrementGeneration() {
+    return 0;
+  }
+
+  @Override
+  public StorageContext getParentStorageContext() {
+    return null;
+  }
+
+  @Override
+  public Object getContextObject(final String key) {
+    return null;
+  }
+
+  @Override
+  public Object putContextObject(final String key, final Object value) {
+    return null;
+  }
+
+  @Override
+  public Object removeContextObject(final String key) {
+    return null;
+  }
+
+  @Override
+  public boolean hasContextObject(final String key) {
+    return false;
   }
 
   @Override

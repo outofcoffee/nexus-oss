@@ -93,8 +93,8 @@ public class ItemSubscriber
       final StorageFileItem fileItem = (StorageFileItem) ievt.getItem();
       final Map<String, String> data = Maps.newHashMap();
       putIfNotNull(data, "validationMessage", ievt.getMessage());
-      putIfNotNull(data, "repoId", fileItem.getRepositoryItemUid().getRepository().getId());
-      putIfNotNull(data, "repoName", fileItem.getRepositoryItemUid().getRepository().getName());
+      //putIfNotNull(data, "repoId", fileItem.getRepositoryItemUid().getRepository().getId());
+      //putIfNotNull(data, "repoName", fileItem.getRepositoryItemUid().getRepository().getName());
       putIfNotNull(data, "itemPath", fileItem.getPath());
       putIfNotNull(data, "itemRemoteUrl", fileItem.getRemoteUrl());
       final String userId = (String) fileItem.getResourceStoreRequest().getRequestContext()
@@ -147,8 +147,8 @@ public class ItemSubscriber
 
       final StorageFileItem fileItem = (StorageFileItem) event.getItem();
       final Map<String, String> data = Maps.newHashMap();
-      putIfNotNull(data, "repoId", fileItem.getRepositoryItemUid().getRepository().getId());
-      putIfNotNull(data, "repoName", fileItem.getRepositoryItemUid().getRepository().getName());
+      //putIfNotNull(data, "repoId", fileItem.getRepositoryItemUid().getRepository().getId());
+      //putIfNotNull(data, "repoName", fileItem.getRepositoryItemUid().getRepository().getName());
       putIfNotNull(data, "itemPath", fileItem.getPath());
       putIfNotNull(data, "itemRemoteUrl", fileItem.getRemoteUrl());
       final String userId = (String) fileItem.getResourceStoreRequest().getRequestContext()

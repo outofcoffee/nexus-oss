@@ -22,31 +22,14 @@ import org.sonatype.nexus.proxy.item.StorageItem;
  */
 public interface WalkerProcessor
 {
-  /**
-   * No calls will be made to the processor if this method returns {@code false}. In case of "sandwiching" multiple
-   * processors, one might declare itself "inactive" if some specific goal was achieven, and it will not use
-   * any CPU cycles from that point on. Warning: once processor declares itself "inactive", walker will not
-   * invoke any method on this processor, so there is no way to "activate" itself using processor methods.
-   */
   boolean isActive();
 
-  /**
-   * Invoked before walk begins.
-   */
   void beforeWalk(WalkerContext context)
       throws Exception;
 
-  /**
-   * Invoked for each visited {@link StorageItem}. Depending on the {@link WalkerContext#isProcessCollections()} value,
-   * this method will be invoked with any item type except collections ({@code false}), or collections will be
-   * passed on this method too ({@code true}).
-   */
   void processItem(WalkerContext context, StorageItem item)
       throws Exception;
 
-  /**
-   * Invoked after walk finishes if it ended without being stopped.
-   */
   void afterWalk(WalkerContext context)
       throws Exception;
 }
