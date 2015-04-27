@@ -16,8 +16,6 @@ import org.sonatype.nexus.proxy.RequestContext;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.attributes.Attributes;
 import org.sonatype.nexus.proxy.repository.ProxyRepository;
-import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.router.RepositoryRouter;
 
 /**
  * The Interface StorageItem, a top of the item abstraction.
@@ -93,12 +91,6 @@ public interface StorageItem
    */
   void setLastRequested(long ts);
 
-  /**
-   * Returns {@code true} if item is "virtual". Virtual items have no backing repository (for example item coming from a
-   * {@link RepositoryRouter}, a path that is not deep enough to dive into any repository), hence, they have no UIDs
-   * either ({@link #getRepositoryItemUid()} returns {@code null}. Still, they have {@link #getPath()} and might even
-   * have content!
-   */
   boolean isVirtual();
 
   /**
@@ -123,14 +115,6 @@ public interface StorageItem
    */
   void setExpired(boolean expired);
 
-  /**
-   * Returns the item path, that is <b>not the same as path returned by UID</b> got from {@link #getRepositoryItemUid()}
-   * ! The path depends and changes, depending from where was it retrieved, while {@link RepositoryItemUid#getPath()} is
-   * immutable! If this item was retrieved over {@link RepositoryRouter}, it will contain all the first and second level
-   * selector path elements (for example "/repositories/repo-foo"). In case item is retrieved from {@link Repository}
-   * instance directly, then this method return value usually equals to the UID path, but does not have to. Shortcut
-   * method (uses {@link #getRepositoryItemAttributes()}).
-   */
   String getPath();
 
   /**

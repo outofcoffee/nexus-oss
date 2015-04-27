@@ -28,12 +28,6 @@ public class DefaultWalker
     extends ComponentSupport
     implements Walker
 {
-  public static final String WALKER_WALKED_COLLECTION_COUNT = Walker.class.getSimpleName() + ".collCount";
-
-  public static final String WALKER_WALKED_FROM_PATH = Walker.class.getSimpleName() + ".fromPath";
-
-  public static final String WALKER_THROTTLE_INFO = Walker.class.getSimpleName() + ".throttleInfo";
-
   @Override
   public void walk(final WalkerContext context) throws WalkerException {
 

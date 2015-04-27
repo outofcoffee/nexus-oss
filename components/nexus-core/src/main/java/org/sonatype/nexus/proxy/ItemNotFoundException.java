@@ -13,7 +13,6 @@
 package org.sonatype.nexus.proxy;
 
 import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
 import org.sonatype.sisu.goodies.common.FormatTemplate;
 import org.sonatype.sisu.goodies.common.SimpleFormat;
 
@@ -222,7 +221,7 @@ public class ItemNotFoundException
   @Deprecated
   public ItemNotFoundException(final ResourceStoreRequest request, final Repository repository, final Throwable cause) {
     this(repository != null ? "Item not found for request \"" + request + "\" in repository \""
-        + RepositoryStringUtils.getHumanizedNameString(repository) + "\"!" : "Item not found for request \""
+        + repository.getId() + "\"!" : "Item not found for request \""
         + request + "\"!", request, repository, cause);
   }
 

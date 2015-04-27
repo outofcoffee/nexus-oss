@@ -12,17 +12,6 @@
  */
 package org.sonatype.nexus.proxy.storage;
 
-import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.storage.local.LocalStorageContext;
-import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
-
-/**
- * The storage settings and context. Used as super class in {@link LocalStorageContext} and {@link RemoteStorageContext}
- * Used to store "contextual" information (tied to {@link Repository} as storages (both local and remote) are
- * stateless and singletons.
- * 
- * @author cstamas
- */
 public interface StorageContext
 {
   // change detection

@@ -27,13 +27,14 @@ import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.proxy.repository.HostedRepository;
 import org.sonatype.nexus.proxy.repository.ProxyRepository;
 import org.sonatype.nexus.proxy.repository.ShadowRepository;
-import org.sonatype.nexus.proxy.repository.WebSiteRepository;
 
 import com.google.common.collect.Lists;
 
 import static org.sonatype.nexus.capability.CapabilityType.capabilityType;
 import static org.sonatype.nexus.capability.Tag.categoryTag;
 import static org.sonatype.nexus.capability.Tag.tags;
+
+//import org.sonatype.nexus.proxy.repository.WebSiteRepository;
 
 //import org.sonatype.nexus.proxy.maven.MavenRepository;
 //import org.sonatype.nexus.proxy.maven.maven1.Maven1ContentClass;
@@ -72,11 +73,11 @@ public class RepositoryComboCapabilityDescriptor
         new RepositoryCombobox("!group", "Any except Groups", "?", FormField.OPTIONAL)
             .excludingAnyOfFacets(GroupRepository.class),
         new RepositoryCombobox("virtual", "Virtual", "?", FormField.OPTIONAL)
-            .includingAnyOfFacets(ShadowRepository.class),
+            .includingAnyOfFacets(ShadowRepository.class)
         //new RepositoryCombobox("maven", "Maven", "?", FormField.OPTIONAL)
         //    .includingAnyOfFacets(MavenRepository.class),
-        new RepositoryCombobox("site", "Sites", "?", FormField.OPTIONAL)
-            .includingAnyOfFacets(WebSiteRepository.class)
+        //new RepositoryCombobox("site", "Sites", "?", FormField.OPTIONAL)
+        //    .includingAnyOfFacets(WebSiteRepository.class)
         //new RepositoryCombobox("maven1", "Maven 1", "?", FormField.OPTIONAL)
         //    .includingAnyOfFacets(MavenRepository.class)
         //    .includingAnyOfContentClasses(Maven1ContentClass.ID),

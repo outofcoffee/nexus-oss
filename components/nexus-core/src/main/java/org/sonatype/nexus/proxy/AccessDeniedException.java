@@ -20,7 +20,7 @@ package org.sonatype.nexus.proxy;
  * @author cstamas
  */
 public class AccessDeniedException
-    extends AuthorizationException
+    extends Exception
 {
   private static final long serialVersionUID = 8341250956517740603L;
 

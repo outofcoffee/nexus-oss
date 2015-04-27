@@ -16,8 +16,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.item.StorageItem;
 import org.sonatype.nexus.proxy.repository.Repository;
@@ -26,30 +24,6 @@ public class DefaultWalkerContext
     implements WalkerContext
 {
   public DefaultWalkerContext(final Repository store, final ResourceStoreRequest request) {
-    this(store, request, null);
-  }
-
-  public DefaultWalkerContext(final Repository store, final ResourceStoreRequest request, final WalkerFilter filter) {
-    this(store, request, filter, TraversalType.DEPTH_FIRST, false);
-  }
-
-  /**
-   * @deprecated Use another ctor.
-   */
-  @Deprecated
-  public DefaultWalkerContext(final Repository store, final ResourceStoreRequest request, final WalkerFilter filter,
-                              boolean localOnly)
-  {
-    this(store, request, filter);
-  }
-
-  public DefaultWalkerContext(final Repository store,
-                              final ResourceStoreRequest request,
-                              @Nullable final WalkerFilter filter,
-                              final TraversalType traversalType,
-                              final boolean processCollections)
-    {
-
   }
 
   @Override
@@ -94,11 +68,6 @@ public class DefaultWalkerContext
 
   @Override
   public Throwable getStopCause() {
-    return null;
-  }
-
-  @Override
-  public WalkerFilter getFilter() {
     return null;
   }
 

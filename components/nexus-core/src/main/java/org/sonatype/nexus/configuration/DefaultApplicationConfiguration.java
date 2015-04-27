@@ -31,8 +31,6 @@ import org.sonatype.nexus.events.Veto;
 import org.sonatype.nexus.jmx.reflect.ManagedAttribute;
 import org.sonatype.nexus.jmx.reflect.ManagedObject;
 import org.sonatype.nexus.jmx.reflect.ManagedOperation;
-import org.sonatype.nexus.proxy.storage.local.DefaultLocalStorageContext;
-import org.sonatype.nexus.proxy.storage.local.LocalStorageContext;
 import org.sonatype.nexus.proxy.storage.remote.DefaultRemoteStorageContext;
 import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 import org.sonatype.nexus.validation.ValidationResponse;
@@ -81,11 +79,6 @@ public class DefaultApplicationConfiguration
   private final ClassLoader uberClassLoader;
 
   private final ApplicationDirectories applicationDirectories;
-
-  /**
-   * The global local storage context.
-   */
-  private DefaultLocalStorageContext globalLocalStorageContext;
 
   /**
    * The global remote storage context.
@@ -179,8 +172,6 @@ public class DefaultApplicationConfiguration
       log.info("Loading Nexus Configuration...");
 
       configurationSource.loadConfiguration();
-
-      globalLocalStorageContext = new DefaultLocalStorageContext(null);
 
       // create global remote ctx
       // this one has no parent
@@ -329,11 +320,6 @@ public class DefaultApplicationConfiguration
   @Deprecated
   public Configuration getConfigurationModel() {
     return configurationSource.getConfiguration();
-  }
-
-  @Override
-  public LocalStorageContext getGlobalLocalStorageContext() {
-    return globalLocalStorageContext;
   }
 
   @Override

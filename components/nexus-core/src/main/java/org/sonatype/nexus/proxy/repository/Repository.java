@@ -25,13 +25,9 @@ import org.sonatype.nexus.proxy.StorageException;
 import org.sonatype.nexus.proxy.access.AccessManager;
 import org.sonatype.nexus.proxy.access.Action;
 import org.sonatype.nexus.proxy.item.RepositoryItemUid;
-import org.sonatype.nexus.proxy.item.StorageCollectionItem;
 import org.sonatype.nexus.proxy.item.StorageItem;
 import org.sonatype.nexus.proxy.registry.ContentClass;
 import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
-import org.sonatype.nexus.proxy.storage.local.LocalRepositoryStorage;
-import org.sonatype.nexus.proxy.storage.local.LocalStorageContext;
-import org.sonatype.nexus.proxy.walker.WalkerFilter;
 
 /**
  * Repository interface used by Proximity. It is an extension of ResourceStore iface, allowing to make direct
@@ -220,23 +216,6 @@ public interface Repository
    */
   void setLocalStatus(LocalStatus val);
 
-  /**
-   * Returns repository specific local storage context.
-   */
-  LocalStorageContext getLocalStorageContext();
-
-  /**
-   * Returns the local storage of the repository. Per repository instance may exists.
-   */
-  LocalRepositoryStorage getLocalStorage();
-
-  /**
-   * Sets the local storage of the repository. May be null if this is an aggregating repos without caching function.
-   * Per repository instance may exists.
-   *
-   * @param storage the storage
-   */
-  void setLocalStorage(LocalRepositoryStorage storage);
 
   // ==================================================
   // Behaviour
@@ -356,45 +335,9 @@ public interface Repository
   // ==================================================
   // Maintenance
 
-  /**
-   * Expires all the caches used by this repository implementation from path and below. This methods delegates to
-   * {@link #expireCaches(ResourceStoreRequest, WalkerFilter)} method using {@code null} for filter.
-   *
-   * @param request a path from to start descending. If null, it is taken as "root".
-   */
   void expireCaches(ResourceStoreRequest request);
 
-  /**
-   * Expires all the caches used by this repository implementation from path and below. What kind of caches are
-   * tackled depends on the actual implementation behind this interface (NFC, proxy cache or something third). To
-   * gain
-   * more control, you can call corresponding methods manually too. Currently, this method equals to a single call to
-   * {@link #expireNotFoundCaches(ResourceStoreRequest)} on hosted repositories, and on a sequential calls of
-   * {@link ProxyRepository#expireProxyCaches(ResourceStoreRequest)} and
-   * {@link #expireNotFoundCaches(ResourceStoreRequest)} on proxy repositories. Moreover, on group repositories, this
-   * call is propagated to it's member repositories!
-   *
-   * @param request a path from to start descending. If null, it is taken as "root".
-   * @param filter  to apply or {@code null} for "all".
-   * @return {@code true} if cache modified.
-   * @since 2.1
-   */
-  boolean expireCaches(ResourceStoreRequest request, WalkerFilter filter);
-
-  /**
-   * Purges the NFC caches from path and below. This methods delegates to
-   * {@link #expireNotFoundCaches(ResourceStoreRequest, WalkerFilter)} method using {@code null} for filter.
-   */
   void expireNotFoundCaches(ResourceStoreRequest request);
-
-  /**
-   * Purges the NFC caches from path and below.
-   *
-   * @param filter to apply or {@code null} for "all".
-   * @return {@code true} if cache modified.
-   * @since 2.1
-   */
-  boolean expireNotFoundCaches(ResourceStoreRequest request, WalkerFilter filter);
 
   /**
    * Evicts items that were last used before timestamp.
@@ -446,6 +389,4 @@ public interface Repository
   void storeItem(boolean fromTask, StorageItem item)
       throws UnsupportedStorageOperationException, IllegalOperationException, StorageException;
 
-  Collection<StorageItem> list(boolean fromTask, StorageCollectionItem item)
-      throws IllegalOperationException, ItemNotFoundException, StorageException;
 }

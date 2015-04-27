@@ -26,14 +26,6 @@ public interface WalkerThrottleController
   String CONTEXT_KEY = WalkerThrottleController.class.getName();
 
   /**
-   * WalkerThrottleController that does not do walk throttling. Used when no user supplied throttle control found in
-   * walker context.
-   */
-  WalkerThrottleController NO_THROTTLING = new AbstractWalkerThrottleController()
-  {
-  };
-
-  /**
    * Carries some "stats" about walk, that makes possible to perform some calculation about it's speed.
    *
    * @author cstamas

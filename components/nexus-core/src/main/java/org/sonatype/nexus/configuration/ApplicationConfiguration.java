@@ -17,7 +17,6 @@ import java.io.IOException;
 
 import org.sonatype.nexus.ApplicationDirectories;
 import org.sonatype.nexus.configuration.model.Configuration;
-import org.sonatype.nexus.proxy.storage.local.LocalStorageContext;
 import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 
 /**
@@ -46,11 +45,6 @@ public interface ApplicationConfiguration
    * Returns the configuration directory. It defaults to $NEXUS_WORK/etc.
    */
   File getConfigurationDirectory();
-
-  /**
-   * Gets the top level local storage context.
-   */
-  LocalStorageContext getGlobalLocalStorageContext();
 
   /**
    * Gets the top level remote storage context.

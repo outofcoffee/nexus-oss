@@ -16,8 +16,27 @@ import org.sonatype.nexus.proxy.item.StorageFileItem;
 import org.sonatype.nexus.proxy.item.StorageItem;
 
 public abstract class AbstractFileWalkerProcessor
-    extends AbstractWalkerProcessor
+    implements WalkerProcessor
 {
+  private boolean active = true;
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public void beforeWalk(WalkerContext context)
+      throws Exception
+  {
+  }
+
+  public void afterWalk(WalkerContext context)
+      throws Exception
+  {
+  }
   @Override
   public final void processItem(WalkerContext context, StorageItem item)
       throws Exception

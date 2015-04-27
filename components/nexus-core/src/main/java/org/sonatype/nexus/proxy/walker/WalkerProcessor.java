@@ -12,9 +12,7 @@
  */
 package org.sonatype.nexus.proxy.walker;
 
-import org.sonatype.nexus.proxy.item.StorageCollectionItem;
 import org.sonatype.nexus.proxy.item.StorageItem;
-import org.sonatype.nexus.proxy.walker.WalkerContext.TraversalType;
 
 /**
  * A walker processors are units that are "attachable" to a single storage walk, hence the result will be combined but
@@ -39,26 +37,11 @@ public interface WalkerProcessor
       throws Exception;
 
   /**
-   * Invoked when entering a {@link StorageCollectionItem}. Based on {@link TraversalType} value, the "boxing"
-   * of this method's call and {@link #onCollectionExit(WalkerContext, StorageCollectionItem)} call may be
-   * nested ({@link TraversalType#DEPTH_FIRST}) or sequential ({@link TraversalType#BREADTH_FIRST}).
-   */
-  void onCollectionEnter(WalkerContext context, StorageCollectionItem coll)
-      throws Exception;
-
-  /**
    * Invoked for each visited {@link StorageItem}. Depending on the {@link WalkerContext#isProcessCollections()} value,
    * this method will be invoked with any item type except collections ({@code false}), or collections will be
    * passed on this method too ({@code true}).
    */
   void processItem(WalkerContext context, StorageItem item)
-      throws Exception;
-
-  /**
-   * Invoked when exiting a {@link StorageCollectionItem}, if walk is not being stopped. See {@link
-   * #onCollectionEnter(WalkerContext, StorageCollectionItem)} for more details about boxing of these calls.
-   */
-  void onCollectionExit(WalkerContext context, StorageCollectionItem coll)
       throws Exception;
 
   /**
