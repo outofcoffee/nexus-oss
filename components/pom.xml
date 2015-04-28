@@ -34,7 +34,6 @@
     <module>nexus-blobstore-file</module>
     <module>nexus-bootstrap</module>
     <module>nexus-client</module>
-    <!--<module>nexus-client-core</module>-->
     <module>nexus-commands</module>
     <module>nexus-core</module>
     <module>nexus-ehcache</module>
