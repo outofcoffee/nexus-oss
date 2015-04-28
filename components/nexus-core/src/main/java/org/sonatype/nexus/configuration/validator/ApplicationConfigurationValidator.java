@@ -13,11 +13,7 @@
 package org.sonatype.nexus.configuration.validator;
 
 import org.sonatype.nexus.configuration.model.CHttpProxySettings;
-import org.sonatype.nexus.configuration.model.CPathMappingItem;
 import org.sonatype.nexus.configuration.model.CRemoteHttpProxySettings;
-import org.sonatype.nexus.configuration.model.CRepository;
-import org.sonatype.nexus.configuration.model.CRepositoryGrouping;
-import org.sonatype.nexus.configuration.model.CRepositoryTarget;
 import org.sonatype.nexus.configuration.model.CSmtpConfiguration;
 import org.sonatype.nexus.configuration.model.Configuration;
 import org.sonatype.nexus.validation.ValidationResponse;
@@ -30,11 +26,6 @@ public interface ApplicationConfigurationValidator
   ValidationResponse validateModel(Configuration request);
 
   /**
-   * Validates a repository configuration.
-   */
-  ValidationResponse validateRepository(ApplicationValidationContext ctx, CRepository repository);
-
-  /**
    * Validates remote proxy settings.
    */
   ValidationResponse validateRemoteHttpProxySettings(ApplicationValidationContext ctx,
@@ -44,21 +35,6 @@ public interface ApplicationConfigurationValidator
    * Validates Nexus built-in HTTP proxy settings.
    */
   ValidationResponse validateHttpProxySettings(ApplicationValidationContext ctx, CHttpProxySettings settings);
-
-  /**
-   * Validates repository grouping.
-   */
-  ValidationResponse validateRepositoryGrouping(ApplicationValidationContext ctx, CRepositoryGrouping settings);
-
-  /**
-   * Validates mapping.
-   */
-  ValidationResponse validateGroupsSettingPathMappingItem(ApplicationValidationContext ctx, CPathMappingItem settings);
-
-  /**
-   * Validates repository target item.
-   */
-  ValidationResponse validateRepositoryTarget(ApplicationValidationContext ctx, CRepositoryTarget settings);
 
   /**
    * Validates smtp

@@ -13,26 +13,18 @@
 
 package org.sonatype.nexus.configuration.validator;
 
-import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.configuration.model.CHttpProxySettings;
-import org.sonatype.nexus.configuration.model.CPathMappingItem;
 import org.sonatype.nexus.configuration.model.CRemoteConnectionSettings;
 import org.sonatype.nexus.configuration.model.CRemoteHttpProxySettings;
 import org.sonatype.nexus.configuration.model.CRemoteProxySettings;
-import org.sonatype.nexus.configuration.model.CRepository;
-import org.sonatype.nexus.configuration.model.CRepositoryGrouping;
-import org.sonatype.nexus.configuration.model.CRepositoryTarget;
 import org.sonatype.nexus.configuration.model.CRouting;
 import org.sonatype.nexus.configuration.model.CSmtpConfiguration;
 import org.sonatype.nexus.configuration.model.Configuration;
-import org.sonatype.nexus.proxy.repository.LocalStatus;
 import org.sonatype.nexus.validation.ValidationMessage;
 import org.sonatype.nexus.validation.ValidationResponse;
 
@@ -96,160 +88,26 @@ public class DefaultApplicationConfigurationValidator
     // check existing reposes and check their realms
     context.addExistingRepositoryIds();
 
-    List<CRepository> reposes = model.getRepositories();
-    for (CRepository repo : reposes) {
-      response.append(validateRepository(context, repo));
-    }
-
-    // check groups (optional section)
-    if (model.getRepositoryGrouping() != null) {
-      response.append(validateRepositoryGrouping(context, model.getRepositoryGrouping()));
-    }
-
-    // check repo targets (optional section)
-    if (model.getRepositoryTargets() != null) {
-      List<CRepositoryTarget> targets = model.getRepositoryTargets();
-
-      for (CRepositoryTarget target : targets) {
-        response.append(validateRepositoryTarget(context, target));
-      }
-    }
+    //List<CRepository> reposes = model.getRepositories();
+    //for (CRepository repo : reposes) {
+    //  response.append(validateRepository(context, repo));
+    //}
+    //
+    //// check groups (optional section)
+    //if (model.getRepositoryGrouping() != null) {
+    //  response.append(validateRepositoryGrouping(context, model.getRepositoryGrouping()));
+    //}
+    //
+    //// check repo targets (optional section)
+    //if (model.getRepositoryTargets() != null) {
+    //  List<CRepositoryTarget> targets = model.getRepositoryTargets();
+    //
+    //  for (CRepositoryTarget target : targets) {
+    //    response.append(validateRepositoryTarget(context, target));
+    //  }
+    //}
 
     response.append(validateSmtpConfiguration(context, model.getSmtpConfiguration()));
-
-    return response;
-  }
-
-  // ---------------
-  // Public
-
-  @Override
-  public ValidationResponse validateRepository(ApplicationValidationContext ctx, CRepository repo) {
-    ApplicationValidationResponse response = new ApplicationValidationResponse(ctx);
-    ApplicationValidationContext context = response.getContext();
-
-    if (StringUtils.isEmpty(repo.getId())) {
-      response.addError(new ValidationMessage("id", "Repository ID's may not be empty!"));
-    }
-    else if (!repo.getId().matches(REPOSITORY_ID_PATTERN)) {
-      response.addError(new ValidationMessage("id", "Only letters, digits, underscores(_), hyphens(-), and dots(.) are allowed in Repository ID"));
-    }
-    // if repo id isn't valid, nothing below here will validate properly
-    else {
-      if (StringUtils.isEmpty(repo.getName())) {
-        repo.setName(repo.getId());
-        response.addWarning(new ValidationMessage("id", "Repository with ID='" + repo.getId() + "' has no name, defaulted to it's ID."));
-        response.setModified(true);
-      }
-
-      if (!validateLocalStatus(repo.getLocalStatus())) {
-        response.addError(
-            new ValidationMessage("id", "LocalStatus of repository with ID='" + repo.getId() + "' is wrong "
-                + repo.getLocalStatus() + "! (Allowed values are: '" + LocalStatus.IN_SERVICE + "' and '"
-                + LocalStatus.OUT_OF_SERVICE + "')"));
-      }
-      if (context.getExistingRepositoryIds() != null) {
-        if (context.getExistingRepositoryIds().contains(repo.getId())) {
-          response.addError(new ValidationMessage("id", "Repository with ID=" + repo.getId() + " already exists!"));
-        }
-
-        context.getExistingRepositoryIds().add(repo.getId());
-      }
-
-      if (context.getExistingRepositoryShadowIds() != null) {
-        if (context.getExistingRepositoryShadowIds().contains(repo.getId())) {
-          response.addError(new ValidationMessage("id", "Repository " + repo.getId() + " conflicts with existing Shadow with same ID='" + repo.getId() + "'!"));
-        }
-      }
-
-      if (context.getExistingRepositoryGroupIds() != null) {
-        if (context.getExistingRepositoryGroupIds().contains(repo.getId())) {
-          response.addError(new ValidationMessage("id", "Repository " + repo.getId() + " conflicts with existing Group with same ID='" + repo.getId() + "'!"));
-        }
-      }
-    }
-
-    return response;
-  }
-
-  @Override
-  public ValidationResponse validateRepositoryGrouping(ApplicationValidationContext ctx, CRepositoryGrouping settings) {
-    ApplicationValidationResponse response = new ApplicationValidationResponse(ctx);
-    ApplicationValidationContext context = response.getContext();
-
-    context.addExistingPathMappingIds();
-
-    if (settings.getPathMappings() != null) {
-      for (CPathMappingItem item : settings.getPathMappings()) {
-        response.append(validateGroupsSettingPathMappingItem(context, item));
-      }
-    }
-
-    return response;
-  }
-
-  @Override
-  public ValidationResponse validateGroupsSettingPathMappingItem(ApplicationValidationContext ctx,
-                                                                 CPathMappingItem item)
-  {
-    ApplicationValidationResponse response = new ApplicationValidationResponse(ctx);
-    ApplicationValidationContext context = response.getContext();
-
-    if (StringUtils.isEmpty(item.getId())
-        || "0".equals(item.getId())
-        || (context.getExistingPathMappingIds() != null && context.getExistingPathMappingIds().contains(
-        item.getId()))) {
-      String newId = generateId();
-
-      item.setId(newId);
-      response.addWarning("Fixed wrong route ID from '" + item.getId() + "' to '" + newId + "'");
-      response.setModified(true);
-    }
-
-    if (StringUtils.isEmpty(item.getGroupId())) {
-      item.setGroupId(CPathMappingItem.ALL_GROUPS);
-      response.addWarning("Fixed route without groupId set, set to ALL_GROUPS to keep backward comp, ID='" + item.getId() + "'.");
-      response.setModified(true);
-    }
-
-    if (item.getRoutePatterns() == null || item.getRoutePatterns().isEmpty()) {
-      response.addError("The Route with ID='" + item.getId() + "' must contain at least one Route Pattern.");
-    }
-
-    for (String regexp : item.getRoutePatterns()) {
-      if (!isValidRegexp(regexp)) {
-        response.addError("The regexp in Route with ID='" + item.getId() + "' is not valid: " + regexp);
-      }
-    }
-
-    if (context.getExistingPathMappingIds() != null) {
-      context.getExistingPathMappingIds().add(item.getId());
-    }
-
-    if (!CPathMappingItem.INCLUSION_RULE_TYPE.equals(item.getRouteType())
-        && !CPathMappingItem.EXCLUSION_RULE_TYPE.equals(item.getRouteType())
-        && !CPathMappingItem.BLOCKING_RULE_TYPE.equals(item.getRouteType())) {
-      response.addError("The groupMapping pattern with ID=" + item.getId()
-          + " have invalid routeType='" + item.getRouteType() + "'. Valid route types are '"
-          + CPathMappingItem.INCLUSION_RULE_TYPE + "', '" + CPathMappingItem.EXCLUSION_RULE_TYPE + "' and '"
-          + CPathMappingItem.BLOCKING_RULE_TYPE + "'.");
-    }
-
-    // REMOVED: check that a blocking route is not empty
-    // if you delete a repo(ses) that were belonging to a route, we insist on
-    // leaving the route "empty" (to save a users hardly concieved regexp) but with empty
-    // repo list
-
-    if (context.getExistingRepositoryIds() != null && context.getExistingRepositoryShadowIds() != null) {
-      List<String> existingReposes = context.getExistingRepositoryIds();
-      List<String> existingShadows = context.getExistingRepositoryShadowIds();
-      for (String repoId : item.getRepositories()) {
-        if (!existingReposes.contains(repoId) && !existingShadows.contains(repoId)) {
-          response.addError("The groupMapping pattern with ID=" + item.getId()
-              + " refers to a nonexistent repository with repoID = " + repoId);
-        }
-      }
-    }
 
     return response;
   }
@@ -288,48 +146,6 @@ public class DefaultApplicationConfigurationValidator
   }
 
   @Override
-  public ValidationResponse validateRepositoryTarget(ApplicationValidationContext ctx, CRepositoryTarget settings) {
-    ApplicationValidationResponse response = new ApplicationValidationResponse(ctx);
-    ApplicationValidationContext context = response.getContext();
-
-    if (StringUtils.isEmpty(settings.getId())) {
-      response.addError("The RepositoryTarget may have no empty/null ID!");
-    }
-
-    if (StringUtils.isEmpty(settings.getName())) {
-      response.addError("The RepositoryTarget may have no empty/null Name!");
-    }
-
-    if (StringUtils.isEmpty(settings.getContentClass())) {
-      response.addError("Repository target with ID='" + settings.getId() + "' has empty content class!");
-    }
-
-    if (context.getExistingRepositoryTargetIds() != null) {
-      // check for uniqueness
-      for (String id : context.getExistingRepositoryTargetIds()) {
-        if (id.equals(settings.getId())) {
-          response.addError("This target ID is already existing!");
-        }
-      }
-    }
-
-    List<String> patterns = settings.getPatterns();
-
-    if (patterns != null && patterns.size() > 0) {
-      for (String pattern : patterns) {
-        if (!isValidRegexp(pattern)) {
-          response.addError("Repository target with ID='" + settings.getId() + "' has invalid regexp pattern: " + pattern);
-        }
-      }
-    }
-    else {
-      response.addError("Repository target with ID='" + settings.getId() + "' has no regexp pattern defined!");
-    }
-
-    return response;
-  }
-
-  @Override
   public ValidationResponse validateSmtpConfiguration(ApplicationValidationContext ctx, CSmtpConfiguration settings) {
     ApplicationValidationResponse response = new ApplicationValidationResponse(ctx);
 
@@ -349,26 +165,5 @@ public class DefaultApplicationConfigurationValidator
     }
 
     return response;
-  }
-
-  // --------------
-  // Inner stuff
-
-  private boolean validateLocalStatus(String ls) {
-    return LocalStatus.IN_SERVICE.name().equals(ls) || LocalStatus.OUT_OF_SERVICE.name().equals(ls);
-  }
-
-  private boolean isValidRegexp(String regexp) {
-    if (regexp == null) {
-      return false;
-    }
-
-    try {
-      Pattern.compile(regexp);
-      return true;
-    }
-    catch (PatternSyntaxException e) {
-      return false;
-    }
   }
 }
