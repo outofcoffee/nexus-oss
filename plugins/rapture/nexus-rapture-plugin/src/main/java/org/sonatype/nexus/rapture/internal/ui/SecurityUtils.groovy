@@ -10,36 +10,22 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-/*global Ext, NX*/
+package org.sonatype.nexus.rapture.internal.ui
+
+import groovy.transform.ToString
+import org.apache.shiro.authz.permission.WildcardPermission
 
 /**
- * Repository "Settings" form for a Maven Hosted repository.
+ * Security related utilities.
  *
  * @since 3.0
  */
-Ext.define('NX.coreui.view.repository.recipe.RawHosted', {
-  extend: 'NX.coreui.view.repository.RepositorySettingsForm',
-  alias: 'widget.nx-coreui-repository-raw-hosted',
-  requires: [
-    'NX.Conditions',
-    'NX.I18n',
-    'NX.coreui.view.repository.facet.StorageFacet',
-    'NX.coreui.view.repository.facet.StorageFacetHosted',
-    'NX.coreui.view.repository.facet.RawContentFacet'
-  ],
-  
+class SecurityUtils
+{
   /**
-   * @override
+   * Access to protected {@link WildcardPermission#getParts()}.
    */
-  initComponent: function() {
-    var me = this;
-
-    me.items = [
-      { xtype: 'nx-coreui-repository-storage-facet'},
-      { xtype: 'nx-coreui-repository-storage-hosted-facet'},
-      { xtype: 'nx-coreui-repository-content-rawcontent-facet' }
-  ]
-
-    me.callParent(arguments);
+  static List<Set<String>> getParts(final WildcardPermission permission) {
+    return permission.parts
   }
-});
+}

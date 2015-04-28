@@ -10,28 +10,34 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.repository;
+package org.sonatype.nexus.repository.search;
+
+import java.io.Serializable;
+
+import javax.annotation.Nonnull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Repository type symbol.
+ * Identifies an indexed search item.
  *
  * @since 3.0
  */
-public abstract class Type
+public class SearchItemId
+    implements Serializable
 {
+  private static final long serialVersionUID = 1L;
+
   private final String value;
 
-  public Type(final String value) {
+  public SearchItemId(final String value) {
     this.value = checkNotNull(value);
   }
 
+  @Nonnull
   public String getValue() {
     return value;
   }
-
-  public abstract Class<?> getValidationGroup();
 
   @Override
   public boolean equals(final Object o) {
@@ -42,9 +48,9 @@ public abstract class Type
       return false;
     }
 
-    Type type = (Type) o;
+    SearchItemId otherItem = (SearchItemId) o;
 
-    if (!value.equals(type.value)) {
+    if (!value.equals(otherItem.value)) {
       return false;
     }
 
@@ -60,5 +66,4 @@ public abstract class Type
   public String toString() {
     return value;
   }
-
 }
