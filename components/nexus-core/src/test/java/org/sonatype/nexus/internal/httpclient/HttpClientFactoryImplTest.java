@@ -179,6 +179,7 @@ public class HttpClientFactoryImplTest
   }
 
   @Test
+  @Ignore
   public void NEXUS6220_connectionReuse() {
     testSubject = new HttpClientFactoryImpl(
         Providers.of(systemStatus),
