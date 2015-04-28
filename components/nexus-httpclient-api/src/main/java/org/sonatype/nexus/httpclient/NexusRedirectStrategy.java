@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory;
 public class NexusRedirectStrategy
     extends DefaultRedirectStrategy
 {
-
   /**
    * HttpContext key marking request is about content retrieval, hence, the special redirection strategy should
    * be applied.

@@ -29,7 +29,7 @@ public interface SSLContextSelector
    *
    * @since 3.0
    */
-  final static String USE_TRUST_STORE = HttpClientFactory.class.getName() + ".useTrustStore";
+  String USE_TRUST_STORE = HttpClientFactory.class.getName() + ".useTrustStore";
 
   /**
    * Returns the desired {@link SSLContext} to be used or {@code null} if no selection possible (or available).

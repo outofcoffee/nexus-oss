@@ -36,11 +36,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class NexusHttpRoutePlanner
     extends DefaultRoutePlanner
 {
-
-  // ----------------------------------------------------------------------
-  // Implementation fields
-  // ----------------------------------------------------------------------
-
   /**
    * Set of patterns for matching hosts names against. Never null.
    */
@@ -50,10 +45,6 @@ public class NexusHttpRoutePlanner
    * Mapping between protocol scheme and proxy to be used
    */
   private final Map<String, HttpHost> proxies;
-
-  // ----------------------------------------------------------------------
-  // Constructors
-  // ----------------------------------------------------------------------
 
   /**
    * @since 2.5
@@ -67,9 +58,7 @@ public class NexusHttpRoutePlanner
     this.nonProxyHostPatterns = checkNotNull(nonProxyHostPatterns);
   }
 
-  // ----------------------------------------------------------------------
-  // Public methods
-  // ----------------------------------------------------------------------
+  // FIXME: Why are we overriding just to call default?
 
   public HttpRoute determineRoute(final HttpHost target, final HttpRequest request, final HttpContext context)
       throws HttpException
@@ -77,15 +66,11 @@ public class NexusHttpRoutePlanner
     return super.determineRoute(target, request, context);
   }
 
-  // ----------------------------------------------------------------------
-  // Implementation methods
-  // ----------------------------------------------------------------------
-
   @Override
-  protected HttpHost determineProxy(
-      final HttpHost target,
-      final HttpRequest request,
-      final HttpContext context) throws HttpException
+  protected HttpHost determineProxy(final HttpHost target,
+                                    final HttpRequest request,
+                                    final HttpContext context)
+      throws HttpException
   {
     if (noProxyFor(target.getHostName())) {
       return null;

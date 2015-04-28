@@ -16,7 +16,6 @@ import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.ProtocolException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
@@ -31,12 +30,11 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 /**
- * {@link NexusRedirectStrategy} UTs.
+ * Tests for {@link NexusRedirectStrategy}.
  */
 public class NexusRedirectStrategyTest
     extends TestSupport
 {
-
   @Mock
   private HttpResponse response;
 
@@ -45,11 +43,8 @@ public class NexusRedirectStrategyTest
 
   private HttpGet request;
 
-
   @Test
-  public void doNotFollowRedirectsToDirIndex()
-      throws ProtocolException
-  {
+  public void doNotFollowRedirectsToDirIndex() throws Exception {
     when(response.getStatusLine()).thenReturn(statusLine);
 
     final RedirectStrategy underTest = new NexusRedirectStrategy();
@@ -81,9 +76,7 @@ public class NexusRedirectStrategyTest
   }
 
   @Test
-  public void doFollowCrossSiteRedirects()
-      throws ProtocolException
-  {
+  public void doFollowCrossSiteRedirects() throws Exception {
     when(response.getStatusLine()).thenReturn(statusLine);
 
     final RedirectStrategy underTest = new NexusRedirectStrategy();

@@ -18,12 +18,10 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,30 +32,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public interface HttpClientFactory
 {
-  // FIXME: Move repository specific semantics out of this class
-
-  /**
-   * HTTP context key of (usually proxy) repository on who's behalf request is made. To be used with
-   * {@link HttpClient#execute(HttpUriRequest, HttpContext)} method of {@link HttpClient} instance got from this
-   * provider. Example code snippet:
-   *
-   * <pre>
-   * final HttpGet httpRequest = new HttpGet( proxyRepository.getRemoteUrl() );
-   * final BasicHttpContext httpContext = new BasicHttpContext();
-   * httpContext.setAttribute( HTTP_CTX_KEY_REPOSITORY, proxyRepository );
-   * final HttpResponse httpResponse = httpClient.execute( httpRequest, httpContext );
-   * </pre>
-   *
-   * @since 2.4
-   */
-  String HTTP_CTX_KEY_REPOSITORY = HttpClientFactory.class.getName() + ".repository";
-
   HttpClient create();
 
   /**
    * Allows customization of {@link HttpClient} via {@link Builder}.
    */
-  public static interface Customizer
+  interface Customizer
   {
     void customize(Builder builder);
   }
@@ -75,7 +55,7 @@ public interface HttpClientFactory
   /**
    * Helper to build new {@link HttpClient} instances.
    */
-  public static class Builder
+  class Builder
   {
     private final HttpClientBuilder httpClientBuilder;
 
@@ -100,9 +80,9 @@ public interface HttpClientFactory
     }
 
     public Builder(final HttpClientBuilder httpClientBuilder,
-            final ConnectionConfig.Builder connectionConfigBuilder,
-            final SocketConfig.Builder socketConfigBuilder,
-            final RequestConfig.Builder requestConfigBuilder)
+                   final ConnectionConfig.Builder connectionConfigBuilder,
+                   final SocketConfig.Builder socketConfigBuilder,
+                   final RequestConfig.Builder requestConfigBuilder)
     {
       this.httpClientBuilder = checkNotNull(httpClientBuilder);
       this.connectionConfigBuilder = checkNotNull(connectionConfigBuilder);
