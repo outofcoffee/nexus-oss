@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 import org.sonatype.nexus.timeline.Entry;
 import org.sonatype.nexus.timeline.feeds.AnyOfFilter;
 import org.sonatype.nexus.timeline.feeds.FeedEvent;
@@ -34,6 +33,8 @@ import com.google.common.collect.Sets;
 import org.codehaus.plexus.util.StringUtils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+//import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 
 //import org.sonatype.nexus.proxy.maven.MavenRepository;
 //import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
@@ -102,7 +103,7 @@ public abstract class AbstractFeedSource
 
   // ==
 
-  protected Predicate<Entry> isMavenArtifact(final RepositoryRegistry repositoryRegistry) {
+  //protected Predicate<Entry> isMavenArtifact(final RepositoryRegistry repositoryRegistry) {
     //return new Predicate<Entry>()
     //{
     //  @Override
@@ -138,8 +139,8 @@ public abstract class AbstractFeedSource
     //    return false;
     //  }
     //};
-    return null;
-  }
+    //return null;
+  //}
 
   ///**
   // * Produces a predicate that applies only to {@link MavenRepository} instances that have {@link RepositoryPolicy}
