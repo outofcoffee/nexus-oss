@@ -28,8 +28,6 @@ public class ItemNotFoundException
 {
   private static final long serialVersionUID = -4964273361722823796L;
 
-  // ==
-
   public static ItemNotFoundReason reasonFor(final ResourceStoreRequest request, final String message,
                                              final Object... params)
   {
@@ -43,19 +41,6 @@ public class ItemNotFoundException
     return new ItemNotFoundInRepositoryReason(SimpleFormat.template(message, params), request, repository);
   }
 
-  @Deprecated
-  private static ItemNotFoundReason legacySupport(final String message, final ResourceStoreRequest request,
-                                                  final Repository repository)
-  {
-    if (repository != null) {
-      return new ItemNotFoundInRepositoryReason(SimpleFormat.template(message), request, repository);
-    }
-    else {
-      return new ItemNotFoundReason(SimpleFormat.template(message), request);
-    }
-  }
-
-  // ==
 
   public static class ItemNotFoundReason
   {
@@ -63,20 +48,11 @@ public class ItemNotFoundException
 
     private final ResourceStoreRequest resourceStoreRequest;
 
-    /**
-     * @param message              reason message (might not be {@code null}).
-     * @param resourceStoreRequest request (might not be {@code null}).
-     */
     public ItemNotFoundReason(final FormatTemplate message, final ResourceStoreRequest resourceStoreRequest) {
       this.message = checkNotNull(message);
       this.resourceStoreRequest = checkNotNull(resourceStoreRequest).cloneAndDetach();
     }
 
-    /**
-     * Returns the reason message, never {@code null}.
-     *
-     * @return the reason message, never {@code null}.
-     */
     public String getMessage() {
       return message.toString();
     }
@@ -86,21 +62,11 @@ public class ItemNotFoundException
     }
   }
 
-  /**
-   * Reason of item not found that is triggered within a {@link Repository} instance.
-   *
-   * @since 2.5
-   */
   public static class ItemNotFoundInRepositoryReason
       extends ItemNotFoundReason
   {
     private final Repository repository;
 
-    /**
-     * @param message              reason message (might not be {@code null}).
-     * @param resourceStoreRequest request (might not be {@code null}).
-     * @param repository           repository (might not be {@code null}).
-     */
     public ItemNotFoundInRepositoryReason(final FormatTemplate message,
                                           final ResourceStoreRequest resourceStoreRequest,
                                           final Repository repository)
@@ -116,83 +82,16 @@ public class ItemNotFoundException
 
   private final ItemNotFoundReason reason;
 
-  /**
-   * Constructor with reason.
-   *
-   * @param reason (might not be {@code null}).
-   * @throws NullPointerException if passed in reason parameter is {@code null}.
-   * @since 2.5
-   */
   public ItemNotFoundException(final ItemNotFoundReason reason) {
     this(reason, null);
   }
 
-  /**
-   * Constructor with reason and cause.
-   *
-   * @param reason (might not be {@code null}).
-   * @throws NullPointerException if passed in reason parameter is {@code null}.
-   * @since 2.5
-   */
   public ItemNotFoundException(final ItemNotFoundReason reason, final Throwable cause) {
     super(reason.getMessage(), cause);
     this.reason = reason;
   }
 
-  /**
-   * Returns the reason of the item not found exception (never {@code null}).
-   *
-   * @return the reason, never {@code null}.
-   * @since 2.5
-   */
   public ItemNotFoundReason getReason() {
     return reason;
   }
-
-  // == Deprecated stuff below
-
-  /**
-   * Constructor. To be used in places where no Repository exists yet in context (like in a Router).
-   *
-   * @deprecated Use constructor with {@link ItemNotFoundReason} instead.
-   */
-  @Deprecated
-  public ItemNotFoundException(final ResourceStoreRequest request) {
-    this(request, null, null);
-  }
-
-  /**
-   * Constructor. To be used in places whenever there IS a Repository in context.
-   *
-   * @deprecated Use constructor with {@link ItemNotFoundReason} instead.
-   */
-  @Deprecated
-  public ItemNotFoundException(final ResourceStoreRequest request, final Repository repository) {
-    this(request, repository, null);
-  }
-
-  /**
-   * Constructor. To be used in places whenever there IS a Repository in context.
-   *
-   * @deprecated Use constructor with {@link ItemNotFoundReason} instead.
-   */
-  @Deprecated
-  public ItemNotFoundException(final ResourceStoreRequest request, final Repository repository, final Throwable cause) {
-    this(repository != null ? "Item not found for request \"" + request + "\" in repository \""
-        + repository.getId() + "\"!" : "Item not found for request \""
-        + request + "\"!", request, repository, cause);
-  }
-
-  /**
-   * Protected constructor, to be used by this class and subclass constructors.
-   *
-   * @deprecated Use constructor with {@link ItemNotFoundReason} instead.
-   */
-  @Deprecated
-  private ItemNotFoundException(final String message, final ResourceStoreRequest request,
-                                final Repository repository, final Throwable cause)
-  {
-    this(legacySupport(message, request, repository), cause);
-  }
-
 }

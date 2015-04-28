@@ -17,8 +17,4 @@ public interface ContentClass
   String getId();
 
   String getName();
-
-  boolean isCompatible(ContentClass contentClass);
-
-  boolean isGroupable();
 }

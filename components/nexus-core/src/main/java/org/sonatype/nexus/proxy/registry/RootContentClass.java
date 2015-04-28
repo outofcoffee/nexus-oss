@@ -33,14 +33,4 @@ public class RootContentClass
   public String getName() {
     return null;
   }
-
-  @Override
-  public boolean isCompatible(final ContentClass contentClass) {
-    return false;
-  }
-
-  @Override
-  public boolean isGroupable() {
-    return false;
-  }
 }

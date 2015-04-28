@@ -22,78 +22,25 @@ import org.sonatype.nexus.proxy.registry.ContentClass;
  */
 public interface Repository
 {
-  /**
-   * Returns the ID of the resourceStore.
-   *
-   * @return the id
-   */
   String getId();
 
-  /**
-   * Sets the ID of the resourceStore. It must be unique type-wide (Router vs Repository).
-   *
-   * @param id the ID of the repo.
-   */
   void setId(String id);
 
-  /**
-   * Gets repository human name.
-   */
   String getName();
 
-  /**
-   * Sets repository human name.
-   */
   void setName(String name);
 
-  /**
-   * This is the "type"/kind of the repository. It tells some minimal info about the repo working (not content,
-   * neither implementation).
-   */
   RepositoryKind getRepositoryKind();
 
-  /**
-   * This is the "class" of the repository content. It is used in grouping, only same content reposes may be grouped.
-   */
   ContentClass getRepositoryContentClass();
 
-
-  /**
-   * Returns the facet of Repository, if available, otherwise it returns null.
-   *
-   * @return the facet requested, otherwise null.
-   */
   <F> F adaptToFacet(Class<F> t);
 
-
-  /**
-   * Gets local status.
-   */
   LocalStatus getLocalStatus();
 
-  /**
-   * Sets local status.
-   *
-   * @param val the val
-   */
   void setLocalStatus(LocalStatus val);
 
-
-  // ==================================================
-  // Behaviour
-
-  RequestStrategy registerRequestStrategy(String key, RequestStrategy strategy);
-
-  RequestStrategy unregisterRequestStrategy(String key);
-
-  /**
-   * Tells whether the resource store is exposed as Nexus content or not.
-   */
   boolean isExposed();
 
-  /**
-   * Sets the exposed flag.
-   */
   void setExposed(boolean val);
-
 }
