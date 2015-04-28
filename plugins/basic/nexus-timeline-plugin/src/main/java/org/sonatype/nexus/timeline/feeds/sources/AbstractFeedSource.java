@@ -34,12 +34,6 @@ import org.codehaus.plexus.util.StringUtils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-//import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
-
-//import org.sonatype.nexus.proxy.maven.MavenRepository;
-//import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
-//import org.sonatype.nexus.proxy.maven.gav.Gav;
-
 /**
  * Support class for {@link FeedSource} implementations.
  *

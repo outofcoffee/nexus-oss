@@ -20,10 +20,6 @@ import org.sonatype.nexus.events.Asynchronous;
 import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.timeline.feeds.FeedRecorder;
 
-//import org.sonatype.nexus.proxy.maven.uid.IsMavenArtifactSignatureAttribute;
-//import org.sonatype.nexus.proxy.maven.uid.IsMavenChecksumAttribute;
-//import org.sonatype.nexus.proxy.maven.uid.IsMavenRepositoryMetadataAttribute;
-
 /**
  * Subscriber listening for events recorded under {@link FeedRecorder#FAMILY_ITEM} event type.
  */

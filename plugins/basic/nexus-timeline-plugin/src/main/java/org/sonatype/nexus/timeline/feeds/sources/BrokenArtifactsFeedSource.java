@@ -22,8 +22,6 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.timeline.feeds.FeedEvent;
 import org.sonatype.nexus.timeline.feeds.FeedRecorder;
 
-//import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
-
 /**
  * Broken artifacts: those that fail file content validation, fail proxy checksum policy and such.
  *

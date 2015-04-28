@@ -22,10 +22,6 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.timeline.feeds.FeedEvent;
 import org.sonatype.nexus.timeline.feeds.FeedRecorder;
 
-//import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
-
-//import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
-
 @Named(RecentDeployedReleaseArtifactFeedSource.CHANNEL_KEY)
 @Singleton
 public class RecentDeployedReleaseArtifactFeedSource
