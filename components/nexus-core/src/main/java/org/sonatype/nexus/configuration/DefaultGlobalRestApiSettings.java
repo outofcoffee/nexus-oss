@@ -100,23 +100,4 @@ public class DefaultGlobalRestApiSettings
 
     return getCurrentConfiguration(false).getBaseUrl();
   }
-
-  @Override
-  public void setUITimeout(int uiTimeout) {
-    if (!isEnabled()) {
-      initConfig();
-    }
-
-    getCurrentConfiguration(true).setUiTimeout(uiTimeout);
-  }
-
-  @Override
-  public int getUITimeout() {
-    if (!isEnabled()) {
-      return 0;
-    }
-
-    return getCurrentConfiguration(false).getUiTimeout();
-  }
-
 }

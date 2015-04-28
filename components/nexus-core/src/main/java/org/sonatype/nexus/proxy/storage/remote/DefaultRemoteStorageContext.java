@@ -15,36 +15,12 @@ package org.sonatype.nexus.proxy.storage.remote;
 import org.sonatype.nexus.proxy.repository.RemoteAuthenticationSettings;
 import org.sonatype.nexus.proxy.repository.RemoteConnectionSettings;
 import org.sonatype.nexus.proxy.repository.RemoteProxySettings;
-import org.sonatype.nexus.proxy.storage.StorageContext;
 
 public class DefaultRemoteStorageContext
     implements RemoteStorageContext
 {
-  public DefaultRemoteStorageContext(final StorageContext parent) {
+  public DefaultRemoteStorageContext() {
 
-  }
-
-  @Override
-  public boolean hasRemoteAuthenticationSettings() {
-    return false;
-  }
-
-  @Override
-  public RemoteAuthenticationSettings getRemoteAuthenticationSettings() {
-    return null;
-  }
-
-  @Override
-  public void setRemoteAuthenticationSettings(RemoteAuthenticationSettings settings) {
-  }
-
-  @Override
-  public void removeRemoteAuthenticationSettings() {
-  }
-
-  @Override
-  public boolean hasRemoteConnectionSettings() {
-    return false;
   }
 
   @Override
@@ -53,17 +29,18 @@ public class DefaultRemoteStorageContext
   }
 
   @Override
-  public void setRemoteConnectionSettings(RemoteConnectionSettings settings) {
-  }
-
-  @Override
-  public void removeRemoteConnectionSettings() {
+  public void setRemoteConnectionSettings(final RemoteConnectionSettings settings) {
 
   }
 
   @Override
-  public boolean hasRemoteProxySettings() {
-    return false;
+  public RemoteAuthenticationSettings getRemoteAuthenticationSettings() {
+    return null;
+  }
+
+  @Override
+  public void setRemoteAuthenticationSettings(final RemoteAuthenticationSettings settings) {
+
   }
 
   @Override
@@ -72,10 +49,7 @@ public class DefaultRemoteStorageContext
   }
 
   @Override
-  public void setRemoteProxySettings(RemoteProxySettings settings) {
-  }
+  public void setRemoteProxySettings(final RemoteProxySettings settings) {
 
-  @Override
-  public void removeRemoteProxySettings() {
   }
 }

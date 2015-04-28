@@ -175,7 +175,7 @@ public class DefaultApplicationConfiguration
 
       // create global remote ctx
       // this one has no parent
-      globalRemoteStorageContext = new DefaultRemoteStorageContext(null);
+      globalRemoteStorageContext = new DefaultRemoteStorageContext();
 
       final GlobalRemoteConnectionSettings globalRemoteConnectionSettings =
           globalRemoteConnectionSettingsProvider.get();

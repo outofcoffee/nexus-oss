@@ -190,13 +190,13 @@ public class HttpClientFactoryImplTest
 
     // nothing NTLM related present
     {
-      final DefaultRemoteStorageContext drsc = new DefaultRemoteStorageContext(null);
+      final DefaultRemoteStorageContext drsc = new DefaultRemoteStorageContext();
       Assert.assertFalse("No auth-proxy set", testSubject.reuseConnectionsNeeded(drsc));
     }
 
     // remote auth is NTLM
     {
-      final DefaultRemoteStorageContext drsc = new DefaultRemoteStorageContext(null);
+      final DefaultRemoteStorageContext drsc = new DefaultRemoteStorageContext();
       drsc.setRemoteAuthenticationSettings(new NtlmRemoteAuthenticationSettings("a", "b", "c", "d"));
       Assert.assertTrue("NTLM target auth-proxy set", testSubject.reuseConnectionsNeeded(drsc));
     }

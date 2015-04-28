@@ -26,8 +26,4 @@ public interface GlobalRestApiSettings
   void setBaseUrl(String baseUrl);
 
   String getBaseUrl();
-
-  void setUITimeout(int uiTimeout);
-
-  int getUITimeout();
 }
