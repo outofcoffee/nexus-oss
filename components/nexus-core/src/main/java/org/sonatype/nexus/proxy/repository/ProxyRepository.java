@@ -22,8 +22,6 @@ import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 public interface ProxyRepository
     extends Repository
 {
-  ProxyMode getProxyMode();
-
   String getRemoteUrl();
 
   RemoteStorageContext getRemoteStorageContext();

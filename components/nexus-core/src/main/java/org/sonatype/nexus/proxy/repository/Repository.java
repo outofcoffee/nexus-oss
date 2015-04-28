@@ -30,10 +30,6 @@ public interface Repository
 
   <F> F adaptToFacet(Class<F> t);
 
-  LocalStatus getLocalStatus();
-
-  void setLocalStatus(LocalStatus val);
-
   boolean isExposed();
 
   void setExposed(boolean val);
