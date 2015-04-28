@@ -12,16 +12,11 @@
  */
 package org.sonatype.nexus.proxy.item;
 
-import org.sonatype.nexus.proxy.RequestContext;
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-
 /**
  * The Interface StorageItem, a top of the item abstraction.
  */
 public interface StorageItem
 {
-  ResourceStoreRequest getResourceStoreRequest();
-
   String getRepositoryId();
 
   long getCreated();
@@ -43,6 +38,4 @@ public interface StorageItem
   String getName();
 
   String getRemoteUrl();
-
-  RequestContext getItemContext();
 }

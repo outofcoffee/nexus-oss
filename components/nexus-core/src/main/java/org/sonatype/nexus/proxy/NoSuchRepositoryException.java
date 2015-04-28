@@ -12,21 +12,7 @@
  */
 package org.sonatype.nexus.proxy;
 
-/**
- * Thrown if the specifically requested Repository does not exists.
- *
- * @author cstamas
- */
 public class NoSuchRepositoryException
     extends Exception
 {
-  private static final long serialVersionUID = 299346983704055394L;
-
-  /**
-   * Constructs a new exception with message based on passed in Repository ID.
-   */
-  public NoSuchRepositoryException(final String repoId) {
-    super("Repository with ID=\"" + repoId + "\" not found");
-  }
-
 }

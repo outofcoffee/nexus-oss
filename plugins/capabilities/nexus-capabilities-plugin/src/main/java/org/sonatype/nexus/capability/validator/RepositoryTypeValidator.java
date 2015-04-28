@@ -23,8 +23,6 @@ import org.sonatype.nexus.capability.CapabilityType;
 import org.sonatype.nexus.capability.ValidationResult;
 import org.sonatype.nexus.capability.Validator;
 import org.sonatype.nexus.capability.support.ValidatorSupport;
-import org.sonatype.nexus.capability.support.validator.DefaultValidationResult;
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 import org.sonatype.nexus.proxy.repository.Repository;
 
@@ -64,18 +62,18 @@ public class RepositoryTypeValidator
 
   @Override
   public ValidationResult validate(final Map<String, String> properties) {
-    String repositoryId = properties.get(propertyKey);
-    if (repositoryId != null) {
-      try {
-        final Repository repository = repositoryRegistry.getRepository(repositoryId);
-        if (!repository.getRepositoryKind().isFacetAvailable(facet)) {
-          return new DefaultValidationResult().add(propertyKey, buildMessage(repository));
-        }
-      }
-      catch (NoSuchRepositoryException ignore) {
-        // ignore
-      }
-    }
+    //String repositoryId = properties.get(propertyKey);
+    //if (repositoryId != null) {
+    //  try {
+    //    final Repository repository = repositoryRegistry.getRepository(repositoryId);
+    //    if (!repository.getRepositoryKind().isFacetAvailable(facet)) {
+    //      return new DefaultValidationResult().add(propertyKey, buildMessage(repository));
+    //    }
+    //  }
+    //  catch (NoSuchRepositoryException ignore) {
+    //    // ignore
+    //  }
+    //}
     return ValidationResult.VALID;
   }
 

@@ -14,17 +14,5 @@ package org.sonatype.nexus.proxy.storage;
 
 public interface StorageContext
 {
-  int getGeneration();
 
-  int incrementGeneration();
-
-  StorageContext getParentStorageContext();
-
-  Object getContextObject(String key);
-
-  Object putContextObject(String key, Object value);
-
-  Object removeContextObject(String key);
-
-  boolean hasContextObject(String key);
 }

@@ -19,10 +19,8 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.capability.Condition;
 import org.sonatype.nexus.capability.condition.RepositoryExistsCondition;
 import org.sonatype.nexus.capability.condition.RepositoryLocalStatusCondition;
-import org.sonatype.nexus.capability.condition.RepositoryProxyModeCondition;
 import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 import org.sonatype.nexus.proxy.repository.LocalStatus;
-import org.sonatype.nexus.proxy.repository.ProxyMode;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -66,7 +64,8 @@ public class RepositoryConditions
    * @return created condition
    */
   public Condition repositoryIsNotBlocked(final RepositoryId repositoryId) {
-    return new RepositoryProxyModeCondition(eventBus, repositoryRegistry, ProxyMode.ALLOW, repositoryId);
+    //return new RepositoryProxyModeCondition(eventBus, repositoryRegistry, ProxyMode.ALLOW, repositoryId);
+    return null;
   }
 
   /**

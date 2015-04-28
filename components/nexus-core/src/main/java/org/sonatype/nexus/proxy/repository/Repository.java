@@ -12,8 +12,6 @@
  */
 package org.sonatype.nexus.proxy.repository;
 
-import org.sonatype.nexus.proxy.registry.ContentClass;
-
 /**
  * Repository interface used by Proximity. It is an extension of ResourceStore iface, allowing to make direct
  * RepositoryItemUid based requests which bypasses AccessManager. Also, defines some properties.
@@ -29,10 +27,6 @@ public interface Repository
   String getName();
 
   void setName(String name);
-
-  RepositoryKind getRepositoryKind();
-
-  ContentClass getRepositoryContentClass();
 
   <F> F adaptToFacet(Class<F> t);
 

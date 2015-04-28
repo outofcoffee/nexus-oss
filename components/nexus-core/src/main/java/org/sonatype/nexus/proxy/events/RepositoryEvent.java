@@ -32,23 +32,11 @@ public abstract class RepositoryEvent
     this.date = new Date();
   }
 
-  /**
-   * Gets the repository.
-   *
-   * @return the repository
-   */
   public Repository getRepository() {
     return repository;
   }
 
   public Date getEventDate() {
     return date;
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName() + "{" +
-        "repositoryId=" + getRepository().getId() +
-        '}';
   }
 }

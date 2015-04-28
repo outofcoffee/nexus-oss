@@ -12,17 +12,11 @@
  */
 package org.sonatype.nexus.proxy.storage.remote;
 
-import org.sonatype.nexus.proxy.repository.DefaultRemoteConnectionSettings;
 import org.sonatype.nexus.proxy.repository.RemoteAuthenticationSettings;
 import org.sonatype.nexus.proxy.repository.RemoteConnectionSettings;
 import org.sonatype.nexus.proxy.repository.RemoteProxySettings;
 import org.sonatype.nexus.proxy.storage.StorageContext;
 
-/**
- * The default remote storage context.
- * 
- * @author cstamas
- */
 public class DefaultRemoteStorageContext
     implements RemoteStorageContext
 {
@@ -31,133 +25,57 @@ public class DefaultRemoteStorageContext
   }
 
   @Override
-  public int getGeneration() {
-    return 0;
-  }
-
-  @Override
-  public int incrementGeneration() {
-    return 0;
-  }
-
-  @Override
-  public StorageContext getParentStorageContext() {
-    return null;
-  }
-
-  @Override
-  public Object getContextObject(final String key) {
-    return null;
-  }
-
-  @Override
-  public Object putContextObject(final String key, final Object value) {
-    return null;
-  }
-
-  @Override
-  public Object removeContextObject(final String key) {
-    return null;
-  }
-
-  @Override
-  public boolean hasContextObject(final String key) {
+  public boolean hasRemoteAuthenticationSettings() {
     return false;
   }
 
   @Override
-  public boolean hasRemoteAuthenticationSettings() {
-    return hasContextObject(RemoteAuthenticationSettings.class.getName());
-  }
-
-  @Override
   public RemoteAuthenticationSettings getRemoteAuthenticationSettings() {
-    return (RemoteAuthenticationSettings) getContextObject(RemoteAuthenticationSettings.class.getName());
+    return null;
   }
 
   @Override
   public void setRemoteAuthenticationSettings(RemoteAuthenticationSettings settings) {
-    putContextObject(RemoteAuthenticationSettings.class.getName(), settings);
   }
 
   @Override
   public void removeRemoteAuthenticationSettings() {
-    removeContextObject(RemoteAuthenticationSettings.class.getName());
   }
 
   @Override
   public boolean hasRemoteConnectionSettings() {
-    return hasContextObject(RemoteConnectionSettings.class.getName());
+    return false;
   }
 
   @Override
   public RemoteConnectionSettings getRemoteConnectionSettings() {
-    final RemoteConnectionSettings remoteConnectionSettings = (RemoteConnectionSettings) getContextObject(RemoteConnectionSettings.class.getName());
-    if (hasContextObject(RemoteConnectionSettings.class.getName())) {
-      return remoteConnectionSettings;
-    }
-    else {
-      return DefaultRemoteConnectionSettings.asReadOnly(remoteConnectionSettings);
-    }
+    return null;
   }
 
   @Override
   public void setRemoteConnectionSettings(RemoteConnectionSettings settings) {
-    putContextObject(RemoteConnectionSettings.class.getName(), settings);
   }
 
   @Override
   public void removeRemoteConnectionSettings() {
-    removeContextObject(RemoteConnectionSettings.class.getName());
+
   }
 
   @Override
   public boolean hasRemoteProxySettings() {
-    return hasContextObject(RemoteProxySettings.class.getName());
+    return false;
   }
 
   @Override
   public RemoteProxySettings getRemoteProxySettings() {
-    return (RemoteProxySettings) getContextObject(RemoteProxySettings.class.getName());
+    return null;
   }
 
   @Override
   public void setRemoteProxySettings(RemoteProxySettings settings) {
-    putContextObject(RemoteProxySettings.class.getName(), settings);
   }
 
   @Override
   public void removeRemoteProxySettings() {
-    removeContextObject(RemoteProxySettings.class.getName());
-  }
-
-  // ==
-
-  /**
-   * Simple helper class to have boolean stored in context and not disturbing the update of it.
-   */
-  public static class BooleanFlagHolder
-  {
-    private Boolean flag = null;
-
-    /**
-     * Returns true only and if only flag is not null and has value Boolean.TRUE.
-     */
-    public boolean isFlag() {
-      if (flag != null) {
-        return flag;
-      }
-      else {
-        return false;
-      }
-    }
-
-    public boolean isNull() {
-      return flag == null;
-    }
-
-    public void setFlag(Boolean flag) {
-      this.flag = flag;
-    }
   }
 }

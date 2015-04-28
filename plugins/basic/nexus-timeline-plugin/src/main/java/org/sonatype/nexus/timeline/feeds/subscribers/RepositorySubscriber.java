@@ -24,8 +24,6 @@ import org.sonatype.nexus.SystemStatus;
 import org.sonatype.nexus.events.Asynchronous;
 import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.proxy.events.RepositoryConfigurationUpdatedEvent;
-import org.sonatype.nexus.proxy.events.RepositoryEventLocalStatusChanged;
-import org.sonatype.nexus.proxy.events.RepositoryEventProxyModeChanged;
 import org.sonatype.nexus.proxy.events.RepositoryRegistryEventAdd;
 import org.sonatype.nexus.proxy.events.RepositoryRegistryEventRemove;
 import org.sonatype.nexus.proxy.events.RepositoryRegistryRepositoryEvent;
@@ -58,54 +56,54 @@ public class RepositorySubscriber
     this.systemStatusProvider = checkNotNull(systemStatusProvider);
   }
 
-  @Subscribe
-  @AllowConcurrentEvents
-  public void on(final RepositoryEventLocalStatusChanged revt) {
-    final Map<String, String> data = Maps.newHashMap();
-    putIfNotNull(data, "oldLocalStatus", revt.getOldLocalStatus().name());
-    putIfNotNull(data, "newLocalStatus", revt.getNewLocalStatus().name());
-    putIfNotNull(data, "repoId", revt.getRepository().getId());
-    putIfNotNull(data, "repoName", revt.getRepository().getName());
-    // TODO: who changed it?
-    //putIfNotNull(data, "user.id", userId);
-    //putIfNotNull(data, "user.ip", userIp);
-    //putIfNotNull(data, "user.ua", userAgent);
-    final FeedEvent fe = new FeedEvent(
-        FeedRecorder.FAMILY_REPO,
-        FeedRecorder.REPO_LSTATUS,
-        revt.getEventDate(),
-        null, // TODO: who changed it?
-        "/", // link to UI
-        data
-    );
-    getFeedRecorder().addEvent(fe);
-  }
+  //@Subscribe
+  //@AllowConcurrentEvents
+  //public void on(final RepositoryEventLocalStatusChanged revt) {
+  //  final Map<String, String> data = Maps.newHashMap();
+  //  putIfNotNull(data, "oldLocalStatus", revt.getOldLocalStatus().name());
+  //  putIfNotNull(data, "newLocalStatus", revt.getNewLocalStatus().name());
+  //  putIfNotNull(data, "repoId", revt.getRepository().getId());
+  //  putIfNotNull(data, "repoName", revt.getRepository().getName());
+  //  // TODO: who changed it?
+  //  //putIfNotNull(data, "user.id", userId);
+  //  //putIfNotNull(data, "user.ip", userIp);
+  //  //putIfNotNull(data, "user.ua", userAgent);
+  //  final FeedEvent fe = new FeedEvent(
+  //      FeedRecorder.FAMILY_REPO,
+  //      FeedRecorder.REPO_LSTATUS,
+  //      revt.getEventDate(),
+  //      null, // TODO: who changed it?
+  //      "/", // link to UI
+  //      data
+  //  );
+  //  getFeedRecorder().addEvent(fe);
+  //}
 
-  @Subscribe
-  @AllowConcurrentEvents
-  public void on(final RepositoryEventProxyModeChanged revt) {
-    final Map<String, String> data = Maps.newHashMap();
-    putIfNotNull(data, "oldProxyMode", revt.getOldProxyMode().name());
-    putIfNotNull(data, "newProxyMode", revt.getNewProxyMode().name());
-    if (revt.getCause() != null) {
-      putIfNotNull(data, "lastError", String.valueOf(revt.getCause()));
-    }
-    putIfNotNull(data, "repoId", revt.getRepository().getId());
-    putIfNotNull(data, "repoName", revt.getRepository().getName());
-    // TODO: who changed it?
-    //putIfNotNull(data, "user.id", userId);
-    //putIfNotNull(data, "user.ip", userIp);
-    //putIfNotNull(data, "user.ua", userAgent);
-    final FeedEvent fe = new FeedEvent(
-        FeedRecorder.FAMILY_REPO,
-        FeedRecorder.REPO_PSTATUS,
-        revt.getEventDate(),
-        null, // TODO: who changed it?
-        "/", // link to UI
-        data
-    );
-    getFeedRecorder().addEvent(fe);
-  }
+  //@Subscribe
+  //@AllowConcurrentEvents
+  //public void on(final RepositoryEventProxyModeChanged revt) {
+  //  final Map<String, String> data = Maps.newHashMap();
+  //  putIfNotNull(data, "oldProxyMode", revt.getOldProxyMode().name());
+  //  putIfNotNull(data, "newProxyMode", revt.getNewProxyMode().name());
+  //  if (revt.getCause() != null) {
+  //    putIfNotNull(data, "lastError", String.valueOf(revt.getCause()));
+  //  }
+  //  putIfNotNull(data, "repoId", revt.getRepository().getId());
+  //  putIfNotNull(data, "repoName", revt.getRepository().getName());
+  //  // TODO: who changed it?
+  //  //putIfNotNull(data, "user.id", userId);
+  //  //putIfNotNull(data, "user.ip", userIp);
+  //  //putIfNotNull(data, "user.ua", userAgent);
+  //  final FeedEvent fe = new FeedEvent(
+  //      FeedRecorder.FAMILY_REPO,
+  //      FeedRecorder.REPO_PSTATUS,
+  //      revt.getEventDate(),
+  //      null, // TODO: who changed it?
+  //      "/", // link to UI
+  //      data
+  //  );
+  //  getFeedRecorder().addEvent(fe);
+  //}
 
   @Subscribe
   @AllowConcurrentEvents

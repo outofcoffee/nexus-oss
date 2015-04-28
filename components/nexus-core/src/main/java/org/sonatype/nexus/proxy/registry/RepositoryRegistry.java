@@ -24,14 +24,6 @@ import org.sonatype.nexus.proxy.repository.Repository;
  */
 public interface RepositoryRegistry
 {
-  void addRepository(Repository repository);
-
-  void removeRepository(String repoId)
-      throws NoSuchRepositoryException;
-
-  void removeRepositorySilently(String repoId)
-      throws NoSuchRepositoryException;
-
   List<Repository> getRepositories();
 
   <T> List<T> getRepositoriesWithFacet(Class<T> f);

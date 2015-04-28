@@ -21,42 +21,12 @@ import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
-/**
- * Repository registry. It holds handles to registered repositories and sorts them properly. This class is used to get
- * a
- * grip on repositories.
- * <p>
- * Getting reposes from here and changing repo attributes like group, id and rank have no effect on repo registry! For
- * that kind of change, you have to: 1) get repository, 2) remove repository from registry, 3) change repo attributes
- * and 4) add repository.
- * <p>
- * ProximityEvents: this component just "concentrates" the repositiry events of all known repositories by it. It can be
- * used as single point to access all repository events. TODO this is not a good place to keep group repository
- * management code
- *
- * @author cstamas
- */
 @Singleton
 @Named
 public class DefaultRepositoryRegistry
     extends ComponentSupport
     implements RepositoryRegistry
 {
-  @Override
-  public void addRepository(final Repository repository) {
-
-  }
-
-  @Override
-  public void removeRepository(final String repoId) throws NoSuchRepositoryException {
-
-  }
-
-  @Override
-  public void removeRepositorySilently(final String repoId) throws NoSuchRepositoryException {
-
-  }
-
   @Override
   public List<Repository> getRepositories() {
     return null;
