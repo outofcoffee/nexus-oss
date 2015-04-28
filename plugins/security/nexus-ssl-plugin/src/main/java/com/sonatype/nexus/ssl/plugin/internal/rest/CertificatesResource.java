@@ -50,6 +50,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static org.sonatype.sisu.goodies.ssl.keystore.CertificateUtil.calculateFingerprint;
 import static org.sonatype.sisu.goodies.ssl.keystore.CertificateUtil.decodePEMFormattedCertificate;
 
+// TODO: Remove
+
 /**
  * Certificate resource.
  *
