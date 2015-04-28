@@ -60,7 +60,7 @@ extends DirectComponentSupport
                                  final @Nullable Integer port,
                                  final @Nullable String protocolHint)
   {
-    return certificatesResource.get(null, host, port as String, protocolHint) as CertificateXO
+    return certificatesResource.get(host, port as String, protocolHint) as CertificateXO
   }
 
   /**
