@@ -13,7 +13,6 @@
 package org.sonatype.nexus.email;
 
 import org.sonatype.micromailer.Address;
-import org.sonatype.micromailer.EMailer;
 import org.sonatype.micromailer.MailRequest;
 import org.sonatype.micromailer.MailRequestStatus;
 
@@ -25,16 +24,6 @@ import org.sonatype.micromailer.MailRequestStatus;
  */
 public interface NexusEmailer
 {
-  /**
-   * Gets the preconfigured EMailer instance for prepared for using it.
-   */
-  EMailer getEMailer();
-
-  /**
-   * Returns the system-wide default mail type used as default mailType for outgoing mails.
-   */
-  String getDefaultMailTypeId();
-
   /**
    * Returns a prepopulated MailRequest. The request only needs to set the To, CC, Bcc (or override any of the
    * defaulted values) and send it.

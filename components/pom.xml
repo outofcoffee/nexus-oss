@@ -38,6 +38,7 @@
     <module>nexus-core</module>
     <module>nexus-ehcache</module>
     <module>nexus-elasticsearch</module>
+    <module>nexus-email</module>
     <module>nexus-extender</module>
     <module>nexus-httpclient-api</module>
     <module>nexus-jmx</module>

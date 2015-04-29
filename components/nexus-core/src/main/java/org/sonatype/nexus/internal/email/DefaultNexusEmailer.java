@@ -89,22 +89,16 @@ public class DefaultNexusEmailer
     this.customizers = checkNotNull(customizers);
   }
 
-  // ==
-  
   @Subscribe
   public void on(final NexusStoppedEvent evt) {
     getEMailer().shutdown();
   }
 
-  // ==
-
-  @Override
-  public EMailer getEMailer() {
+  private EMailer getEMailer() {
     return eMailer;
   }
 
-  @Override
-  public String getDefaultMailTypeId() {
+  private String getDefaultMailTypeId() {
     return DefaultMailType.DEFAULT_TYPE_ID;
   }
 
