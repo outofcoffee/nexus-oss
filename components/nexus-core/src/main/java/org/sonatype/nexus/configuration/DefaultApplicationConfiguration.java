@@ -43,7 +43,6 @@ import com.google.common.collect.Collections2;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.codehaus.plexus.util.ExceptionUtils;
-import org.eclipse.sisu.inject.BeanLocator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -64,8 +63,6 @@ public class DefaultApplicationConfiguration
     extends ComponentSupport
     implements ApplicationConfiguration
 {
-  private final BeanLocator beanLocator;
-
   private final EventBus eventBus;
 
   private final ApplicationConfigurationSource configurationSource;
@@ -75,8 +72,6 @@ public class DefaultApplicationConfiguration
   private final Provider<GlobalRemoteProxySettings> globalRemoteProxySettingsProvider;
 
   private final ApplicationConfigurationValidator configurationValidator;
-
-  private final ClassLoader uberClassLoader;
 
   private final ApplicationDirectories applicationDirectories;
 
@@ -91,22 +86,18 @@ public class DefaultApplicationConfiguration
   private File configurationDirectory;
 
   @Inject
-  public DefaultApplicationConfiguration(final BeanLocator beanLocator,
-                                         final EventBus eventBus,
+  public DefaultApplicationConfiguration(final EventBus eventBus,
                                          final @Named("file") ApplicationConfigurationSource configurationSource,
                                          final Provider<GlobalRemoteConnectionSettings> globalRemoteConnectionSettingsProvider,
                                          final Provider<GlobalRemoteProxySettings> globalRemoteProxySettingsProvider,
                                          final ApplicationConfigurationValidator configurationValidator,
-                                         final @Named("nexus-uber") ClassLoader uberClassLoader,
                                          final ApplicationDirectories applicationDirectories)
   {
-    this.beanLocator = checkNotNull(beanLocator);
     this.eventBus = checkNotNull(eventBus);
     this.configurationSource = checkNotNull(configurationSource);
     this.globalRemoteConnectionSettingsProvider = checkNotNull(globalRemoteConnectionSettingsProvider);
     this.globalRemoteProxySettingsProvider = checkNotNull(globalRemoteProxySettingsProvider);
     this.configurationValidator = checkNotNull(configurationValidator);
-    this.uberClassLoader = checkNotNull(uberClassLoader);
     this.applicationDirectories = checkNotNull(applicationDirectories);
     this.configurationDirectory = applicationDirectories.getWorkDirectory("etc");
   }
