@@ -12,31 +12,21 @@
  */
 package org.sonatype.nexus.coreui
 
-import java.security.cert.CertPathBuilderException
-
 import javax.annotation.Nullable
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
-import javax.net.ssl.SSLPeerUnverifiedException
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
-import org.sonatype.micromailer.Address
-import org.sonatype.nexus.configuration.ApplicationConfiguration
-import org.sonatype.nexus.email.EmailerException
-import org.sonatype.nexus.email.NexusEmailer
-import org.sonatype.nexus.email.SmtpConfiguration
-import org.sonatype.nexus.email.SmtpSettingsValidator
+import org.sonatype.nexus.email.EmailManager
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
-import org.sonatype.nexus.extdirect.model.Password
 import org.sonatype.nexus.rapture.TrustStoreKeys
 import org.sonatype.nexus.validation.Validate
 
 import com.softwarementors.extjs.djn.config.annotations.DirectAction
 import com.softwarementors.extjs.djn.config.annotations.DirectMethod
-import groovy.transform.PackageScope
 import org.apache.shiro.authz.annotation.RequiresAuthentication
 import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.hibernate.validator.constraints.Email
@@ -50,23 +40,15 @@ import org.hibernate.validator.constraints.Email
 @Singleton
 @DirectAction(action = 'coreui_SmtpSettings')
 class SmtpSettingsComponent
-extends DirectComponentSupport
+    extends DirectComponentSupport
 {
-
   private static final TRUST_STORE_TYPE = 'smtp'
 
   private static final TRUST_STORE_ID = 'global'
 
   @Inject
-  NexusEmailer emailer
+  EmailManager emailManager
 
-  @Inject
-  SmtpSettingsValidator smtpSettingsValidator
-
-  @Inject
-  ApplicationConfiguration nexusConfiguration
-
-  @Inject
   @Nullable
   TrustStoreKeys trustStoreKeys
 
@@ -78,13 +60,13 @@ extends DirectComponentSupport
   @RequiresPermissions('nexus:settings:read')
   SmtpSettingsXO read() {
     return new SmtpSettingsXO(
-        systemEmail: emailer.SMTPSystemEmailAddress.mailAddress,
-        host: emailer.SMTPHostname,
-        port: emailer.SMTPPort,
-        username: emailer.SMTPUsername,
-        password: Password.fakePassword(),
-        connectionType: getConnectionType(emailer),
-        useTrustStore: trustStoreKeys?.isEnabled(TRUST_STORE_TYPE, TRUST_STORE_ID)
+//        systemEmail: emailer.SMTPSystemEmailAddress.mailAddress,
+//        host: emailer.SMTPHostname,
+//        port: emailer.SMTPPort,
+//        username: emailer.SMTPUsername,
+//        password: Password.fakePassword(),
+//        connectionType: getConnectionType(emailer),
+//        useTrustStore: trustStoreKeys?.isEnabled(TRUST_STORE_TYPE, TRUST_STORE_ID)
     )
   }
 
@@ -96,18 +78,25 @@ extends DirectComponentSupport
   @RequiresAuthentication
   @RequiresPermissions('nexus:settings:update')
   @Validate
-  SmtpSettingsXO update(final @NotNull(message = '[smtpSettingsXO] may not be null') @Valid SmtpSettingsXO smtpSettingsXO) {
-    emailer.with {
-      SMTPHostname = smtpSettingsXO.host ?: ''
-      if (smtpSettingsXO.port) SMTPPort = smtpSettingsXO.port
-      SMTPUsername = smtpSettingsXO.username
-      if (smtpSettingsXO.password?.valid) SMTPPassword = smtpSettingsXO.password.value
-      SMTPSystemEmailAddress = new Address(smtpSettingsXO.systemEmail?.trim())
-      SMTPSslEnabled = smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.SSL
-      SMTPTlsEnabled = smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.TLS
-    }
-    nexusConfiguration.saveConfiguration()
-    trustStoreKeys?.setEnabled(TRUST_STORE_TYPE, TRUST_STORE_ID, smtpSettingsXO.useTrustStore)
+  SmtpSettingsXO update(
+      final @NotNull(message = '[smtpSettingsXO] may not be null') @Valid SmtpSettingsXO smtpSettingsXO)
+  {
+//    emailer.with {
+//      SMTPHostname = smtpSettingsXO.host ?: ''
+//      if (smtpSettingsXO.port) {
+//        SMTPPort = smtpSettingsXO.port
+//      }
+//      SMTPUsername = smtpSettingsXO.username
+//      if (smtpSettingsXO.password?.valid) {
+//        SMTPPassword = smtpSettingsXO.password.value
+//      }
+//      SMTPSystemEmailAddress = new Address(smtpSettingsXO.systemEmail?.trim())
+//      SMTPSslEnabled = smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.SSL
+//      SMTPTlsEnabled = smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.TLS
+//    }
+//    nexusConfiguration.saveConfiguration()
+//    trustStoreKeys?.setEnabled(TRUST_STORE_TYPE, TRUST_STORE_ID, smtpSettingsXO.useTrustStore)
+
     return read()
   }
 
@@ -120,58 +109,59 @@ extends DirectComponentSupport
   @RequiresAuthentication
   @RequiresPermissions('nexus:settings:update')
   @Validate
-  void verifyConnection(final @NotNull(message = '[smtpSettingsXO] may not be null') @Valid SmtpSettingsXO smtpSettingsXO,
-                        final @NotNull(message = '[email] may not be null') @Email String email)
+  void verifyConnection(
+      final @NotNull(message = '[smtpSettingsXO] may not be null') @Valid SmtpSettingsXO smtpSettingsXO,
+      final @NotNull(message = '[email] may not be null') @Email String email)
   {
-    try {
-      smtpSettingsValidator.sendSmtpConfigurationTest(
-          new SmtpConfiguration(
-              hostname: smtpSettingsXO.host,
-              port: smtpSettingsXO.port,
-              username: smtpSettingsXO.username,
-              password: smtpSettingsXO.password?.valid ? smtpSettingsXO.password : emailer.SMTPPassword,
-              sslEnabled: smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.SSL,
-              tlsEnabled: smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.TLS,
-              systemEmailAddress: smtpSettingsXO.systemEmail
-          ),
-          email
-      )
-    }
-    catch (EmailerException e) {
-      throw new Exception(
-          'Failed to send validation e-mail: ' + parseReason(e)
-      )
-    }
+//    try {
+//      smtpSettingsValidator.sendSmtpConfigurationTest(
+//          new SmtpConfiguration(
+//              hostname: smtpSettingsXO.host,
+//              port: smtpSettingsXO.port,
+//              username: smtpSettingsXO.username,
+//              password: smtpSettingsXO.password?.valid ? smtpSettingsXO.password : emailer.SMTPPassword,
+//              sslEnabled: smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.SSL,
+//              tlsEnabled: smtpSettingsXO.connectionType == SmtpSettingsXO.ConnectionType.TLS,
+//              systemEmailAddress: smtpSettingsXO.systemEmail
+//          ),
+//          email
+//      )
+//    }
+//    catch (EmailerException e) {
+//      throw new Exception(
+//          'Failed to send validation e-mail: ' + parseReason(e)
+//      )
+//    }
   }
 
-  @PackageScope
-  SmtpSettingsXO.ConnectionType getConnectionType(final NexusEmailer emailer) {
-    if (emailer.SMTPSslEnabled) {
-      return SmtpSettingsXO.ConnectionType.SSL
-    }
-    if (emailer.SMTPTlsEnabled) {
-      return SmtpSettingsXO.ConnectionType.TLS
-    }
-    return SmtpSettingsXO.ConnectionType.PLAIN
-  }
-
-  @PackageScope
-  String parseReason(final EmailerException e) {
-    // first let's go to the top in exception chain
-    Throwable top = e
-    while (top.getCause() != null) {
-      top = top.getCause()
-    }
-    if (top instanceof SSLPeerUnverifiedException) {
-      return "Untrusted Remote"
-    }
-    if (top instanceof CertPathBuilderException) {
-      return "Untrusted Remote (${top.message})"
-    }
-    if (top instanceof UnknownHostException) {
-      return "Unknown Host (${top.message})"
-    }
-    return top.getMessage()
-  }
+//  @PackageScope
+//  SmtpSettingsXO.ConnectionType getConnectionType(final NexusEmailer emailer) {
+//    if (emailer.SMTPSslEnabled) {
+//      return SmtpSettingsXO.ConnectionType.SSL
+//    }
+//    if (emailer.SMTPTlsEnabled) {
+//      return SmtpSettingsXO.ConnectionType.TLS
+//    }
+//    return SmtpSettingsXO.ConnectionType.PLAIN
+//  }
+//
+//  @PackageScope
+//  String parseReason(final EmailerException e) {
+//    // first let's go to the top in exception chain
+//    Throwable top = e
+//    while (top.getCause() != null) {
+//      top = top.getCause()
+//    }
+//    if (top instanceof SSLPeerUnverifiedException) {
+//      return "Untrusted Remote"
+//    }
+//    if (top instanceof CertPathBuilderException) {
+//      return "Untrusted Remote (${top.message})"
+//    }
+//    if (top instanceof UnknownHostException) {
+//      return "Unknown Host (${top.message})"
+//    }
+//    return top.getMessage()
+//  }
 
 }

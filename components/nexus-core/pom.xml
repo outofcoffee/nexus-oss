@@ -219,8 +219,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-mailer</artifactId>
+      <groupId>org.sonatype.nexus</groupId>
+      <artifactId>nexus-email</artifactId>
     </dependency>
 
     <!-- FIXME: unused in core, but was in core and breaks plugins using it -->

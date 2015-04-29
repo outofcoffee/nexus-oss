@@ -13,7 +13,7 @@
 package org.sonatype.nexus.email;
 
 /**
- * SMTP-protocol.
+ * SMTP-protocol constants.
  *
  * @since 3.0
  */

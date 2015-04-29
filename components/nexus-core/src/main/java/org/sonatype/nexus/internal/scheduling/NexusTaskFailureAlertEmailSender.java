@@ -13,16 +13,11 @@
 
 package org.sonatype.nexus.internal.scheduling;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.micromailer.Address;
-import org.sonatype.micromailer.MailRequest;
-import org.sonatype.nexus.email.NexusEmailer;
+import org.sonatype.nexus.email.EmailManager;
 import org.sonatype.nexus.events.Asynchronous;
 import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.scheduling.Task;
@@ -44,57 +39,54 @@ public class NexusTaskFailureAlertEmailSender
     extends ComponentSupport
     implements EventSubscriber, Asynchronous
 {
-  private final NexusEmailer nexusEmailer;
+  private final EmailManager emailManager;
 
   @Inject
-  public NexusTaskFailureAlertEmailSender(final NexusEmailer nexusEmailer) {
-    this.nexusEmailer = checkNotNull(nexusEmailer);
+  public NexusTaskFailureAlertEmailSender(final EmailManager emailManager) {
+    this.emailManager = checkNotNull(emailManager);
   }
 
   /**
-   * Sends alert emails if necessary. {@inheritDoc}
+   * Sends alert emails if necessary.
    */
   @Subscribe
   @AllowConcurrentEvents
-  public void inspect(final TaskEventStoppedFailed failureEvent) {
-    final TaskInfo failedTask = failureEvent.getTaskInfo();
-    if (failedTask == null || failedTask.getConfiguration().getAlertEmail() == null) {
+  public void on(final TaskEventStoppedFailed event) {
+    final TaskInfo taskInfo = event.getTaskInfo();
+    if (taskInfo == null || taskInfo.getConfiguration().getAlertEmail() == null) {
       return;
     }
-    sendNexusTaskFailure(
-        failedTask.getConfiguration().getAlertEmail(),
-        failedTask.getId(),
-        failedTask.getName(),
-        failureEvent.getFailureCause()
-    );
+
+    // FIXME: Need to sort out changes to sisu-mailer or replacement
+    //sendEmail(
+    //    taskInfo.getConfiguration().getAlertEmail(),
+    //    taskInfo.getId(),
+    //    taskInfo.getName(),
+    //    event.getFailureCause()
+    //);
   }
 
-  private void sendNexusTaskFailure(final String email,
-                                    final String taskId,
-                                    final String taskName,
-                                    final Throwable cause)
-  {
-    final StringBuilder body = new StringBuilder();
-
-    if (taskId != null) {
-      body.append(String.format("Task ID: %s", taskId)).append("\n");
-    }
-
-    if (taskName != null) {
-      body.append(String.format("Task Name: %s", taskName)).append("\n");
-    }
-
-    if (cause != null) {
-      final StringWriter sw = new StringWriter();
-      final PrintWriter pw = new PrintWriter(sw);
-      cause.printStackTrace(pw);
-      body.append("Stack trace: ").append("\n").append(sw.toString());
-    }
-
-    MailRequest request = nexusEmailer.getDefaultMailRequest("Nexus: Task execution failure", body.toString());
-
-    request.getToAddresses().add(new Address(email));
-
-    nexusEmailer.sendMail(request);
-  }
+  //private void sendEmail(final String address, final String taskId, final String taskName, final Throwable cause) {
+  //  // FIXME: This should ideally render a user-configurable template
+  //
+  //  StringWriter buff = new StringWriter();
+  //  PrintWriter out = new PrintWriter(buff);
+  //
+  //  if (taskId != null) {
+  //    out.format("Task ID: %s%n", taskId);
+  //  }
+  //
+  //  if (taskName != null) {
+  //    out.format("Task Name: %s%n", taskName);
+  //  }
+  //
+  //  if (cause != null) {
+  //    out.println("Stack-trace:");
+  //    cause.printStackTrace(out);
+  //  }
+  //
+  //  MailRequest request = emailManager.createRequest("Task execution failure", buff.toString());
+  //  request.getToAddresses().add(new Address(address));
+  //  emailManager.send(request);
+  //}
 }

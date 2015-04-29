@@ -12,9 +12,6 @@
  */
 package org.sonatype.nexus.email;
 
-import org.sonatype.micromailer.MailRequest;
-import org.sonatype.micromailer.MailRequestStatus;
-
 /**
  * Email manager.
  *
@@ -32,18 +29,18 @@ public interface EmailManager
    */
   void setConfiguration(EmailConfiguration configuration);
 
-  /**
-   * Create default email request.
-   */
-  MailRequest createRequest(String subject, String body);
-
-  /**
-   * Send email.
-   */
-  MailRequestStatus send(MailRequest request);
-
-  /**
-   * Send verification email.
-   */
-  boolean sendVerification(SmtpServerConfiguration configuration, String address);
+  ///**
+  // * Create default email request.
+  // */
+  //MailRequest createRequest(String subject, String body);
+  //
+  ///**
+  // * Send email.
+  // */
+  //MailRequestStatus send(MailRequest request);
+  //
+  ///**
+  // * Send verification email.
+  // */
+  //boolean sendVerification(SmtpServerConfiguration configuration, String address);
 }
