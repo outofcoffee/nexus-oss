@@ -18,12 +18,12 @@ import javax.inject.Singleton
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
-import org.sonatype.nexus.configuration.GlobalRestApiSettings
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
 import org.sonatype.nexus.validation.ValidationMessage
 import org.sonatype.nexus.validation.ValidationResponse
 import org.sonatype.nexus.validation.ValidationResponseException
+import org.sonatype.nexus.web.BaseUrlManager
 
 import com.softwarementors.extjs.djn.config.annotations.DirectAction
 import com.softwarementors.extjs.djn.config.annotations.DirectMethod
@@ -44,23 +44,21 @@ class GeneralSettingsComponent
     extends DirectComponentSupport
 {
   @Inject
-  GlobalRestApiSettings globalRestApiSettings
+  BaseUrlManager baseUrlManager
 
   /**
    * Retrieves general system settings.
-   * @return general system settings
    */
   @DirectMethod
   @RequiresPermissions('nexus:settings:read')
   GeneralSettingsXO read() {
     return new GeneralSettingsXO(
-        baseUrl: globalRestApiSettings.baseUrl
+        baseUrl: baseUrlManager.url
     )
   }
 
   /**
    * Updates general system settings.
-   * @return updated general system settings
    */
   @DirectMethod
   @RequiresAuthentication
@@ -69,12 +67,14 @@ class GeneralSettingsComponent
       final @NotNull(message = '[generalSettings] may not be null') @Valid GeneralSettingsXO generalSettingsXO)
   {
     validate(generalSettingsXO)
-    globalRestApiSettings.baseUrl = generalSettingsXO.baseUrl
+    baseUrlManager.url = generalSettingsXO.baseUrl
     return read()
   }
 
+  // FIXME: use bean-validation constraint
+
   @PackageScope
-  validate(final GeneralSettingsXO generalSettingsXO) {
+  def validate(final GeneralSettingsXO generalSettingsXO) {
     def validations = new ValidationResponse()
     if (!StringUtils.isBlank(generalSettingsXO.baseUrl)) {
       try {
@@ -88,5 +88,4 @@ class GeneralSettingsComponent
       throw new ValidationResponseException(validations)
     }
   }
-
 }

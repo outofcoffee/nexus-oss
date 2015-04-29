@@ -10,7 +10,7 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.configuration;
+package org.sonatype.nexus.security;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -18,9 +18,10 @@ import org.sonatype.sisu.goodies.crypto.internal.CryptoHelperImpl;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
 import com.google.common.base.Throwables;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
-import static org.hamcrest.MatcherAssert.assertThat;
+
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -50,7 +51,7 @@ public class PasswordHelperTest
         public void run() {
           for (int i = 0; i < 20; i++) {
             try {
-              assertThat(helper.decrypt(helper.encrypt(password)), is(password));
+              MatcherAssert.assertThat(helper.decrypt(helper.encrypt(password)), is(password));
             }
             catch (Throwable e) {
               error.compareAndSet(null, e);
