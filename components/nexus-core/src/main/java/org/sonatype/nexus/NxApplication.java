@@ -17,8 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.configuration.ApplicationConfiguration;
-import org.sonatype.nexus.configuration.ConfigurationChangeEvent;
 import org.sonatype.nexus.events.EventSubscriberHost;
 import org.sonatype.nexus.events.NexusInitializedEvent;
 import org.sonatype.nexus.events.NexusStartedEvent;
@@ -30,7 +28,6 @@ import org.sonatype.sisu.goodies.eventbus.EventBus;
 import org.sonatype.sisu.goodies.lifecycle.LifecycleSupport;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Throwables;
 import org.eclipse.sisu.bean.BeanManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -49,8 +46,6 @@ public class NxApplication
 
   private final ApplicationStatusSource applicationStatusSource;
 
-  private final ApplicationConfiguration applicationConfiguration;
-
   private final SecuritySystem securitySystem;
 
   private final EventSubscriberHost eventSubscriberHost;
@@ -61,7 +56,6 @@ public class NxApplication
 
   @Inject
   public NxApplication(final EventBus eventBus,
-                       final ApplicationConfiguration applicationConfiguration,
                        final ApplicationStatusSource applicationStatusSource,
                        final SecuritySystem securitySystem,
                        final EventSubscriberHost eventSubscriberHost,
@@ -70,7 +64,6 @@ public class NxApplication
   {
     this.eventBus = checkNotNull(eventBus);
     this.applicationStatusSource = checkNotNull(applicationStatusSource);
-    this.applicationConfiguration = checkNotNull(applicationConfiguration);
     this.securitySystem = checkNotNull(securitySystem);
     this.eventSubscriberHost = checkNotNull(eventSubscriberHost);
     this.orientBootstrap = checkNotNull(orientBootstrap);
@@ -113,27 +106,13 @@ public class NxApplication
     eventBus.post(new NexusInitializedEvent(this));
 
     applicationStatusSource.getSystemStatus().setState(SystemState.STARTING);
-    try {
-      // force configuration load, validation and probable upgrade if needed
-      // applies configuration and notifies listeners
-      applicationConfiguration.loadConfiguration(true);
 
-      // essential services
-      securitySystem.start();
+    securitySystem.start();
 
-      // notify about start other components participating in configuration framework
-      eventBus.post(new ConfigurationChangeEvent(applicationConfiguration, null, null));
+    applicationStatusSource.getSystemStatus().setState(SystemState.STARTED);
 
-      applicationStatusSource.getSystemStatus().setState(SystemState.STARTED);
-
-      log.info("Started {}", getNexusNameForLogs());
-      eventBus.post(new NexusStartedEvent(this));
-    }
-    catch (Exception e) {
-      applicationStatusSource.getSystemStatus().setState(SystemState.BROKEN);
-      log.error("Failed start application", e);
-      throw Throwables.propagate(e);
-    }
+    log.info("Started {}", getNexusNameForLogs());
+    eventBus.post(new NexusStartedEvent(this));
   }
 
   @Override

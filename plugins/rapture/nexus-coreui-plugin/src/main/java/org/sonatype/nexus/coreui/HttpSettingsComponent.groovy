@@ -18,7 +18,6 @@ import javax.inject.Singleton
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
-import org.sonatype.nexus.configuration.ApplicationConfiguration
 import org.sonatype.nexus.configuration.GlobalRemoteConnectionSettings
 import org.sonatype.nexus.configuration.GlobalRemoteProxySettings
 import org.sonatype.nexus.extdirect.DirectComponent
@@ -55,9 +54,6 @@ extends DirectComponentSupport
 
   @Inject
   GlobalRemoteProxySettings proxySettings
-
-  @Inject
-  ApplicationConfiguration nexusConfiguration
 
   /**
    * Retrieves HTTP system settings
@@ -125,7 +121,6 @@ extends DirectComponentSupport
         httpSettingsXO.httpsAuthNtlmHost, httpSettingsXO.httpsAuthNtlmDomain
     )
 
-    nexusConfiguration.saveConfiguration()
     return read()
   }
 

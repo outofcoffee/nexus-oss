@@ -18,7 +18,6 @@ import javax.inject.Singleton
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
-import org.sonatype.nexus.configuration.ApplicationConfiguration
 import org.sonatype.nexus.configuration.GlobalRestApiSettings
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
@@ -42,14 +41,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions
 @Singleton
 @DirectAction(action = 'coreui_GeneralSettings')
 class GeneralSettingsComponent
-extends DirectComponentSupport
+    extends DirectComponentSupport
 {
-
   @Inject
   GlobalRestApiSettings globalRestApiSettings
-
-  @Inject
-  ApplicationConfiguration nexusConfiguration
 
   /**
    * Retrieves general system settings.
@@ -70,10 +65,11 @@ extends DirectComponentSupport
   @DirectMethod
   @RequiresAuthentication
   @RequiresPermissions('nexus:settings:update')
-  GeneralSettingsXO update(final @NotNull(message = '[generalSettings] may not be null') @Valid GeneralSettingsXO generalSettingsXO) {
+  GeneralSettingsXO update(
+      final @NotNull(message = '[generalSettings] may not be null') @Valid GeneralSettingsXO generalSettingsXO)
+  {
     validate(generalSettingsXO)
     globalRestApiSettings.baseUrl = generalSettingsXO.baseUrl
-    nexusConfiguration.saveConfiguration()
     return read()
   }
 

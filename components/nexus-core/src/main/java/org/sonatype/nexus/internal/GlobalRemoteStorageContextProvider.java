@@ -12,15 +12,12 @@
  */
 package org.sonatype.nexus.internal;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.configuration.ApplicationConfiguration;
+import org.sonatype.nexus.proxy.storage.remote.DefaultRemoteStorageContext;
 import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Global {@link RemoteStorageContext} provider.
@@ -32,15 +29,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class GlobalRemoteStorageContextProvider
   implements Provider<RemoteStorageContext>
 {
-  private final ApplicationConfiguration configuration;
-
-  @Inject
-  public GlobalRemoteStorageContextProvider(final ApplicationConfiguration configuration) {
-    this.configuration = checkNotNull(configuration);
-  }
-
   @Override
   public RemoteStorageContext get() {
-    return configuration.getGlobalRemoteStorageContext();
+    return new DefaultRemoteStorageContext();
   }
 }

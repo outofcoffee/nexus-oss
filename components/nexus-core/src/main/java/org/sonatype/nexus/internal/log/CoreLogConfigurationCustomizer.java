@@ -57,9 +57,7 @@ public class CoreLogConfigurationCustomizer
     configuration.setLoggerLevel("org.sonatype.nexus.jmx", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.internal.log", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.internal.httpclient", LoggerLevel.DEFAULT);
-    configuration.setLoggerLevel("org.sonatype.nexus.configuration", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.plugins", LoggerLevel.DEFAULT);
-    configuration.setLoggerLevel("org.sonatype.nexus.proxy", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.tasks", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.threads", LoggerLevel.DEFAULT);
   }

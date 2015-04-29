@@ -70,7 +70,7 @@ public class BaseUrlDetector
   @Nullable
   public String detect() {
     // force base-url always wins if set
-    if (settings.isEnabled() && settings.isForceBaseUrl() && !Strings.isNullOrEmpty(settings.getBaseUrl())) {
+    if (settings.isForceBaseUrl() && !Strings.isNullOrEmpty(settings.getBaseUrl())) {
       return settings.getBaseUrl();
     }
 

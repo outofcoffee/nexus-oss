@@ -14,9 +14,6 @@ package org.sonatype.nexus.configuration;
 
 import org.sonatype.nexus.proxy.repository.RemoteProxySettings;
 
-/**
- * @since 2.6
- */
 public interface GlobalRemoteProxySettings
     extends RemoteProxySettings
 {

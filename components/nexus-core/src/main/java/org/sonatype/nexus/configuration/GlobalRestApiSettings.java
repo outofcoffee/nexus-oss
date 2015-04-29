@@ -12,13 +12,8 @@
  */
 package org.sonatype.nexus.configuration;
 
-
 public interface GlobalRestApiSettings
 {
-  void disable();
-
-  boolean isEnabled();
-
   void setForceBaseUrl(boolean forceBaseUrl);
 
   boolean isForceBaseUrl();
