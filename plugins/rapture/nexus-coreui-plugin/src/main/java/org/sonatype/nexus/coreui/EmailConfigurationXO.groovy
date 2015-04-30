@@ -10,27 +10,48 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.email;
+package org.sonatype.nexus.coreui
+
+import org.sonatype.nexus.validation.constraint.PortNumber
+
+import groovy.transform.ToString
+import org.hibernate.validator.constraints.Email
+import org.hibernate.validator.constraints.NotBlank
 
 /**
- * SMTP-protocol constants.
+ * Email configuration exchange object.
  *
  * @since 3.0
  */
-public enum SmtpProtocol
+@ToString(includePackage = false, includeNames = true)
+class EmailConfigurationXO
 {
-  /**
-   * Plain SMTP.
-   */
-  PLAIN,
+  boolean enabled
 
-  /**
-   * Secure SMTP with SSL.
-   */
-  SSL,
+  @NotBlank
+  String host
 
-  /**
-   * Secure SMTP with TLS.
-   */
-  TLS
+  @PortNumber
+  Integer port
+
+  String username
+
+  String password
+
+  @Email
+  @NotBlank
+  String fromAddress
+
+  String subjectPrefix
+
+  // TODO: SSL/TLS options:
+  // starttls enabled
+  // starttls required
+  // ssl on connect
+  // ssl check server identity
+  // use nexus trust-store
+
+  // TODO: Advanced configuration:
+  // socket connection timeout
+  // socket timeout
 }

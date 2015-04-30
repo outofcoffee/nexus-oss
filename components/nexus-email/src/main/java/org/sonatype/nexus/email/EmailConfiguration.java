@@ -13,6 +13,7 @@
 package org.sonatype.nexus.email;
 
 import org.sonatype.nexus.common.entity.Entity;
+import org.sonatype.nexus.common.text.Strings2;
 
 import com.google.common.base.Throwables;
 
@@ -27,7 +28,17 @@ public class EmailConfiguration
 {
   private boolean enabled;
 
-  private SmtpServerConfiguration smtpServer;
+  private String host;
+
+  private int port;
+
+  private String username;
+
+  private String password;
+
+  private String fromAddress;
+
+  private String subjectPrefix;
 
   public boolean isEnabled() {
     return enabled;
@@ -37,12 +48,52 @@ public class EmailConfiguration
     this.enabled = enabled;
   }
 
-  public SmtpServerConfiguration getSmtpServer() {
-    return smtpServer;
+  public String getHost() {
+    return host;
   }
 
-  public void setSmtpServer(final SmtpServerConfiguration smtpServer) {
-    this.smtpServer = smtpServer;
+  public void setHost(final String host) {
+    this.host = host;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public void setPort(final int port) {
+    this.port = port;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(final String username) {
+    this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(final String password) {
+    this.password = password;
+  }
+
+  public String getFromAddress() {
+    return fromAddress;
+  }
+
+  public void setFromAddress(final String fromAddress) {
+    this.fromAddress = fromAddress;
+  }
+
+  public String getSubjectPrefix() {
+    return subjectPrefix;
+  }
+
+  public void setSubjectPrefix(final String subjectPrefix) {
+    this.subjectPrefix = subjectPrefix;
   }
 
   public EmailConfiguration copy() {
@@ -58,7 +109,12 @@ public class EmailConfiguration
   public String toString() {
     return getClass().getSimpleName() + "{" +
         "enabled=" + enabled +
-        ", smtpServer=" + smtpServer +
+        ", host='" + host + '\'' +
+        ", port=" + port +
+        ", username='" + username + '\'' +
+        ", password='" + Strings2.mask(password) + '\'' +
+        ", fromAddress='" + fromAddress + '\'' +
+        ", subjectPrefix='" + subjectPrefix + '\'' +
         '}';
   }
 }

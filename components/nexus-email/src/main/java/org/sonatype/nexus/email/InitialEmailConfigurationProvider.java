@@ -30,6 +30,9 @@ public class InitialEmailConfigurationProvider
   public EmailConfiguration get() {
     EmailConfiguration configuration = new EmailConfiguration();
     configuration.setEnabled(false);
+    configuration.setHost("localhost");
+    configuration.setPort(25);
+    configuration.setFromAddress("nexus@example.org");
     return configuration;
   }
 }

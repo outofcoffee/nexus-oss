@@ -20,7 +20,6 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.email.EmailConfiguration;
 import org.sonatype.nexus.email.EmailConfigurationStore;
 import org.sonatype.nexus.email.EmailManager;
-import org.sonatype.nexus.email.SmtpServerConfiguration;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.common.Mutex;
 
@@ -123,27 +122,19 @@ public class EmailManagerImpl
   /**
    * Apply server configuration to email.
    */
-  private Email apply(final SmtpServerConfiguration server, final Email mail) throws EmailException {
-    switch (server.getProtocol()) {
-      case SSL:
-        mail.setSSLOnConnect(true);
-        break;
+  private Email apply(final EmailConfiguration configuration, final Email mail) throws EmailException {
+    mail.setHostName(configuration.getHost());
+    mail.setSmtpPort(configuration.getPort());
 
-      case TLS:
-        mail.setStartTLSEnabled(true);
-        break;
-    }
-
-    mail.setHostName(server.getHost());
-    mail.setSmtpPort(server.getPort());
+    // TODO: ssl/tls configuration
 
     // default from address
     if (mail.getFromAddress() == null) {
-      mail.setFrom(server.getFromAddress());
+      mail.setFrom(configuration.getFromAddress());
     }
 
     // apply subject prefix if configured
-    String subjectPrefix = server.getSubjectPrefix();
+    String subjectPrefix = configuration.getSubjectPrefix();
     if (subjectPrefix != null) {
       String subject = mail.getSubject();
       mail.setSubject(String.format("%s %s", subjectPrefix, subject));
@@ -158,21 +149,21 @@ public class EmailManagerImpl
 
     EmailConfiguration model = getConfigurationInternal();
     if (model.isEnabled()) {
-      Email prepared = apply(model.getSmtpServer(), mail);
+      Email prepared = apply(model, mail);
       prepared.send();
     }
   }
 
   @Override
-  public void sendVerification(final SmtpServerConfiguration server, final String address) throws EmailException {
-    checkNotNull(server);
+  public void sendVerification(final EmailConfiguration configuration, final String address) throws EmailException {
+    checkNotNull(configuration);
     checkNotNull(address);
 
     Email mail = new SimpleEmail();
     mail.setSubject("Email configuration verification");
     mail.addTo(address);
     mail.setMsg("Verification successful");
-    mail = apply(server, mail);
+    mail = apply(configuration, mail);
     mail.send();
   }
 }

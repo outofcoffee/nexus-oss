@@ -40,5 +40,5 @@ public interface EmailManager
   /**
    * Send verification email to given address.
    */
-  void sendVerification(SmtpServerConfiguration server, String address) throws EmailException;
+  void sendVerification(EmailConfiguration configuration, String address) throws EmailException;
 }
