@@ -17,7 +17,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.common.stateguard.Guarded;
 import org.sonatype.nexus.email.EmailConfiguration;
 import org.sonatype.nexus.email.EmailConfigurationStore;
 import org.sonatype.nexus.email.EmailManager;
@@ -30,7 +29,6 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
 
 /**
  * Default {@link EmailManager}.
@@ -100,7 +98,6 @@ public class EmailManagerImpl
   }
 
   @Override
-  @Guarded(by = STARTED)
   public EmailConfiguration getConfiguration() {
     return getConfigurationInternal().copy();
   }
