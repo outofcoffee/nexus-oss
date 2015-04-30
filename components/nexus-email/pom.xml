@@ -33,11 +33,10 @@
       <artifactId>nexus-common</artifactId>
     </dependency>
 
-    <!-- FIXME: Need to sort out changes to sisu-mailer or replacement -->
-    <!--<dependency>-->
-      <!--<groupId>org.sonatype.sisu</groupId>-->
-      <!--<artifactId>sisu-mailer</artifactId>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-email</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.sonatype.sisu.goodies</groupId>

@@ -18,11 +18,16 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.common.stateguard.Guarded;
-import org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport;
 import org.sonatype.nexus.email.EmailConfiguration;
 import org.sonatype.nexus.email.EmailConfigurationStore;
 import org.sonatype.nexus.email.EmailManager;
+import org.sonatype.nexus.email.SmtpServerConfiguration;
+import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.common.Mutex;
+
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
@@ -35,8 +40,8 @@ import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.St
 @Named
 @Singleton
 public class EmailManagerImpl
-  extends StateGuardLifecycleSupport
-  implements EmailManager
+    extends ComponentSupport
+    implements EmailManager
 {
   private final EmailConfigurationStore store;
 
@@ -53,8 +58,6 @@ public class EmailManagerImpl
     this.store = checkNotNull(store);
     this.defaults = checkNotNull(defaults);
   }
-
-  // FIXME: Need to sort out changes to sisu-mailer or replacement
 
   //
   // Configuration
@@ -103,7 +106,6 @@ public class EmailManagerImpl
   }
 
   @Override
-  @Guarded(by = STARTED)
   public void setConfiguration(final EmailConfiguration configuration) {
     checkNotNull(configuration);
 
@@ -117,94 +119,63 @@ public class EmailManagerImpl
     }
   }
 
-  // FIXME: Need to sort out changes to sisu-mailer or replacement
-
   //
-  // Mail Sending
+  // Mail sending
   //
 
-  //@Override
-  //@Guarded(by = STARTED)
-  //public MailRequest createRequest(final String subject, final String body) {
-  //  checkNotNull(subject);
-  //  checkNotNull(body);
-  //
-  //  String mailId = "NX" + System.currentTimeMillis();
-  //  MailRequest request = new MailRequest(mailId, DefaultMailType.DEFAULT_TYPE_ID);
-  //
-  //  // TODO: Add subject-prefix if configured
-  //  request.getBodyContext().put(MailType.SUBJECT_KEY, subject);
-  //
-  //  request.getBodyContext().put(MailType.BODY_KEY, body);
-  //
-  //  // TODO: Add from-address, or do this on send?
-  //
-  //  // TODO: Add custom headers?
-  //
-  //  return request;
-  //}
-  //
-  //@Override
-  //@Guarded(by = STARTED)
-  //public MailRequestStatus send(final MailRequest request) {
-  //  checkNotNull(request);
-  //
-  //  EmailConfiguration model = getConfigurationInternal();
-  //  MailRequestStatus status;
-  //  if (model.isEnabled()) {
-  //    log.debug("Sending email: {}", request);
-  //    status = emailer.sendMail(request);
-  //  }
-  //  else {
-  //    // generate synthetic status if disabled
-  //    status = new MailRequestStatus(request);
-  //    status.setErrorCause(new Exception("Email sending disabled"));
-  //  }
-  //  return status;
-  //}
-  //
-  //@Override
-  //@Guarded(by = STARTED)
-  //public boolean sendVerification(final SmtpServerConfiguration configuration, final String address) {
-  //  checkNotNull(configuration);
-  //  checkNotNull(address);
-  //
-  //  // TODO: construct fresh emailer and send verification email
-  //
-  //  return false;
-  //}
+  /**
+   * Apply server configuration to email.
+   */
+  private Email apply(final SmtpServerConfiguration server, final Email mail) throws EmailException {
+    switch (server.getProtocol()) {
+      case SSL:
+        mail.setSSLOnConnect(true);
+        break;
 
-  // HACK: For ref this is what previous impl did... but this pollutes the default emailer configuration
+      case TLS:
+        mail.setStartTLSEnabled(true);
+        break;
+    }
 
-  //public boolean sendSmtpConfigurationTest(final SmtpConfiguration config, final String email) throws EmailerException {
-  //final EmailerConfiguration emailerConfiguration = new NexusEmailerConfiguration(customizers);
-  //emailerConfiguration.setDebug(config.isDebugMode());
-  //emailerConfiguration.setMailHost(config.getHostname());
-  //emailerConfiguration.setMailPort(config.getPort());
-  //emailerConfiguration.setUsername(config.getUsername());
-  //emailerConfiguration.setPassword(config.getPassword());
-  //emailerConfiguration.setSsl(config.isSslEnabled());
-  //emailerConfiguration.setTls(config.isTlsEnabled());
-  //
-  //emailer.configure(emailerConfiguration);
-  //
-  //MailRequest request = new MailRequest(NEXUS_MAIL_ID, DefaultMailType.DEFAULT_TYPE_ID);
-  //request.setFrom(new Address(config.getSystemEmailAddress(), "Nexus Repository Manager"));
-  //request.getToAddresses().add(new Address(email));
-  //request.getBodyContext().put(DefaultMailType.SUBJECT_KEY, "Nexus: SMTP Configuration validation.");
-  //
-  //StringBuilder body = new StringBuilder();
-  //body.append("Your current SMTP configuration is valid!");
-  //
-  //request.getBodyContext().put(DefaultMailType.BODY_KEY, body.toString());
-  //
-  //MailRequestStatus status = emailer.sendSyncedMail(request);
-  //
-  //if (status.getErrorCause() != null) {
-  //  log.error("Unable to send e-mail", status.getErrorCause());
-  //  throw new EmailerException("Unable to send e-mail", status.getErrorCause());
-  //}
-  //
-  //return status.isSent();
-  //}
+    mail.setHostName(server.getHost());
+    mail.setSmtpPort(server.getPort());
+
+    // default from address
+    if (mail.getFromAddress() == null) {
+      mail.setFrom(server.getFromAddress());
+    }
+
+    // apply subject prefix if configured
+    String subjectPrefix = server.getSubjectPrefix();
+    if (subjectPrefix != null) {
+      String subject = mail.getSubject();
+      mail.setSubject(String.format("%s %s", subjectPrefix, subject));
+    }
+
+    return mail;
+  }
+
+  @Override
+  public void send(final Email mail) throws EmailException {
+    checkNotNull(mail);
+
+    EmailConfiguration model = getConfigurationInternal();
+    if (model.isEnabled()) {
+      Email prepared = apply(model.getSmtpServer(), mail);
+      prepared.send();
+    }
+  }
+
+  @Override
+  public void sendVerification(final SmtpServerConfiguration server, final String address) throws EmailException {
+    checkNotNull(server);
+    checkNotNull(address);
+
+    Email mail = new SimpleEmail();
+    mail.setSubject("Email configuration verification");
+    mail.addTo(address);
+    mail.setMsg("Verification successful");
+    mail = apply(server, mail);
+    mail.send();
+  }
 }

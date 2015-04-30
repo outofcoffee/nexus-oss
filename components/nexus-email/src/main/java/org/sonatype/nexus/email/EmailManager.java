@@ -12,6 +12,9 @@
  */
 package org.sonatype.nexus.email;
 
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+
 /**
  * Email manager.
  *
@@ -29,18 +32,13 @@ public interface EmailManager
    */
   void setConfiguration(EmailConfiguration configuration);
 
-  ///**
-  // * Create default email request.
-  // */
-  //MailRequest createRequest(String subject, String body);
-  //
-  ///**
-  // * Send email.
-  // */
-  //MailRequestStatus send(MailRequest request);
-  //
-  ///**
-  // * Send verification email.
-  // */
-  //boolean sendVerification(SmtpServerConfiguration configuration, String address);
+  /**
+   * Send an email.
+   */
+  void send(Email mail) throws EmailException;
+
+  /**
+   * Send verification email to given address.
+   */
+  void sendVerification(SmtpServerConfiguration server, String address) throws EmailException;
 }

@@ -13,6 +13,9 @@
 
 package org.sonatype.nexus.internal.scheduling;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -27,6 +30,8 @@ import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.SimpleEmail;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -57,36 +62,41 @@ public class NexusTaskFailureAlertEmailSender
       return;
     }
 
-    // FIXME: Need to sort out changes to sisu-mailer or replacement
-    //sendEmail(
-    //    taskInfo.getConfiguration().getAlertEmail(),
-    //    taskInfo.getId(),
-    //    taskInfo.getName(),
-    //    event.getFailureCause()
-    //);
+    try {
+      sendEmail(
+          taskInfo.getConfiguration().getAlertEmail(),
+          taskInfo.getId(),
+          taskInfo.getName(),
+          event.getFailureCause()
+      );
+    }
+    catch (Exception e) {
+      log.warn("Failed to send email", e);
+    }
   }
 
-  //private void sendEmail(final String address, final String taskId, final String taskName, final Throwable cause) {
-  //  // FIXME: This should ideally render a user-configurable template
-  //
-  //  StringWriter buff = new StringWriter();
-  //  PrintWriter out = new PrintWriter(buff);
-  //
-  //  if (taskId != null) {
-  //    out.format("Task ID: %s%n", taskId);
-  //  }
-  //
-  //  if (taskName != null) {
-  //    out.format("Task Name: %s%n", taskName);
-  //  }
-  //
-  //  if (cause != null) {
-  //    out.println("Stack-trace:");
-  //    cause.printStackTrace(out);
-  //  }
-  //
-  //  MailRequest request = emailManager.createRequest("Task execution failure", buff.toString());
-  //  request.getToAddresses().add(new Address(address));
-  //  emailManager.send(request);
-  //}
+  private void sendEmail(final String address, final String taskId, final String taskName, final Throwable cause)
+      throws Exception
+  {
+    Email mail = new SimpleEmail();
+    mail.setSubject("Task execution failure");
+    mail.addTo(address);
+
+    // FIXME: This should ideally render a user-configurable template
+    StringWriter buff = new StringWriter();
+    PrintWriter out = new PrintWriter(buff);
+    if (taskId != null) {
+      out.format("Task ID: %s%n", taskId);
+    }
+    if (taskName != null) {
+      out.format("Task Name: %s%n", taskName);
+    }
+    if (cause != null) {
+      out.println("Stack-trace:");
+      cause.printStackTrace(out);
+    }
+    mail.setMsg(buff.toString());
+
+    emailManager.send(mail);
+  }
 }
