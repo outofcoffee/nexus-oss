@@ -18,7 +18,6 @@ import java.security.cert.CertificateParsingException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -33,7 +32,6 @@ import com.sonatype.nexus.ssl.plugin.SSLPlugin;
 import com.sonatype.nexus.ssl.plugin.TrustStore;
 import com.sonatype.nexus.ssl.plugin.internal.CertificateRetriever;
 
-import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
 import org.sonatype.siesta.Resource;
 import org.sonatype.siesta.ValidationErrorsException;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
@@ -63,17 +61,13 @@ public class CertificatesResource
 {
   private final TrustStore trustStore;
 
-  private final Provider<RemoteStorageContext> remoteStorageContextProvider;
-
   private final CertificateRetriever certificateRetriever;
 
   @Inject
   public CertificatesResource(final CertificateRetriever certificateRetriever,
-                              final @Named("global") Provider<RemoteStorageContext> remoteStorageContextProvider,
                               final TrustStore trustStore)
   {
     this.certificateRetriever = checkNotNull(certificateRetriever);
-    this.remoteStorageContextProvider = checkNotNull(remoteStorageContextProvider);
     this.trustStore = checkNotNull(trustStore);
   }
 
@@ -85,7 +79,6 @@ public class CertificatesResource
                     final @QueryParam("protocolHint") String protocolHint)
       throws Exception
   {
-    RemoteStorageContext remoteStorageContext = remoteStorageContextProvider.get();
     String actualProtocolHint = protocolHint;
     String actualHost = host;
     String actualPort = port;
@@ -102,7 +95,7 @@ public class CertificatesResource
 
       Certificate[] chain;
       try {
-        chain = retrieveCertificates(remoteStorageContext, actualHost, actualPortInt, actualProtocolHint);
+        chain = retrieveCertificates(actualHost, actualPortInt, actualProtocolHint);
       }
       catch (Exception e) {
         String errorMessage = e.getMessage();
@@ -122,8 +115,7 @@ public class CertificatesResource
     throw new ValidationErrorsException("One of repositoryId or host/port should be specified");
   }
 
-  private Certificate[] retrieveCertificates(final RemoteStorageContext remoteStorageContext,
-                                             final String host,
+  private Certificate[] retrieveCertificates(final String host,
                                              final int port,
                                              final String protocolHint)
       throws Exception
@@ -144,11 +136,11 @@ public class CertificatesResource
               host, port, e.getClass().getName(), e.getMessage()
           );
         }
-        return certificateRetriever.retrieveCertificatesFromHttpsServer(host, port, remoteStorageContext);
+        return certificateRetriever.retrieveCertificatesFromHttpsServer(host, port);
       }
     }
     else if ("https".equalsIgnoreCase(protocolHint)) {
-      return certificateRetriever.retrieveCertificatesFromHttpsServer(host, port, remoteStorageContext);
+      return certificateRetriever.retrieveCertificatesFromHttpsServer(host, port);
     }
     return certificateRetriever.retrieveCertificates(host, port);
   }

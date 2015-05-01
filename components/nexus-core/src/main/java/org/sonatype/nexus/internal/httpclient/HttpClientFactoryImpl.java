@@ -25,13 +25,9 @@ import org.sonatype.nexus.common.property.SystemPropertiesHelper;
 import org.sonatype.nexus.events.NexusStoppedEvent;
 import org.sonatype.nexus.httpclient.HttpClientFactory;
 import org.sonatype.nexus.httpclient.SSLContextSelector;
-import org.sonatype.nexus.proxy.repository.NtlmRemoteAuthenticationSettings;
-import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
-import org.sonatype.nexus.proxy.storage.remote.httpclient.RemoteStorageContextCustomizer;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.Subscribe;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -40,8 +36,6 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.NoConnectionReuseStrategy;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -115,11 +109,7 @@ public class HttpClientFactoryImpl
    */
   private static final int CONNECTION_POOL_TIMEOUT_DEFAULT = (int) TimeUnit.SECONDS.toMillis(30);
 
-  // ==
-
   private final Provider<SystemStatus> systemStatusProvider;
-
-  private final Provider<RemoteStorageContext> globalRemoteStorageContextProvider;
 
   /**
    * The low level core event bus.
@@ -156,21 +146,12 @@ public class HttpClientFactoryImpl
    */
   private final EvictingThread evictingThread;
 
-  /**
-   * Used to install created {@link PoolingClientConnectionManager} into jmx.
-   */
-  private final PoolingClientConnectionManagerMBeanInstaller jmxInstaller;
-
   @Inject
   public HttpClientFactoryImpl(final Provider<SystemStatus> systemStatusProvider,
-                               final @Named("global") Provider<RemoteStorageContext> globalRemoteStorageContextProvider,
                                final EventBus eventBus,
-                               final PoolingClientConnectionManagerMBeanInstaller jmxInstaller,
                                final List<SSLContextSelector> selectors)
   {
     this.systemStatusProvider = checkNotNull(systemStatusProvider);
-    this.globalRemoteStorageContextProvider = checkNotNull(globalRemoteStorageContextProvider);
-    this.jmxInstaller = checkNotNull(jmxInstaller);
     this.sharedConnectionManager = createClientConnectionManager(selectors);
 
     long connectedPoolIdleTime = SystemPropertiesHelper
@@ -180,8 +161,6 @@ public class HttpClientFactoryImpl
 
     this.eventBus = checkNotNull(eventBus);
     this.eventBus.register(this);
-
-    this.jmxInstaller.register(sharedConnectionManager);
   }
 
   private ManagedClientConnectionManager createClientConnectionManager(final List<SSLContextSelector> selectors) {
@@ -210,7 +189,6 @@ public class HttpClientFactoryImpl
    */
   public synchronized void shutdown() {
     evictingThread.interrupt();
-    jmxInstaller.unregister();
     sharedConnectionManager._shutdown();
     eventBus.unregister(this);
     log.info("Stopped");
@@ -233,40 +211,41 @@ public class HttpClientFactoryImpl
 
   @Override
   public HttpClient create() {
-    RemoteStorageContext context = globalRemoteStorageContextProvider.get();
-    Builder builder = prepare(new RemoteStorageContextCustomizer(context));
+    //RemoteStorageContext context = globalRemoteStorageContextProvider.get();
+    //Builder builder = prepare(new RemoteStorageContextCustomizer(context));
 
     // FIXME: Why is this here and not general?
-    boolean reuseConnections = reuseConnectionsNeeded(context);
-    if (!reuseConnections) {
-      builder.getHttpClientBuilder().setConnectionReuseStrategy(new NoConnectionReuseStrategy());
-    }
+    //boolean reuseConnections = reuseConnectionsNeeded(context);
+    //if (!reuseConnections) {
+    //  builder.getHttpClientBuilder().setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+    //}
 
-    return builder.build();
+    //return builder.build();
+    return null;
   }
 
-  @VisibleForTesting
-  boolean reuseConnectionsNeeded(final RemoteStorageContext context) {
-    // return true if any of the auth is NTLM based, as NTLM must have keep-alive to work
-    if (context != null) {
-      if (context.getRemoteAuthenticationSettings() instanceof NtlmRemoteAuthenticationSettings) {
-        return true;
-      }
-      if (context.getRemoteProxySettings() != null) {
-        if (context.getRemoteProxySettings().getHttpProxySettings() != null &&
-            context.getRemoteProxySettings().getHttpProxySettings()
-                .getProxyAuthentication() instanceof NtlmRemoteAuthenticationSettings) {
-          return true;
-        }
-        if (context.getRemoteProxySettings().getHttpsProxySettings() != null &&
-            context.getRemoteProxySettings().getHttpsProxySettings()
-                .getProxyAuthentication() instanceof NtlmRemoteAuthenticationSettings) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+  //@VisibleForTesting
+  //boolean reuseConnectionsNeeded(final RemoteStorageContext context) {
+  //  // return true if any of the auth is NTLM based, as NTLM must have keep-alive to work
+  //  if (context != null) {
+  //    if (context.getRemoteAuthenticationSettings() instanceof NtlmRemoteAuthenticationSettings) {
+  //      return true;
+  //    }
+  //    if (context.getRemoteProxySettings() != null) {
+  //      if (context.getRemoteProxySettings().getHttpProxySettings() != null &&
+  //          context.getRemoteProxySettings().getHttpProxySettings()
+  //              .getProxyAuthentication() instanceof NtlmRemoteAuthenticationSettings) {
+  //        return true;
+  //      }
+  //      if (context.getRemoteProxySettings().getHttpsProxySettings() != null &&
+  //          context.getRemoteProxySettings().getHttpsProxySettings()
+  //              .getProxyAuthentication() instanceof NtlmRemoteAuthenticationSettings) {
+  //        return true;
+  //      }
+  //    }
+  //  }
+  //  return false;
+  //}
 
   @Override
   public HttpClient create(final Customizer customizer) {
