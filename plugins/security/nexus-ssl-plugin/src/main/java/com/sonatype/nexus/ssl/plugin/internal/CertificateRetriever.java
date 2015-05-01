@@ -24,7 +24,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.sonatype.nexus.httpclient.HttpClientFactory;
+import org.sonatype.nexus.httpclient.HttpClientManager;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,11 +40,11 @@ public class CertificateRetriever
     extends ComponentSupport
 {
 
-  private final HttpClientFactory httpClientFactory;
+  private final HttpClientManager httpClientManager;
 
   @Inject
-  public CertificateRetriever(final HttpClientFactory httpClientFactory) {
-    this.httpClientFactory = checkNotNull(httpClientFactory);
+  public CertificateRetriever(final HttpClientManager httpClientManager) {
+    this.httpClientManager = checkNotNull(httpClientManager);
   }
 
   private static final TrustManager ACCEPT_ALL_TRUST_MANAGER = new X509TrustManager()
@@ -123,10 +123,7 @@ public class CertificateRetriever
    * @return certificate chain
    * @throws Exception Re-thrown from accessing the remote host
    */
-  public Certificate[] retrieveCertificates(final String host,
-                                            final int port)
-      throws Exception
-  {
+  public Certificate[] retrieveCertificates(final String host, final int port) throws Exception {
     checkNotNull(host);
 
     log.info("Retrieving certificate from {}:{} using direct socket connection", host, port);
@@ -148,5 +145,4 @@ public class CertificateRetriever
       }
     }
   }
-
 }

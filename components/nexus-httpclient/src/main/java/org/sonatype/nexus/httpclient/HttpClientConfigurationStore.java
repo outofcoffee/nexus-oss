@@ -12,30 +12,19 @@
  */
 package org.sonatype.nexus.httpclient;
 
-import javax.net.ssl.SSLContext;
+import javax.annotation.Nullable;
 
-import org.apache.http.protocol.HttpContext;
+import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 
 /**
- * Selects SSLContext to be used for given HTTP context.
+ * {@link HttpClientConfiguration} store.
  *
- * @since 2.8
+ * @since 3.0
  */
-public interface SSLContextSelector
+public interface HttpClientConfigurationStore
 {
-  // FIXME: Avoid using other classes to build property names
+  @Nullable
+  HttpClientConfiguration load();
 
-  /**
-   * {@link HttpContext} attribute to be used to enable usage of nexus trust store.
-   *
-   * @since 3.0
-   */
-  String USE_TRUST_STORE = HttpClientFactory.class.getName() + ".useTrustStore";
-
-  /**
-   * Returns the desired {@link SSLContext} to be used or {@code null} if no selection possible (or available).
-   *
-   * In this case, HTTP client will use the "default" SSL context.
-   */
-  SSLContext select(HttpContext context);
+  void save(HttpClientConfiguration configuration);
 }

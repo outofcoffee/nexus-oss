@@ -10,38 +10,36 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.internal.httpclient;
+package org.sonatype.nexus.httpclient.internal;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 
-import org.sonatype.nexus.httpclient.HttpClientFactory;
+import org.sonatype.nexus.httpclient.HttpClientManager;
 
 import org.apache.http.client.HttpClient;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * {@link HttpClient} provider via {@link HttpClientFactory}.
+ * {@link HttpClient} provider via {@link HttpClientManager}.
  *
  * @since 3.0
  */
 @Named
-@Singleton
 public class HttpClientProvider
     implements Provider<HttpClient>
 {
-  private final HttpClientFactory factory;
+  private final HttpClientManager httpClientManager;
 
   @Inject
-  public HttpClientProvider(final HttpClientFactory factory) {
-    this.factory = checkNotNull(factory);
+  public HttpClientProvider(final HttpClientManager httpClientManager) {
+    this.httpClientManager = checkNotNull(httpClientManager);
   }
 
   @Override
   public HttpClient get() {
-    return factory.create();
+    return httpClientManager.create();
   }
 }

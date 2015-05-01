@@ -12,30 +12,26 @@
  */
 package org.sonatype.nexus.httpclient;
 
-import javax.net.ssl.SSLContext;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
-import org.apache.http.protocol.HttpContext;
+import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 
 /**
- * Selects SSLContext to be used for given HTTP context.
+ * Initial {@link HttpClientConfiguration} provider.
  *
- * @since 2.8
+ * @since 3.0
  */
-public interface SSLContextSelector
+@Named("initial")
+@Singleton
+public class InitialHttpClientConfigurationProvider
+  implements Provider<HttpClientConfiguration>
 {
-  // FIXME: Avoid using other classes to build property names
-
-  /**
-   * {@link HttpContext} attribute to be used to enable usage of nexus trust store.
-   *
-   * @since 3.0
-   */
-  String USE_TRUST_STORE = HttpClientFactory.class.getName() + ".useTrustStore";
-
-  /**
-   * Returns the desired {@link SSLContext} to be used or {@code null} if no selection possible (or available).
-   *
-   * In this case, HTTP client will use the "default" SSL context.
-   */
-  SSLContext select(HttpContext context);
+  @Override
+  public HttpClientConfiguration get() {
+    HttpClientConfiguration configuration = new HttpClientConfiguration();
+    // TODO:
+    return configuration;
+  }
 }

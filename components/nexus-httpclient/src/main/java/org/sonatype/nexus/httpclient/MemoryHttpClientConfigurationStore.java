@@ -12,22 +12,39 @@
  */
 package org.sonatype.nexus.httpclient;
 
-import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.apache.http.client.HttpClient;
+import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
+import org.sonatype.sisu.goodies.common.ComponentSupport;
+
+import com.google.common.annotations.VisibleForTesting;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * HTTP-client manager.
+ * In-memory {@link HttpClientConfigurationStore}.
  *
  * @since 3.0
  */
-public interface HttpClientManager
+@Named("memory")
+@Singleton
+@VisibleForTesting
+public class MemoryHttpClientConfigurationStore
+  extends ComponentSupport
+  implements HttpClientConfigurationStore
 {
-  HttpClientConfiguration getConfiguration();
+  private HttpClientConfiguration model;
 
-  void setConfiguration(HttpClientConfiguration configuration);
+  @Nullable
+  @Override
+  public synchronized HttpClientConfiguration load() {
+    return model;
+  }
 
-  // TODO: Revisit use where Provider<HttpClient> would be more appropriate instead of wider api manager exposes
-
-  HttpClient create();
+  @Override
+  public synchronized void save(final HttpClientConfiguration configuration) {
+    this.model = checkNotNull(configuration);
+  }
 }
