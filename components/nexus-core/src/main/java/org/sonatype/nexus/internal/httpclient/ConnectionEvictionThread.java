@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.sonatype.sisu.goodies.common.Time;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ class ConnectionEvictionThread
 
   private final long delay;
 
+  @VisibleForTesting
   ConnectionEvictionThread(final HttpClientConnectionManager connectionManager,
                            final long idleTimeMillis,
                            final long delay)

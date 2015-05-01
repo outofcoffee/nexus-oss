@@ -17,6 +17,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.sonatype.nexus.common.stateguard.Guarded;
 import org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport;
 import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.events.NexusStartedEvent;
@@ -30,6 +31,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.http.client.HttpClient;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
 
 /**
  * Default {@link HttpClientManager}.
@@ -39,8 +41,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Named
 @Singleton
 public class HttpClientManagerImpl
-  extends StateGuardLifecycleSupport
-  implements HttpClientManager, EventSubscriber
+    extends StateGuardLifecycleSupport
+    implements HttpClientManager, EventSubscriber
 {
   private final HttpClientConfigurationStore store;
 
@@ -132,11 +134,13 @@ public class HttpClientManagerImpl
    * Return _copy_ of configuration.
    */
   @Override
+  @Guarded(by = STARTED)
   public HttpClientConfiguration getConfiguration() {
     return getConfigurationInternal().copy();
   }
 
   @Override
+  @Guarded(by = STARTED)
   public void setConfiguration(final HttpClientConfiguration configuration) {
     checkNotNull(configuration);
 
@@ -153,6 +157,7 @@ public class HttpClientManagerImpl
   //
 
   @Override
+  @Guarded(by = STARTED)
   public HttpClient create() {
     return null;
   }
