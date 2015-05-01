@@ -30,4 +30,6 @@ public interface HttpClientManager
   // TODO: Revisit use where Provider<HttpClient> would be more appropriate instead of wider api manager exposes
 
   HttpClient create();
+
+  // TODO: create with customizer
 }
