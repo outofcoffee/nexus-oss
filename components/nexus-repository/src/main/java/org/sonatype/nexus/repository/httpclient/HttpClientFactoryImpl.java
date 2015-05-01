@@ -27,9 +27,9 @@ import javax.inject.Singleton;
 
 import org.sonatype.nexus.httpclient.HttpClientBuilder;
 import org.sonatype.nexus.httpclient.HttpClientFactory.Customizer;
-import org.sonatype.nexus.httpclient.NexusHttpRoutePlanner;
-import org.sonatype.nexus.httpclient.NexusRedirectStrategy;
 import org.sonatype.nexus.httpclient.SSLContextSelector;
+import org.sonatype.nexus.httpclient.internal.NexusHttpRoutePlanner;
+import org.sonatype.nexus.httpclient.internal.NexusRedirectStrategy;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 import com.google.common.annotations.VisibleForTesting;
