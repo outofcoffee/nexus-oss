@@ -13,51 +13,49 @@
 package org.sonatype.nexus.httpclient.config;
 
 /**
- * Connection configuration.
+ * HTTP-client configuration.
  *
  * @since 3.0
  */
-public class ConnectionConfiguration
+public class HttpClientConfiguration
     implements Cloneable
 {
-  private int timeout;
+  private ConnectionConfiguration connection;
 
-  private int maximumRetries;
+  private ProxyConfiguration proxy;
 
-  private String userAgent;
+  private AuthenticationConfiguration authentication;
 
-  // TODO: queryString?  This may be more harmful than helpful, omitting for now
-
-  public int getTimeout() {
-    return timeout;
+  public ConnectionConfiguration getConnection() {
+    return connection;
   }
 
-  public void setTimeout(final int timeout) {
-    this.timeout = timeout;
+  public void setConnection(final ConnectionConfiguration connection) {
+    this.connection = connection;
   }
 
-  public int getMaximumRetries() {
-    return maximumRetries;
+  public ProxyConfiguration getProxy() {
+    return proxy;
   }
 
-  public void setMaximumRetries(final int maximumRetries) {
-    this.maximumRetries = maximumRetries;
+  public void setProxy(final ProxyConfiguration proxy) {
+    this.proxy = proxy;
   }
 
-  public String getUserAgent() {
-    return userAgent;
+  public AuthenticationConfiguration getAuthentication() {
+    return authentication;
   }
 
-  public void setUserAgent(final String userAgent) {
-    this.userAgent = userAgent;
+  public void setAuthentication(final AuthenticationConfiguration authentication) {
+    this.authentication = authentication;
   }
 
   @Override
   public String toString() {
     return getClass().getSimpleName() + "{" +
-        "timeout=" + timeout +
-        ", maximumRetries=" + maximumRetries +
-        ", userAgent='" + userAgent + '\'' +
+        "connection=" + connection +
+        ", proxy=" + proxy +
+        ", authentication=" + authentication +
         '}';
   }
 }
