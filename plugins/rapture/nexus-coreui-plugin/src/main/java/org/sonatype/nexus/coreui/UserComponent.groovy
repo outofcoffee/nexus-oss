@@ -111,7 +111,6 @@ extends DirectComponentSupport
    */
   @DirectMethod
   @RequiresUser
-  @RequiresPermissions('security:users')
   UserAccountXO readAccount() {
     User user = securitySystem.currentUser()
     return new UserAccountXO(
@@ -206,7 +205,6 @@ extends DirectComponentSupport
   @DirectMethod
   @RequiresUser
   @RequiresAuthentication
-  @RequiresPermissions('security:users')
   @Validate
   UserAccountXO updateAccount(final @NotNull(message = '[userAccountXO] may not be null') @Valid UserAccountXO userAccountXO) {
     User user = securitySystem.currentUser().with {
