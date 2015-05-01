@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.httpclient.HttpClientFactory.Builder;
+import org.sonatype.nexus.httpclient.HttpClientBuilder;
 import org.sonatype.nexus.httpclient.HttpClientFactory.Customizer;
 import org.sonatype.nexus.httpclient.NexusHttpRoutePlanner;
 import org.sonatype.nexus.httpclient.NexusRedirectStrategy;
@@ -79,14 +79,14 @@ public class HttpClientFactoryImpl
     return httpClientFactory.create(new Customizer()
     {
       @Override
-      public void customize(final Builder builder) {
+      public void customize(final HttpClientBuilder builder) {
         applyConfiguration(builder, config);
         applyRedirectStrategy(builder);
       }
     });
   }
 
-  private void applyConfiguration(final Builder builder, final HttpClientConfig config) {
+  private void applyConfiguration(final HttpClientBuilder builder, final HttpClientConfig config) {
     // connection/socket timeouts
     int timeout = 20000; // default 20 seconds
     if (config.getConnection() != null && config.getConnection().getTimeout() != null) {
@@ -131,7 +131,7 @@ public class HttpClientFactoryImpl
     }
   }
 
-  private void applyAuthenticationConfig(final Builder builder,
+  private void applyAuthenticationConfig(final HttpClientBuilder builder,
                                          final AuthenticationConfig config,
                                          final HttpHost httpHost)
   {
@@ -158,7 +158,7 @@ public class HttpClientFactoryImpl
   }
 
   @VisibleForTesting
-  public void applyProxyConfig(final Builder builder, final HttpClientConfig config) {
+  public void applyProxyConfig(final HttpClientBuilder builder, final HttpClientConfig config) {
     if (config.getProxy() != null && config.getProxy().getHttp() != null) {
       Map<String, HttpHost> proxies = Maps.newHashMap();
 
@@ -196,11 +196,11 @@ public class HttpClientFactoryImpl
     }
   }
 
-  private void applyRedirectStrategy(final Builder builder) {
+  private void applyRedirectStrategy(final HttpClientBuilder builder) {
     builder.getHttpClientBuilder().setRedirectStrategy(new NexusRedirectStrategy());
   }
 
-  private void applyRequestExecutor(final Builder builder, final String userAgent, final String urlParameters) {
+  private void applyRequestExecutor(final HttpClientBuilder builder, final String userAgent, final String urlParameters) {
     if (userAgent != null || urlParameters != null) {
       builder.getHttpClientBuilder().setRequestExecutor(new HttpRequestExecutor()
       {

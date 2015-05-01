@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.SystemStatus;
 import org.sonatype.nexus.common.property.SystemPropertiesHelper;
 import org.sonatype.nexus.events.NexusStoppedEvent;
+import org.sonatype.nexus.httpclient.HttpClientBuilder;
 import org.sonatype.nexus.httpclient.HttpClientFactory;
 import org.sonatype.nexus.httpclient.SSLContextSelector;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
@@ -253,8 +254,8 @@ public class HttpClientFactoryImpl
   }
 
   @Override
-  public Builder prepare(final Customizer customizer) {
-    final Builder builder = new Builder();
+  public HttpClientBuilder prepare(final Customizer customizer) {
+    final HttpClientBuilder builder = new HttpClientBuilder();
 
     // dependencies
     builder.getHttpClientBuilder().setConnectionManager(sharedConnectionManager);
