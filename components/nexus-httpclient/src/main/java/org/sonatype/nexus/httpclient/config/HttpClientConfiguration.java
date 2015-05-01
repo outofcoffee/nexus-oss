@@ -12,12 +12,17 @@
  */
 package org.sonatype.nexus.httpclient.config;
 
+import org.sonatype.nexus.common.entity.Entity;
+
+import com.google.common.base.Throwables;
+
 /**
  * HTTP-client configuration.
  *
  * @since 3.0
  */
 public class HttpClientConfiguration
+    extends Entity
     implements Cloneable
 {
   private ConnectionConfiguration connection;
@@ -48,6 +53,16 @@ public class HttpClientConfiguration
 
   public void setAuthentication(final AuthenticationConfiguration authentication) {
     this.authentication = authentication;
+  }
+
+  public HttpClientConfiguration copy() {
+    try {
+      // FIXME: Address deep clone
+      return (HttpClientConfiguration) clone();
+    }
+    catch (CloneNotSupportedException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   @Override

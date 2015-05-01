@@ -22,7 +22,7 @@ import org.sonatype.nexus.common.text.Strings2;
 public class NtlmAuthenticationConfiguration
   extends AuthenticationConfiguration
 {
-  public static final String TYPE = "ntml";
+  public static final String TYPE = "ntlm";
 
   private String username;
 
