@@ -17,12 +17,16 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport;
+import org.sonatype.nexus.events.EventSubscriber;
+import org.sonatype.nexus.events.NexusStartedEvent;
+import org.sonatype.nexus.events.NexusStoppedEvent;
 import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
 import org.sonatype.nexus.httpclient.HttpClientManager;
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
-import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.common.Mutex;
 
+import com.google.common.eventbus.Subscribe;
 import org.apache.http.client.HttpClient;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -35,12 +39,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Named
 @Singleton
 public class HttpClientManagerImpl
-  extends ComponentSupport
-  implements HttpClientManager
+  extends StateGuardLifecycleSupport
+  implements HttpClientManager, EventSubscriber
 {
   private final HttpClientConfigurationStore store;
 
   private final Provider<HttpClientConfiguration> defaults;
+
+  private final SharedHttpClientConnectionManager sharedConnectionManager;
 
   private final Mutex lock = new Mutex();
 
@@ -48,12 +54,38 @@ public class HttpClientManagerImpl
 
   @Inject
   public HttpClientManagerImpl(final HttpClientConfigurationStore store,
-                               @Named("initial") final Provider<HttpClientConfiguration> defaults)
+                               @Named("initial") final Provider<HttpClientConfiguration> defaults,
+                               final SharedHttpClientConnectionManager sharedConnectionManager)
   {
     this.store = checkNotNull(store);
     log.debug("Store: {}", store);
     this.defaults = checkNotNull(defaults);
     log.debug("Defaults: {}", defaults);
+    this.sharedConnectionManager = checkNotNull(sharedConnectionManager);
+  }
+
+  //
+  // Lifecycle
+  //
+
+  @Override
+  protected void doStart() throws Exception {
+    sharedConnectionManager.start();
+  }
+
+  @Override
+  protected void doStop() throws Exception {
+    sharedConnectionManager.stop();
+  }
+
+  @Subscribe
+  public void on(final NexusStartedEvent event) throws Exception {
+    start();
+  }
+
+  @Subscribe
+  public void on(final NexusStoppedEvent event) throws Exception {
+    stop();
   }
 
   //
@@ -96,6 +128,9 @@ public class HttpClientManagerImpl
     }
   }
 
+  /**
+   * Return _copy_ of configuration.
+   */
   @Override
   public HttpClientConfiguration getConfiguration() {
     return getConfigurationInternal().copy();

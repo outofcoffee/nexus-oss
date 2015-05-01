@@ -14,68 +14,76 @@ package org.sonatype.nexus.internal.httpclient;
 
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Preconditions;
+import org.sonatype.sisu.goodies.common.Time;
+
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Low priority daemon thread responsible to evict connection manager pooled connections/
+ * Low priority daemon thread responsible to evict connection manager pooled connections.
  *
  * @since 2.2
  */
-class EvictingThread
+class ConnectionEvictionThread
     extends Thread
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(EvictingThread.class);
+  private static final Logger log = LoggerFactory.getLogger(ConnectionEvictionThread.class);
 
-  private final HttpClientConnectionManager httpClientConnectionManager;
+  private final HttpClientConnectionManager connectionManager;
 
   private final long idleTimeMillis;
 
   private final long delay;
 
-  EvictingThread(final HttpClientConnectionManager httpClientConnectionManager, final long idleTimeMillis, final long delay) {
-    super("HC4x-EvictingThread");
-    Preconditions.checkArgument(idleTimeMillis > -1, "Keep alive period in milliseconds cannot be negative");
-    this.httpClientConnectionManager = checkNotNull(httpClientConnectionManager);
+  ConnectionEvictionThread(final HttpClientConnectionManager connectionManager,
+                           final long idleTimeMillis,
+                           final long delay)
+  {
+    super("nexus-httpclient-eviction-thread");
+    checkArgument(idleTimeMillis > -1, "Keep alive period in milliseconds cannot be negative");
+    this.connectionManager = checkNotNull(connectionManager);
     this.idleTimeMillis = idleTimeMillis;
     this.delay = delay;
     setDaemon(true);
     setPriority(MIN_PRIORITY);
   }
 
-  EvictingThread(final HttpClientConnectionManager httpClientConnectionManager, final long idleTimeMillis) {
-    this(httpClientConnectionManager, idleTimeMillis, 5000);
+  ConnectionEvictionThread(final HttpClientConnectionManager connectionManager, final Time idelTime) {
+    this(connectionManager, idelTime.toMillisI(), 5000);
   }
 
   @Override
   public void run() {
-    LOGGER.debug("Starting '{}' (delay {} millis)", getName(), delay);
+    log.debug("Starting '{}' (delay {} millis)", getName(), delay);
     try {
       while (true) {
         synchronized (this) {
           wait(delay);
+
           try {
-            httpClientConnectionManager.closeExpiredConnections();
+            connectionManager.closeExpiredConnections();
           }
-          catch (final Exception e) {
-            LOGGER.warn("Failed to close expired connections", e);
+          catch (Exception e) {
+            log.warn("Failed to close expired connections", e);
           }
+
           try {
-            httpClientConnectionManager.closeIdleConnections(idleTimeMillis, TimeUnit.MILLISECONDS);
+            connectionManager.closeIdleConnections(idleTimeMillis, TimeUnit.MILLISECONDS);
           }
-          catch (final Exception e) {
-            LOGGER.warn("Failed to close expired connections", e);
+          catch (Exception e) {
+            log.warn("Failed to close idle connections", e);
           }
         }
       }
     }
     catch (InterruptedException e) {
-      // bye bye
+      // ignore
     }
-    LOGGER.debug("Stopped '{}'", getName());
+
+    log.debug("Stopped '{}'", getName());
   }
 }

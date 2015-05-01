@@ -26,24 +26,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link EvictingThread}.
+ * Tests for {@link ConnectionEvictionThread}.
  */
-public class EvictingThreadTest
+public class ConnectionEvictionThreadTest
     extends TestSupport
 {
-
   /**
    * Verify that ClientConnectionManager are called.
-   *
-   * @throws Exception unexpected
    */
   @Test
-  public void connectionEvictedIn5Seconds()
-      throws Exception
-  {
+  public void connectionEvictedIn5Seconds() throws Exception {
     final HttpClientConnectionManager clientConnectionManager = mock(HttpClientConnectionManager.class);
 
-    final EvictingThread underTest = new EvictingThread(clientConnectionManager, 1000, 100);
+    final ConnectionEvictionThread underTest = new ConnectionEvictionThread(clientConnectionManager, 1000, 100);
     underTest.start();
 
     Thread.sleep(300);
@@ -60,16 +55,14 @@ public class EvictingThreadTest
    * @throws Exception unexpected
    */
   @Test
-  public void evictionContinuesWhenConnectionManagerFails()
-      throws Exception
-  {
+  public void evictionContinuesWhenConnectionManagerFails() throws Exception {
     final HttpClientConnectionManager clientConnectionManager = mock(HttpClientConnectionManager.class);
     doThrow(new RuntimeException("closeExpiredConnections")).when(clientConnectionManager)
         .closeExpiredConnections();
     doThrow(new RuntimeException("closeIdleConnections")).when(clientConnectionManager)
         .closeIdleConnections(1000, TimeUnit.MILLISECONDS);
 
-    final EvictingThread underTest = new EvictingThread(clientConnectionManager, 1000, 100);
+    final ConnectionEvictionThread underTest = new ConnectionEvictionThread(clientConnectionManager, 1000, 100);
     underTest.start();
 
     Thread.sleep(300);
@@ -79,5 +72,4 @@ public class EvictingThreadTest
 
     underTest.interrupt();
   }
-
 }

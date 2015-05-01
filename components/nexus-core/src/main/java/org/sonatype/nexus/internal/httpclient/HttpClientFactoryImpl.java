@@ -12,32 +12,22 @@
  */
 package org.sonatype.nexus.internal.httpclient;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.SystemStatus;
 import org.sonatype.nexus.common.property.SystemPropertiesHelper;
 import org.sonatype.nexus.events.NexusStoppedEvent;
 import org.sonatype.nexus.httpclient.HttpClientBuilder;
 import org.sonatype.nexus.httpclient.HttpClientFactory;
-import org.sonatype.nexus.httpclient.SSLContextSelector;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -63,41 +53,6 @@ public class HttpClientFactoryImpl
    */
   private static final long KEEP_ALIVE_MAX_DURATION_DEFAULT = TimeUnit.SECONDS.toMillis(30);
 
-  /**
-   * Key for customizing connection pool maximum size. Value should be integer equal to 0 or greater. Pool size of 0
-   * will actually prevent use of pool. Any positive number means the actual size of the pool to be created. This is
-   * a
-   * hard limit, connection pool will never contain more than this count of open sockets.
-   */
-  private static final String CONNECTION_POOL_MAX_SIZE_KEY = "nexus.apacheHttpClient4x.connectionPoolMaxSize";
-
-  /**
-   * Default pool max size: 200.
-   */
-  private static final int CONNECTION_POOL_MAX_SIZE_DEFAULT = 200;
-
-  /**
-   * Key for customizing connection pool size per route (usually per-repository, but not quite in case of Mirrors).
-   * Value should be integer equal to 0 or greater. Pool size of 0 will actually prevent use of pool. Any positive
-   * number means the actual size of the pool to be created.
-   */
-  private static final String CONNECTION_POOL_SIZE_KEY = "nexus.apacheHttpClient4x.connectionPoolSize";
-
-  /**
-   * Default pool size: 20.
-   */
-  private static final int CONNECTION_POOL_SIZE_DEFAULT = 20;
-
-  /**
-   * Key for customizing connection pool idle time. In other words, how long open connections (sockets) are kept in
-   * pool idle (unused) before they get evicted and closed. Value is milliseconds.
-   */
-  private static final String CONNECTION_POOL_IDLE_TIME_KEY = "nexus.apacheHttpClient4x.connectionPoolIdleTime";
-
-  /**
-   * Default pool idle time: 30 seconds.
-   */
-  private static final long CONNECTION_POOL_IDLE_TIME_DEFAULT = TimeUnit.SECONDS.toMillis(30);
 
   /**
    * Key for customizing connection pool timeout. In other words, how long should a HTTP request execution be blocked
@@ -110,78 +65,24 @@ public class HttpClientFactoryImpl
    */
   private static final int CONNECTION_POOL_TIMEOUT_DEFAULT = (int) TimeUnit.SECONDS.toMillis(30);
 
-  private final Provider<SystemStatus> systemStatusProvider;
-
   /**
    * The low level core event bus.
    */
   private final EventBus eventBus;
 
-  private static class ManagedClientConnectionManager
-      extends PoolingHttpClientConnectionManager
-  {
-    public ManagedClientConnectionManager(final Registry<ConnectionSocketFactory> schemeRegistry) {
-      super(schemeRegistry);
-    }
-
-    /**
-     * Do nothing in order to avoid unwanted shutdown of shared connection manager.
-     */
-    @Override
-    public void shutdown() {
-      // empty
-    }
-
-    private void _shutdown() {
-      super.shutdown();
-    }
-  }
-
   /**
    * Shared client connection manager.
    */
-  private final ManagedClientConnectionManager sharedConnectionManager;
-
-  /**
-   * Thread evicting idle open connections from {@link #sharedConnectionManager}.
-   */
-  private final EvictingThread evictingThread;
+  private final SharedHttpClientConnectionManager sharedConnectionManager;
 
   @Inject
-  public HttpClientFactoryImpl(final Provider<SystemStatus> systemStatusProvider,
-                               final EventBus eventBus,
-                               final List<SSLContextSelector> selectors)
+  public HttpClientFactoryImpl(final EventBus eventBus,
+                               final SharedHttpClientConnectionManager clientConnectionManager)
   {
-    this.systemStatusProvider = checkNotNull(systemStatusProvider);
-    this.sharedConnectionManager = createClientConnectionManager(selectors);
-
-    long connectedPoolIdleTime = SystemPropertiesHelper
-        .getLong(CONNECTION_POOL_IDLE_TIME_KEY, CONNECTION_POOL_IDLE_TIME_DEFAULT);
-    this.evictingThread = new EvictingThread(sharedConnectionManager, connectedPoolIdleTime);
-    this.evictingThread.start();
+    this.sharedConnectionManager = checkNotNull(clientConnectionManager);
 
     this.eventBus = checkNotNull(eventBus);
     this.eventBus.register(this);
-  }
-
-  private ManagedClientConnectionManager createClientConnectionManager(final List<SSLContextSelector> selectors) {
-    final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-        .register("http", PlainConnectionSocketFactory.getSocketFactory())
-        .register("https", new NexusSSLConnectionSocketFactory(
-                (javax.net.ssl.SSLSocketFactory) javax.net.ssl.SSLSocketFactory.getDefault(),
-                SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER, selectors)
-        ).build();
-
-    final ManagedClientConnectionManager connManager = new ManagedClientConnectionManager(registry);
-    final int maxConnectionCount = SystemPropertiesHelper
-        .getInteger(CONNECTION_POOL_MAX_SIZE_KEY, CONNECTION_POOL_MAX_SIZE_DEFAULT);
-    final int poolSize = SystemPropertiesHelper.getInteger(CONNECTION_POOL_SIZE_KEY, CONNECTION_POOL_SIZE_DEFAULT);
-    final int perRouteConnectionCount = Math.min(poolSize, maxConnectionCount);
-
-    connManager.setMaxTotal(maxConnectionCount);
-    connManager.setDefaultMaxPerRoute(perRouteConnectionCount);
-
-    return connManager;
   }
 
   /**
@@ -189,8 +90,8 @@ public class HttpClientFactoryImpl
    * manager. Multiple invocation of this method is safe, it will not do anything.
    */
   public synchronized void shutdown() {
-    evictingThread.interrupt();
-    sharedConnectionManager._shutdown();
+    //evictingThread.interrupt();
+    //sharedConnectionManager._shutdown();
     eventBus.unregister(this);
     log.info("Stopped");
   }
@@ -264,8 +165,7 @@ public class HttpClientFactoryImpl
     int poolTimeout = SystemPropertiesHelper.getInteger(CONNECTION_POOL_TIMEOUT_KEY, CONNECTION_POOL_TIMEOUT_DEFAULT);
     builder.getRequestConfigBuilder().setConnectionRequestTimeout(poolTimeout);
 
-    long keepAliveDuration = SystemPropertiesHelper
-        .getLong(KEEP_ALIVE_MAX_DURATION_KEY, KEEP_ALIVE_MAX_DURATION_DEFAULT);
+    long keepAliveDuration = SystemPropertiesHelper.getLong(KEEP_ALIVE_MAX_DURATION_KEY, KEEP_ALIVE_MAX_DURATION_DEFAULT);
     builder.getHttpClientBuilder().setKeepAliveStrategy(new NexusConnectionKeepAliveStrategy(keepAliveDuration));
 
     // defaults
@@ -275,36 +175,11 @@ public class HttpClientFactoryImpl
     builder.getRequestConfigBuilder().setStaleConnectionCheckEnabled(false);
 
     // Apply default user-agent
-    final String userAgent = getUserAgent();
+    final String userAgent = null; // getUserAgent();
     builder.setUserAgent(userAgent);
 
     customizer.customize(builder);
 
     return builder;
-  }
-
-  private String userAgent;
-
-  private String platformEditionShort;
-
-  private synchronized String getUserAgent() {
-    SystemStatus status = systemStatusProvider.get();
-
-    // Cache platform details or re-cache if the edition has changed
-    if (userAgent == null || !status.getEditionShort().equals(platformEditionShort)) {
-      // track edition for cache invalidation
-      platformEditionShort = status.getEditionShort();
-
-      userAgent =
-          String.format("Nexus/%s (%s; %s; %s; %s; %s)",
-              status.getVersion(),
-              platformEditionShort,
-              System.getProperty("os.name"),
-              System.getProperty("os.version"),
-              System.getProperty("os.arch"),
-              System.getProperty("java.version"));
-    }
-
-    return userAgent;
   }
 }
