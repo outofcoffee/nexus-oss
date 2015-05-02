@@ -30,7 +30,7 @@ public interface SSLContextSelector
    *
    * @since 3.0
    */
-  String USE_TRUST_STORE = HttpClientFactory.class.getName() + ".useTrustStore";
+  String USE_TRUST_STORE = "nexus.httpclient.ssl.trustStore";
 
   /**
    * Returns the desired {@link SSLContext} to be used or {@code null} if no selection possible (or available).

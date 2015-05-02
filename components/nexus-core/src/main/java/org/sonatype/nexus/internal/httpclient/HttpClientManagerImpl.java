@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.internal.httpclient;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -24,11 +25,13 @@ import org.sonatype.nexus.events.NexusStartedEvent;
 import org.sonatype.nexus.events.NexusStoppedEvent;
 import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
 import org.sonatype.nexus.httpclient.HttpClientManager;
+import org.sonatype.nexus.httpclient.HttpClientPlan;
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.sisu.goodies.common.Mutex;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
@@ -158,7 +161,30 @@ public class HttpClientManagerImpl
 
   @Override
   @Guarded(by = STARTED)
+  public HttpClient create(final @Nullable HttpClientPlan.Customizer customizer) {
+    HttpClientPlan plan = new HttpClientPlan();
+
+    // TODO: apply defaults
+
+    if (customizer != null) {
+      customizer.customize(plan);
+    }
+
+    // TODO: apply overrides
+
+    // apply plan to builder
+    HttpClientBuilder builder = plan.getClient();
+    builder.setDefaultConnectionConfig(plan.getConnection().build());
+    builder.setDefaultSocketConfig(plan.getSocket().build());
+    builder.setDefaultRequestConfig(plan.getRequest().build());
+
+    // build instance
+    return builder.build();
+  }
+
+  @Override
+  @Guarded(by = STARTED)
   public HttpClient create() {
-    return null;
+    return create(null);
   }
 }

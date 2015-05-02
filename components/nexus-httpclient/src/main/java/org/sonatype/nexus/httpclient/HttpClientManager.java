@@ -16,6 +16,8 @@ import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 
 import org.apache.http.client.HttpClient;
 
+// TODO: Revisit use where Provider<HttpClient> would be more appropriate instead of wider api manager exposes
+
 /**
  * HTTP-client manager.
  *
@@ -27,9 +29,7 @@ public interface HttpClientManager
 
   void setConfiguration(HttpClientConfiguration configuration);
 
-  // TODO: Revisit use where Provider<HttpClient> would be more appropriate instead of wider api manager exposes
+  HttpClient create(HttpClientPlan.Customizer customizer);
 
   HttpClient create();
-
-  // TODO: create with customizer
 }
