@@ -39,6 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Named("shared")
 @Singleton
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 public class SharedHttpClientConnectionManager
     extends PoolingHttpClientConnectionManager
     implements Lifecycle

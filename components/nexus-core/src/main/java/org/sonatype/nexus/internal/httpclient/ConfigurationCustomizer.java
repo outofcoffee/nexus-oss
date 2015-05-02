@@ -51,13 +51,13 @@ import static org.apache.http.client.config.AuthSchemes.NTLM;
  *
  * @since 3.0
  */
-public class ConfigurationHttpClientPlanCustomizer
+public class ConfigurationCustomizer
     extends ComponentSupport
     implements HttpClientPlan.Customizer
 {
   private final HttpClientConfiguration configuration;
 
-  public ConfigurationHttpClientPlanCustomizer(final HttpClientConfiguration configuration) {
+  public ConfigurationCustomizer(final HttpClientConfiguration configuration) {
     this.configuration = checkNotNull(configuration);
   }
 

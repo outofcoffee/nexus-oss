@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Named
 @Singleton
-public class DefaultsHttpClientPlanCustomizer
+public class DefaultsCustomizer
   extends ComponentSupport
   implements HttpClientPlan.Customizer
 {
@@ -43,7 +43,7 @@ public class DefaultsHttpClientPlanCustomizer
   private final Time keepAliveDuration;
 
   @Inject
-  public DefaultsHttpClientPlanCustomizer(
+  public DefaultsCustomizer(
       final UserAgentGenerator userAgentGenerator,
       @Named("${nexus.httpclient.requestTimeout:-30s}") final Time requestTimeout,
       @Named("${nexus.httpclient.keepAliveDuration:-30s}") final Time keepAliveDuration)

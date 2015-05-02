@@ -63,7 +63,7 @@ public class HttpClientManagerImpl
 
   private final SharedHttpClientConnectionManager sharedConnectionManager;
 
-  private final DefaultsHttpClientPlanCustomizer defaultsCustomizer;
+  private final DefaultsCustomizer defaultsCustomizer;
 
   private final Mutex lock = new Mutex();
 
@@ -73,7 +73,7 @@ public class HttpClientManagerImpl
   public HttpClientManagerImpl(final HttpClientConfigurationStore store,
                                @Named("initial") final Provider<HttpClientConfiguration> defaults,
                                final SharedHttpClientConnectionManager sharedConnectionManager,
-                               final DefaultsHttpClientPlanCustomizer defaultsCustomizer)
+                               final DefaultsCustomizer defaultsCustomizer)
   {
     this.store = checkNotNull(store);
     log.debug("Store: {}", store);
@@ -184,7 +184,7 @@ public class HttpClientManagerImpl
     defaultsCustomizer.customize(plan);
 
     // apply globals
-    new ConfigurationHttpClientPlanCustomizer(getConfigurationInternal()).customize(plan);
+    new ConfigurationCustomizer(getConfigurationInternal()).customize(plan);
 
     if (customizer != null) {
       customizer.customize(plan);
