@@ -12,6 +12,13 @@
  */
 package org.sonatype.nexus.httpclient.config;
 
+import javax.annotation.Nullable;
+import javax.validation.Valid;
+
+import org.sonatype.nexus.validation.constraint.PortNumber;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  * Proxy-server configuration.
  *
@@ -22,10 +29,14 @@ public class ProxyServerConfiguration
 {
   private boolean enabled;
 
+  @NotBlank
   private String host;
 
+  @PortNumber
   private int port;
 
+  @Valid
+  @Nullable
   private AuthenticationConfiguration authentication;
 
   public boolean isEnabled() {
@@ -52,11 +63,12 @@ public class ProxyServerConfiguration
     this.port = port;
   }
 
+  @Nullable
   public AuthenticationConfiguration getAuthentication() {
     return authentication;
   }
 
-  public void setAuthentication(final AuthenticationConfiguration authentication) {
+  public void setAuthentication(@Nullable final AuthenticationConfiguration authentication) {
     this.authentication = authentication;
   }
 

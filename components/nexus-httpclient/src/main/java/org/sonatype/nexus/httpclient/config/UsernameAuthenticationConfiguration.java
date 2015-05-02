@@ -14,6 +14,8 @@ package org.sonatype.nexus.httpclient.config;
 
 import org.sonatype.nexus.common.text.Strings2;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  * Username(+password) authentication configuration.
  *
@@ -24,8 +26,10 @@ public class UsernameAuthenticationConfiguration
 {
   public static final String TYPE = "username";
 
+  @NotBlank
   private String username;
 
+  @NotBlank
   private String password;
 
   public UsernameAuthenticationConfiguration() {

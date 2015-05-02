@@ -12,7 +12,11 @@
  */
 package org.sonatype.nexus.httpclient.config;
 
+import javax.annotation.Nullable;
+
 import org.sonatype.nexus.common.text.Strings2;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * NTLM authentication configuration.
@@ -24,12 +28,16 @@ public class NtlmAuthenticationConfiguration
 {
   public static final String TYPE = "ntlm";
 
+  @NotBlank
   private String username;
 
+  @NotBlank
   private String password;
 
+  @Nullable
   private String host;
 
+  @Nullable
   private String domain;
 
   public NtlmAuthenticationConfiguration() {
@@ -52,19 +60,21 @@ public class NtlmAuthenticationConfiguration
     this.password = password;
   }
 
+  @Nullable
   public String getHost() {
     return host;
   }
 
-  public void setHost(final String host) {
+  public void setHost(@Nullable final String host) {
     this.host = host;
   }
 
+  @Nullable
   public String getDomain() {
     return domain;
   }
 
-  public void setDomain(final String domain) {
+  public void setDomain(@Nullable final String domain) {
     this.domain = domain;
   }
 

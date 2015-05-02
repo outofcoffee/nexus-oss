@@ -14,6 +14,9 @@ package org.sonatype.nexus.httpclient.config;
 
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+import javax.validation.Valid;
+
 /**
  * Proxy configuration.
  *
@@ -22,33 +25,41 @@ import java.util.Arrays;
 public class ProxyConfiguration
     implements Cloneable
 {
+  @Valid
+  @Nullable
   private ProxyServerConfiguration http;
 
+  @Valid
+  @Nullable
   private ProxyServerConfiguration https;
 
+  @Nullable
   private String[] nonProxyHosts;
 
+  @Nullable
   public ProxyServerConfiguration getHttp() {
     return http;
   }
 
-  public void setHttp(final ProxyServerConfiguration http) {
+  public void setHttp(@Nullable final ProxyServerConfiguration http) {
     this.http = http;
   }
 
+  @Nullable
   public ProxyServerConfiguration getHttps() {
     return https;
   }
 
-  public void setHttps(final ProxyServerConfiguration https) {
+  public void setHttps(@Nullable final ProxyServerConfiguration https) {
     this.https = https;
   }
 
+  @Nullable
   public String[] getNonProxyHosts() {
     return nonProxyHosts;
   }
 
-  public void setNonProxyHosts(final String[] nonProxyHosts) {
+  public void setNonProxyHosts(@Nullable final String[] nonProxyHosts) {
     this.nonProxyHosts = nonProxyHosts;
   }
 

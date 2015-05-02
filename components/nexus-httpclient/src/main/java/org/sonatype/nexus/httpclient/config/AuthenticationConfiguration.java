@@ -31,4 +31,6 @@ public abstract class AuthenticationConfiguration
   public String getType() {
     return type;
   }
+
+  // TODO: preemptive?
 }

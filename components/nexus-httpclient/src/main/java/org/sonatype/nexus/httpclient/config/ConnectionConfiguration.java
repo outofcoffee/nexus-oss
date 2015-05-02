@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.httpclient.config;
 
+import javax.annotation.Nullable;
+
 /**
  * Connection configuration.
  *
@@ -24,9 +26,12 @@ public class ConnectionConfiguration
 
   private int maximumRetries;
 
+  @Nullable
   private String userAgent;
 
   // TODO: queryString?  This may be more harmful than helpful, omitting for now
+
+  // TODO: SSL trust-store?
 
   public int getTimeout() {
     return timeout;
@@ -44,11 +49,12 @@ public class ConnectionConfiguration
     this.maximumRetries = maximumRetries;
   }
 
+  @Nullable
   public String getUserAgent() {
     return userAgent;
   }
 
-  public void setUserAgent(final String userAgent) {
+  public void setUserAgent(@Nullable final String userAgent) {
     this.userAgent = userAgent;
   }
 

@@ -12,6 +12,9 @@
  */
 package org.sonatype.nexus.httpclient.config;
 
+import javax.annotation.Nullable;
+import javax.validation.Valid;
+
 import org.sonatype.nexus.common.entity.Entity;
 
 import com.google.common.base.Throwables;
@@ -25,33 +28,42 @@ public class HttpClientConfiguration
     extends Entity
     implements Cloneable
 {
+  @Valid
+  @Nullable
   private ConnectionConfiguration connection;
 
+  @Valid
+  @Nullable
   private ProxyConfiguration proxy;
 
+  @Valid
+  @Nullable
   private AuthenticationConfiguration authentication;
 
+  @Nullable
   public ConnectionConfiguration getConnection() {
     return connection;
   }
 
-  public void setConnection(final ConnectionConfiguration connection) {
+  public void setConnection(@Nullable final ConnectionConfiguration connection) {
     this.connection = connection;
   }
 
+  @Nullable
   public ProxyConfiguration getProxy() {
     return proxy;
   }
 
-  public void setProxy(final ProxyConfiguration proxy) {
+  public void setProxy(@Nullable final ProxyConfiguration proxy) {
     this.proxy = proxy;
   }
 
+  @Nullable
   public AuthenticationConfiguration getAuthentication() {
     return authentication;
   }
 
-  public void setAuthentication(final AuthenticationConfiguration authentication) {
+  public void setAuthentication(@Nullable final AuthenticationConfiguration authentication) {
     this.authentication = authentication;
   }
 
