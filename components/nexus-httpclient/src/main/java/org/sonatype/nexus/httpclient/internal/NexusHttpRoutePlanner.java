@@ -27,6 +27,8 @@ import org.apache.http.protocol.HttpContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+// TODO: Should we instead be using ProxySelectorRoutePlanner and implement a custom ProxySelector instead?
+
 /**
  * An {@link HttpRoutePlanner} that uses different proxies / url scheme (http/https) and bypasses proxy for specific
  * hosts (non proxy hosts).
@@ -78,6 +80,8 @@ public class NexusHttpRoutePlanner
     }
     return proxies.get(host.getSchemeName());
   }
+
+  // TODO: Should we guard this with a cache to avoid rematching regex constantly?
 
   /**
    * Determine if proxy should be configured for given host or not.

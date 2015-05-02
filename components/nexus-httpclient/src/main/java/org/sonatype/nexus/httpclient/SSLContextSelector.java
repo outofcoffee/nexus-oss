@@ -23,8 +23,6 @@ import org.apache.http.protocol.HttpContext;
  */
 public interface SSLContextSelector
 {
-  // FIXME: Avoid using other classes to build property names
-
   /**
    * {@link HttpContext} attribute to be used to enable usage of nexus trust store.
    *
