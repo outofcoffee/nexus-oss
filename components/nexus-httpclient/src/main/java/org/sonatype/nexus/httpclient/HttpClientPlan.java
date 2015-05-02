@@ -12,12 +12,18 @@
  */
 package org.sonatype.nexus.httpclient;
 
+import javax.annotation.Nullable;
+
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.SocketConfig;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
@@ -35,6 +41,9 @@ public class HttpClientPlan
   private final SocketConfig.Builder socket;
 
   private final RequestConfig.Builder request;
+
+  @Nullable
+  private CredentialsProvider credentials;
 
   public HttpClientPlan() {
     this.client = HttpClientBuilder.create();
@@ -57,6 +66,19 @@ public class HttpClientPlan
 
   public RequestConfig.Builder getRequest() {
     return request;
+  }
+
+  public void addCredentials(final AuthScope authScope, final Credentials credentials) {
+    // lazy initialized to allow null state to indicate non-customized
+    if (this.credentials == null) {
+      this.credentials = new BasicCredentialsProvider();
+    }
+    this.credentials.setCredentials(authScope, credentials);
+  }
+
+  @Nullable
+  public CredentialsProvider getCredentials() {
+    return credentials;
   }
 
   //

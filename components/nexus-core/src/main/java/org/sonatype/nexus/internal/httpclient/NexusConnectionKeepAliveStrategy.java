@@ -27,6 +27,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class NexusConnectionKeepAliveStrategy
     extends DefaultConnectionKeepAliveStrategy
 {
+  // FIXME: Clean up names, used as max here, but config passed in isn't a "max"
+
   /**
    * The max duration for how long to pool a connection in milliseconds. Used as default too, instead of
    * "indefinite" case.

@@ -19,10 +19,10 @@ import java.util.regex.Pattern;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
-import org.apache.http.conn.SchemePortResolver;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
+import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.protocol.HttpContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -39,7 +39,7 @@ public class NexusHttpRoutePlanner
   /**
    * Set of patterns for matching hosts names against. Never null.
    */
-  private final Set<Pattern> nonProxyHostPatterns;
+  private final Set<Pattern> patterns;
 
   /**
    * Mapping between protocol scheme and proxy to be used
@@ -50,37 +50,43 @@ public class NexusHttpRoutePlanner
    * @since 2.5
    */
   public NexusHttpRoutePlanner(final Map<String, HttpHost> proxies,
-                               final Set<Pattern> nonProxyHostPatterns,
-                               final SchemePortResolver schemePortResolver)
+                               final Set<Pattern> patterns)
   {
-    super(schemePortResolver);
+    super(DefaultSchemePortResolver.INSTANCE);
     this.proxies = checkNotNull(proxies);
-    this.nonProxyHostPatterns = checkNotNull(nonProxyHostPatterns);
+    this.patterns = checkNotNull(patterns);
   }
 
   // FIXME: Why are we overriding just to call default?
 
-  public HttpRoute determineRoute(final HttpHost target, final HttpRequest request, final HttpContext context)
+  public HttpRoute determineRoute(final HttpHost host,
+                                  final HttpRequest request,
+                                  final HttpContext context)
       throws HttpException
   {
-    return super.determineRoute(target, request, context);
+    return super.determineRoute(host, request, context);
   }
 
   @Override
-  protected HttpHost determineProxy(final HttpHost target,
+  protected HttpHost determineProxy(final HttpHost host,
                                     final HttpRequest request,
                                     final HttpContext context)
       throws HttpException
   {
-    if (noProxyFor(target.getHostName())) {
+    if (noProxyFor(host.getHostName())) {
       return null;
     }
-    return proxies.get(target.getSchemeName());
+    return proxies.get(host.getSchemeName());
   }
 
+  /**
+   * Determine if proxy should be configured for given host or not.
+   *
+   * @return true if no proxy should be configured.
+   */
   private boolean noProxyFor(final String hostName) {
-    for (final Pattern nonProxyHostPattern : nonProxyHostPatterns) {
-      if (nonProxyHostPattern.matcher(hostName).matches()) {
+    for (Pattern pattern : patterns) {
+      if (pattern.matcher(hostName).matches()) {
         return true;
       }
     }

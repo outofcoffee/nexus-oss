@@ -53,6 +53,8 @@ public class HttpClientManagerImpl
 
   private final SharedHttpClientConnectionManager sharedConnectionManager;
 
+  private final DefaultsHttpClientPlanCustomizer defaultsHttpClientPlanCustomizer;
+
   private final Mutex lock = new Mutex();
 
   private HttpClientConfiguration configuration;
@@ -60,13 +62,15 @@ public class HttpClientManagerImpl
   @Inject
   public HttpClientManagerImpl(final HttpClientConfigurationStore store,
                                @Named("initial") final Provider<HttpClientConfiguration> defaults,
-                               final SharedHttpClientConnectionManager sharedConnectionManager)
+                               final SharedHttpClientConnectionManager sharedConnectionManager,
+                               final DefaultsHttpClientPlanCustomizer defaultsHttpClientPlanCustomizer)
   {
     this.store = checkNotNull(store);
     log.debug("Store: {}", store);
     this.defaults = checkNotNull(defaults);
     log.debug("Defaults: {}", defaults);
     this.sharedConnectionManager = checkNotNull(sharedConnectionManager);
+    this.defaultsHttpClientPlanCustomizer = checkNotNull(defaultsHttpClientPlanCustomizer);
   }
 
   //
@@ -164,7 +168,7 @@ public class HttpClientManagerImpl
   public HttpClient create(final @Nullable HttpClientPlan.Customizer customizer) {
     HttpClientPlan plan = new HttpClientPlan();
 
-    // TODO: apply defaults
+    defaultsHttpClientPlanCustomizer.customize(plan);
 
     if (customizer != null) {
       customizer.customize(plan);
@@ -174,9 +178,11 @@ public class HttpClientManagerImpl
 
     // apply plan to builder
     HttpClientBuilder builder = plan.getClient();
+    builder.setConnectionManager(sharedConnectionManager);
     builder.setDefaultConnectionConfig(plan.getConnection().build());
     builder.setDefaultSocketConfig(plan.getSocket().build());
     builder.setDefaultRequestConfig(plan.getRequest().build());
+    builder.setDefaultCredentialsProvider(plan.getCredentials());
 
     // build instance
     return builder.build();
@@ -185,6 +191,7 @@ public class HttpClientManagerImpl
   @Override
   @Guarded(by = STARTED)
   public HttpClient create() {
+    // create with defaults only
     return create(null);
   }
 }

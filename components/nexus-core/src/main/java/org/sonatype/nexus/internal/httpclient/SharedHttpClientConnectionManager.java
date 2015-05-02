@@ -52,9 +52,9 @@ public class SharedHttpClientConnectionManager
   @Inject
   public SharedHttpClientConnectionManager(
       final List<SSLContextSelector> sslContextSelectors,
-      @Named("${nexus.httpclient.connectionpool.size:=20}") final int connectionPoolSize,
-      @Named("${nexus.httpclient.connectionpool.maxSize:=200}") final int connectionPoolMaxSize,
-      @Named("${nexus.httpclient.connectionpool.idleTime:=30s") final Time connectionPoolIdleTime)
+      @Named("${nexus.httpclient.connectionpool.size:-20}") final int connectionPoolSize,
+      @Named("${nexus.httpclient.connectionpool.maxSize:-200}") final int connectionPoolMaxSize,
+      @Named("${nexus.httpclient.connectionpool.idleTime:-30s") final Time connectionPoolIdleTime)
   {
     super(createRegistry(sslContextSelectors));
     log.debug("Connection pool max-size: {}", connectionPoolMaxSize);
