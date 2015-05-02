@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.net.HttpHeaders.LOCATION;
 
+// FIXME: Sort out where this was used/needed apply or remove
+
 /**
  * This special strategy will kick in only if Nexus performs content retrieval.
  * In every other case (non-GET method or GET method used in remote
