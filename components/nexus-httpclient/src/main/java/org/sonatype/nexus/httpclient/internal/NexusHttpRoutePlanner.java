@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
@@ -57,16 +56,6 @@ public class NexusHttpRoutePlanner
     super(DefaultSchemePortResolver.INSTANCE);
     this.proxies = checkNotNull(proxies);
     this.patterns = checkNotNull(patterns);
-  }
-
-  // FIXME: Why are we overriding just to call default?
-
-  public HttpRoute determineRoute(final HttpHost host,
-                                  final HttpRequest request,
-                                  final HttpContext context)
-      throws HttpException
-  {
-    return super.determineRoute(host, request, context);
   }
 
   @Override
