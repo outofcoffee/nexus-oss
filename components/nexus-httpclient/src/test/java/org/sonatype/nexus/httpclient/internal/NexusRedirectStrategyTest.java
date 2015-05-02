@@ -15,7 +15,6 @@ package org.sonatype.nexus.httpclient.internal;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
@@ -25,9 +24,12 @@ import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import static org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static org.sonatype.nexus.httpclient.internal.NexusRedirectStrategy.CONTENT_RETRIEVAL_MARKER_KEY;
 
 /**
  * Tests for {@link NexusRedirectStrategy}.
@@ -53,24 +55,23 @@ public class NexusRedirectStrategyTest
     // no location header
     request = new HttpGet("http://localhost/dir/fileA");
     httpContext = new BasicHttpContext();
-    httpContext.setAttribute(NexusRedirectStrategy.CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
-    when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+    httpContext.setAttribute(CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
+    when(statusLine.getStatusCode()).thenReturn(SC_OK);
     assertThat(underTest.isRedirected(request, response, httpContext), is(false));
 
     // redirect to file
     request = new HttpGet("http://localhost/dir/fileA");
     httpContext = new BasicHttpContext();
-    httpContext.setAttribute(NexusRedirectStrategy.CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
-    when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_MOVED_TEMPORARILY);
-    when(response.getFirstHeader("location")).thenReturn(
-        new BasicHeader("location", "http://localhost/dir/fileB"));
+    httpContext.setAttribute(CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
+    when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
+    when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://localhost/dir/fileB"));
     assertThat(underTest.isRedirected(request, response, httpContext), is(true));
 
     // redirect to dir
     request = new HttpGet("http://localhost/dir");
     httpContext = new BasicHttpContext();
-    httpContext.setAttribute(NexusRedirectStrategy.CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
-    when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_MOVED_TEMPORARILY);
+    httpContext.setAttribute(CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
+    when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
     when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://localhost/dir/"));
     assertThat(underTest.isRedirected(request, response, httpContext), is(false));
   }
@@ -83,14 +84,13 @@ public class NexusRedirectStrategyTest
 
     // simple cross redirect
     request = new HttpGet("http://hostA/dir");
-    when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_MOVED_TEMPORARILY);
-    when(response.getFirstHeader("location")).thenReturn(
-        new BasicHeader("location", "http://hostB/dir"));
+    when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
+    when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://hostB/dir"));
     assertThat(underTest.isRedirected(request, response, new BasicHttpContext()), is(true));
 
     // cross redirect to dir (failed coz NEXUS-5744)
     request = new HttpGet("http://hostA/dir/");
-    when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_MOVED_TEMPORARILY);
+    when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
     when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://hostB/dir/"));
     assertThat(underTest.isRedirected(request, response, new BasicHttpContext()), is(true));
   }
