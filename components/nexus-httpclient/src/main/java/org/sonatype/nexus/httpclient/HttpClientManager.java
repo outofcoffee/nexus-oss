@@ -25,8 +25,14 @@ import org.apache.http.client.HttpClient;
  */
 public interface HttpClientManager
 {
+  /**
+   * Returns global HTTP-client configuration.
+   */
   HttpClientConfiguration getConfiguration();
 
+  /**
+   * Installs new global HTTP-client configuration.
+   */
   void setConfiguration(HttpClientConfiguration configuration);
 
   /**
