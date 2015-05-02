@@ -12,6 +12,9 @@
  */
 package org.sonatype.nexus.internal.httpclient;
 
+import java.io.IOException;
+import java.util.Map.Entry;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,8 +33,14 @@ import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.sisu.goodies.common.Mutex;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.HttpRequestExecutor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
@@ -41,6 +50,7 @@ import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.St
  *
  * @since 3.0
  */
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 @Named
 @Singleton
 public class HttpClientManagerImpl
@@ -53,7 +63,7 @@ public class HttpClientManagerImpl
 
   private final SharedHttpClientConnectionManager sharedConnectionManager;
 
-  private final DefaultsHttpClientPlanCustomizer defaultsHttpClientPlanCustomizer;
+  private final DefaultsHttpClientPlanCustomizer defaultsCustomizer;
 
   private final Mutex lock = new Mutex();
 
@@ -63,14 +73,16 @@ public class HttpClientManagerImpl
   public HttpClientManagerImpl(final HttpClientConfigurationStore store,
                                @Named("initial") final Provider<HttpClientConfiguration> defaults,
                                final SharedHttpClientConnectionManager sharedConnectionManager,
-                               final DefaultsHttpClientPlanCustomizer defaultsHttpClientPlanCustomizer)
+                               final DefaultsHttpClientPlanCustomizer defaultsCustomizer)
   {
     this.store = checkNotNull(store);
     log.debug("Store: {}", store);
+
     this.defaults = checkNotNull(defaults);
     log.debug("Defaults: {}", defaults);
+
     this.sharedConnectionManager = checkNotNull(sharedConnectionManager);
-    this.defaultsHttpClientPlanCustomizer = checkNotNull(defaultsHttpClientPlanCustomizer);
+    this.defaultsCustomizer = checkNotNull(defaultsCustomizer);
   }
 
   //
@@ -166,9 +178,13 @@ public class HttpClientManagerImpl
   @Override
   @Guarded(by = STARTED)
   public HttpClient create(final @Nullable HttpClientPlan.Customizer customizer) {
-    HttpClientPlan plan = new HttpClientPlan();
+    final HttpClientPlan plan = new HttpClientPlan();
 
-    defaultsHttpClientPlanCustomizer.customize(plan);
+    // apply defaults
+    defaultsCustomizer.customize(plan);
+
+    // apply globals
+    new ConfigurationHttpClientPlanCustomizer(getConfigurationInternal()).customize(plan);
 
     if (customizer != null) {
       customizer.customize(plan);
@@ -183,6 +199,40 @@ public class HttpClientManagerImpl
     builder.setDefaultSocketConfig(plan.getSocket().build());
     builder.setDefaultRequestConfig(plan.getRequest().build());
     builder.setDefaultCredentialsProvider(plan.getCredentials());
+
+    // FIXME: Sort out why we have an interceptor and a request-executor, will interceptor not work for headers?
+
+    // apply http-context attributes
+    if (!plan.getAttributes().isEmpty()) {
+      builder.addInterceptorFirst(new HttpRequestInterceptor()
+      {
+        @Override
+        public void process(final HttpRequest request, final HttpContext context)
+            throws HttpException, IOException
+        {
+          for (Entry<String,Object> entry : plan.getAttributes().entrySet()) {
+            context.setAttribute(entry.getKey(), entry.getValue());
+          }
+        }
+      });
+    }
+
+    // apply http-request headers
+    if (!plan.getHeaders().isEmpty()) {
+      builder.setRequestExecutor(new HttpRequestExecutor()
+      {
+        @Override
+        public void preProcess(final HttpRequest request, final HttpProcessor processor, final HttpContext context)
+            throws HttpException, IOException
+        {
+          for (Entry<String,String> entry : plan.getHeaders().entrySet()) {
+            request.addHeader(entry.getKey(), entry.getValue());
+          }
+
+          super.preProcess(request, processor, context);
+        }
+      });
+    }
 
     // build instance
     return builder.build();

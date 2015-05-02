@@ -29,7 +29,13 @@ public interface HttpClientManager
 
   void setConfiguration(HttpClientConfiguration configuration);
 
+  /**
+   * Create customized HTTP-client.
+   */
   HttpClient create(HttpClientPlan.Customizer customizer);
 
+  /**
+   * Create HTTP-client with defaults.
+   */
   HttpClient create();
 }

@@ -20,6 +20,7 @@ import org.sonatype.nexus.httpclient.HttpClientPlan;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.common.Time;
 
+import com.google.common.net.HttpHeaders;
 import org.apache.http.client.config.CookieSpecs;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -35,15 +36,20 @@ public class DefaultsHttpClientPlanCustomizer
   extends ComponentSupport
   implements HttpClientPlan.Customizer
 {
+  private final UserAgentGenerator userAgentGenerator;
+
   private final Time requestTimeout;
 
   private final Time keepAliveDuration;
 
   @Inject
   public DefaultsHttpClientPlanCustomizer(
+      final UserAgentGenerator userAgentGenerator,
       @Named("${nexus.httpclient.requestTimeout:-30s}") final Time requestTimeout,
       @Named("${nexus.httpclient.keepAliveDuration:-30s}") final Time keepAliveDuration)
   {
+    this.userAgentGenerator = checkNotNull(userAgentGenerator);
+
     this.requestTimeout = checkNotNull(requestTimeout);
     log.debug("Request timeout: {}", requestTimeout);
 
@@ -54,6 +60,8 @@ public class DefaultsHttpClientPlanCustomizer
   @Override
   public void customize(final HttpClientPlan plan) {
     checkNotNull(plan);
+
+    plan.getHeaders().put(HttpHeaders.USER_AGENT, userAgentGenerator.get());
 
     plan.getClient().setKeepAliveStrategy(new NexusConnectionKeepAliveStrategy(keepAliveDuration.toMillis()));
 

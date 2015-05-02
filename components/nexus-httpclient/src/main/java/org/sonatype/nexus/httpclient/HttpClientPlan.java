@@ -12,6 +12,9 @@
  */
 package org.sonatype.nexus.httpclient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Nullable;
 
 import org.sonatype.sisu.goodies.common.ComponentSupport;
@@ -31,6 +34,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
  *
  * @since 3.0
  */
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 public class HttpClientPlan
     extends ComponentSupport
 {
@@ -42,6 +46,10 @@ public class HttpClientPlan
 
   private final RequestConfig.Builder request;
 
+  private final Map<String,String> headers;
+
+  private final Map<String,Object> attributes;
+
   @Nullable
   private CredentialsProvider credentials;
 
@@ -50,6 +58,8 @@ public class HttpClientPlan
     this.connection = ConnectionConfig.copy(ConnectionConfig.DEFAULT);
     this.socket = SocketConfig.copy(SocketConfig.DEFAULT);
     this.request = RequestConfig.copy(RequestConfig.DEFAULT);
+    this.headers = new HashMap<>();
+    this.attributes = new HashMap<>();
   }
 
   public HttpClientBuilder getClient() {
@@ -66,6 +76,14 @@ public class HttpClientPlan
 
   public RequestConfig.Builder getRequest() {
     return request;
+  }
+
+  public Map<String, String> getHeaders() {
+    return headers;
+  }
+
+  public Map<String, Object> getAttributes() {
+    return attributes;
   }
 
   public void addCredentials(final AuthScope authScope, final Credentials credentials) {
