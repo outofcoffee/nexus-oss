@@ -26,6 +26,8 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.protocol.HttpContext;
 
+// FIXME: Sort out where this was used, implement or remove
+
 /**
  * {@link HttpRequestInterceptor} to force use of preemptive authentication.
  *
