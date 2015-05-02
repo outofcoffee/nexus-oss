@@ -28,6 +28,8 @@ import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.net.HttpHeaders.LOCATION;
+
 /**
  * This special strategy will kick in only if Nexus performs content retrieval.
  * In every other case (non-GET method or GET method used in remote
@@ -71,7 +73,7 @@ public class NexusRedirectStrategy
     if (super.isRedirected(request, response, context)) {
       // code below comes from DefaultRedirectStrategy, as method super.getLocationURI cannot be used
       // since it modifies context state, and would result in false circular reference detection
-      final Header locationHeader = response.getFirstHeader("location");
+      final Header locationHeader = response.getFirstHeader(LOCATION);
       if (locationHeader == null) {
         // got a redirect response, but no location header
         throw new ProtocolException("Received redirect response " + response.getStatusLine() +
