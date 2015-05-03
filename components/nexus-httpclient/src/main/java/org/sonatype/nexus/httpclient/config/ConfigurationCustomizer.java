@@ -10,7 +10,7 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.httpclient;
+package org.sonatype.nexus.httpclient.config;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,13 +22,7 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nullable;
 
-import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration;
-import org.sonatype.nexus.httpclient.config.ConnectionConfiguration;
-import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
-import org.sonatype.nexus.httpclient.config.NtlmAuthenticationConfiguration;
-import org.sonatype.nexus.httpclient.config.ProxyConfiguration;
-import org.sonatype.nexus.httpclient.config.ProxyServerConfiguration;
-import org.sonatype.nexus.httpclient.config.UsernameAuthenticationConfiguration;
+import org.sonatype.nexus.httpclient.HttpClientPlan;
 import org.sonatype.nexus.httpclient.internal.NexusHttpRoutePlanner;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 

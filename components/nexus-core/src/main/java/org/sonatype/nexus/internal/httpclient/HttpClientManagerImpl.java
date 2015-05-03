@@ -26,10 +26,10 @@ import org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport;
 import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.events.NexusStartedEvent;
 import org.sonatype.nexus.events.NexusStoppedEvent;
-import org.sonatype.nexus.httpclient.ConfigurationCustomizer;
 import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
 import org.sonatype.nexus.httpclient.HttpClientManager;
 import org.sonatype.nexus.httpclient.HttpClientPlan;
+import org.sonatype.nexus.httpclient.config.ConfigurationCustomizer;
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.sisu.goodies.common.Mutex;
 

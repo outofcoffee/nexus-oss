@@ -54,8 +54,8 @@ class ConnectionEvictionThread
     setPriority(MIN_PRIORITY);
   }
 
-  ConnectionEvictionThread(final HttpClientConnectionManager connectionManager, final Time idelTime) {
-    this(connectionManager, idelTime.toMillisI(), 5000);
+  ConnectionEvictionThread(final HttpClientConnectionManager connectionManager, final Time idleTime) {
+    this(connectionManager, idleTime.toMillisI(), 5000);
   }
 
   @Override

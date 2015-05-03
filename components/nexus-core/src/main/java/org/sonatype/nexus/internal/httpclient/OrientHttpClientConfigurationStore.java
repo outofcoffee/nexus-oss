@@ -10,7 +10,7 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.internal.security.realm;
+package org.sonatype.nexus.internal.httpclient;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -18,12 +18,11 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.events.NexusInitializedEvent;
 import org.sonatype.nexus.events.NexusStoppingEvent;
+import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
+import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.nexus.orient.DatabaseInstance;
-import org.sonatype.nexus.security.realm.RealmConfiguration;
-import org.sonatype.nexus.security.realm.RealmConfigurationStore;
 import org.sonatype.sisu.goodies.lifecycle.LifecycleSupport;
 
 import com.google.common.eventbus.Subscribe;
@@ -32,23 +31,23 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Orient {@link RealmConfigurationStore}.
+ * Orient {@link HttpClientConfigurationStore}.
  *
  * @since 3.0
  */
 @Named("orient")
 @Singleton
-public class OrientRealmConfigurationStore
+public class OrientHttpClientConfigurationStore
   extends LifecycleSupport
-  implements RealmConfigurationStore, EventSubscriber
+  implements HttpClientConfigurationStore
 {
   private final Provider<DatabaseInstance> databaseInstance;
 
-  private final RealmConfigurationEntityAdapter entityAdapter;
+  private final HttpClientConfigurationEntityAdapter entityAdapter;
 
   @Inject
-  public OrientRealmConfigurationStore(@Named("security") final Provider<DatabaseInstance> databaseInstance,
-                                       final RealmConfigurationEntityAdapter entityAdapter)
+  public OrientHttpClientConfigurationStore(@Named("config") final Provider<DatabaseInstance> databaseInstance,
+                                            final HttpClientConfigurationEntityAdapter entityAdapter)
   {
     this.databaseInstance = checkNotNull(databaseInstance);
     this.entityAdapter = checkNotNull(entityAdapter);
@@ -78,14 +77,14 @@ public class OrientRealmConfigurationStore
 
   @Override
   @Nullable
-  public RealmConfiguration load() {
+  public HttpClientConfiguration load() {
     try (ODatabaseDocumentTx db = openDb()) {
       return entityAdapter.get(db);
     }
   }
 
   @Override
-  public void save(final RealmConfiguration configuration) {
+  public void save(final HttpClientConfiguration configuration) {
     try (ODatabaseDocumentTx db = openDb()) {
       entityAdapter.set(db, configuration);
     }
