@@ -44,6 +44,7 @@ public class HttpClientConfigurationEntityAdapter
 
   @Override
   protected void defineType(final OClass type) {
+    // TODO: May consider special handling for entire entity as a single map property?
     type.createProperty(P_CONNECTION, OType.EMBEDDEDMAP);
     type.createProperty(P_PROXY, OType.EMBEDDEDMAP);
     type.createProperty(P_AUTHENTICATION, OType.EMBEDDEDMAP);

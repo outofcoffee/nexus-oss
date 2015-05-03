@@ -13,25 +13,28 @@
 package org.sonatype.nexus.internal.httpclient;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
-import org.sonatype.nexus.httpclient.MemoryHttpClientConfigurationStore;
-
-import com.google.inject.AbstractModule;
+import org.sonatype.nexus.log.LogConfigurationCustomizer;
+import org.sonatype.nexus.log.LoggerLevel;
 
 /**
- * HTTP-client module.
+ * HTTP-client {@link LogConfigurationCustomizer}.
  *
  * @since 3.0
  */
 @Named
-public class HttpClientModule
-  extends AbstractModule
+@Singleton
+public class LogConfigurationCustomizerImpl
+    implements LogConfigurationCustomizer
 {
   @Override
-  protected void configure() {
-    // FIXME: Enable once we have orient-based store functional, until then use memory impl
-    //bind(HttpClientConfigurationStore.class).to(OrientHttpClientConfigurationStore.class);
-    bind(HttpClientConfigurationStore.class).to(MemoryHttpClientConfigurationStore.class);
+  public void customize(final Configuration config) {
+    // NEXUS-6134: make it easy for user to debug outbound request headers
+    config.setLoggerLevel("org.apache.http", LoggerLevel.INFO);
+    config.setLoggerLevel("org.apache.http.wire", LoggerLevel.ERROR);
+
+    config.setLoggerLevel("org.sonatype.nexus.httpclient", LoggerLevel.DEFAULT);
+    config.setLoggerLevel("org.sonatype.nexus.internal.httpclient", LoggerLevel.DEFAULT);
   }
 }

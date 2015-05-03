@@ -37,10 +37,6 @@ public class CoreLogConfigurationCustomizer
     configuration.setLoggerLevel("org.eclipse.jetty", LoggerLevel.INFO);
     configuration.setLoggerLevel("eu.medsea.mimeutil.MimeUtil2", LoggerLevel.INFO);
 
-    // NEXUS-6134: make it easy for user to debug outbound request headers
-    configuration.setLoggerLevel("org.apache.http", LoggerLevel.INFO);
-    configuration.setLoggerLevel("org.apache.http.wire", LoggerLevel.ERROR);
-
     // NEXUS-5456: limit noisy guice timing logger
     configuration.setLoggerLevel("com.google.inject.internal.util.Stopwatch", LoggerLevel.INFO);
 
@@ -56,7 +52,6 @@ public class CoreLogConfigurationCustomizer
     configuration.setLoggerLevel("org.sonatype.nexus.security", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.jmx", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.internal.log", LoggerLevel.DEFAULT);
-    configuration.setLoggerLevel("org.sonatype.nexus.internal.httpclient", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.plugins", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.tasks", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.threads", LoggerLevel.DEFAULT);
