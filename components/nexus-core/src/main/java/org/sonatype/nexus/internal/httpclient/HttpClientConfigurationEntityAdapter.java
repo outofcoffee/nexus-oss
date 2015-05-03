@@ -17,6 +17,7 @@ import org.sonatype.nexus.orient.OClassNameBuilder;
 import org.sonatype.nexus.orient.entity.SingletonEntityAdapter;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -31,13 +32,21 @@ public class HttpClientConfigurationEntityAdapter
       .type(HttpClientConfiguration.class)
       .build();
 
+  public static final String P_CONNECTION = "connection";
+
+  public static final String P_PROXY = "proxy";
+
+  public static final String P_AUTHENTICATION = "authentication";
+
   public HttpClientConfigurationEntityAdapter() {
     super(DB_CLASS);
   }
 
   @Override
   protected void defineType(final OClass type) {
-    // TODO:
+    type.createProperty(P_CONNECTION, OType.EMBEDDEDMAP);
+    type.createProperty(P_PROXY, OType.EMBEDDEDMAP);
+    type.createProperty(P_AUTHENTICATION, OType.EMBEDDEDMAP);
   }
 
   @Override
