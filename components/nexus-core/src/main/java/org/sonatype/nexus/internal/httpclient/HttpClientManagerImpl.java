@@ -158,6 +158,10 @@ public class HttpClientManagerImpl
     return getConfigurationInternal().copy();
   }
 
+  //
+  // TODO: Add events to expose when httpclient configuration has changed?
+  //
+
   @Override
   @Guarded(by = STARTED)
   public void setConfiguration(final HttpClientConfiguration configuration) {

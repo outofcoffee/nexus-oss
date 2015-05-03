@@ -26,8 +26,6 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.protocol.HttpContext;
 
-// FIXME: Sort out where this was used, implement or remove
-
 /**
  * {@link HttpRequestInterceptor} to force use of preemptive authentication.
  *
@@ -36,6 +34,7 @@ import org.apache.http.protocol.HttpContext;
  *
  * @since 2.8
  */
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 public class PreemptiveAuthHttpRequestInterceptor
     implements HttpRequestInterceptor
 {
