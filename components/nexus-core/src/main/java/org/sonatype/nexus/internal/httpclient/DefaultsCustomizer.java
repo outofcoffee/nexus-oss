@@ -17,6 +17,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.httpclient.HttpClientPlan;
+import org.sonatype.sisu.goodies.common.ByteSize;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.common.Time;
 
@@ -43,11 +44,14 @@ public class DefaultsCustomizer
 
   private final Time keepAliveDuration;
 
+  private final ByteSize bufferSize;
+
   @Inject
   public DefaultsCustomizer(
       final UserAgentGenerator userAgentGenerator,
       @Named("${nexus.httpclient.requestTimeout:-30s}") final Time requestTimeout,
-      @Named("${nexus.httpclient.keepAliveDuration:-30s}") final Time keepAliveDuration)
+      @Named("${nexus.httpclient.keepAliveDuration:-30s}") final Time keepAliveDuration,
+      @Named("${nexus.httpclient.bufferSize:-8k}") final ByteSize bufferSize)
   {
     this.userAgentGenerator = checkNotNull(userAgentGenerator);
 
@@ -56,6 +60,9 @@ public class DefaultsCustomizer
 
     this.keepAliveDuration = checkNotNull(keepAliveDuration);
     log.debug("Keep-alive duration: {}", keepAliveDuration);
+
+    this.bufferSize = checkNotNull(bufferSize);
+    log.debug("Buffer-size: {}", bufferSize);
   }
 
   @Override
@@ -66,7 +73,7 @@ public class DefaultsCustomizer
 
     plan.getClient().setKeepAliveStrategy(new NexusConnectionKeepAliveStrategy(keepAliveDuration.toMillis()));
 
-    plan.getConnection().setBufferSize(8 * 1024);
+    plan.getConnection().setBufferSize(bufferSize.toBytesI());
 
     plan.getRequest().setConnectionRequestTimeout(requestTimeout.toMillisI());
     plan.getRequest().setCookieSpec(CookieSpecs.IGNORE_COOKIES);
