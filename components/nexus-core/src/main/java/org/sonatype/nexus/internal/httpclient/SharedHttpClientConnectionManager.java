@@ -31,6 +31,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.sonatype.nexus.httpclient.HttpSchemes.HTTP;
+import static org.sonatype.nexus.httpclient.HttpSchemes.HTTPS;
+
+// TODO: Restore JMX support for httpclient bits
 
 /**
  * Shared {@link PoolingHttpClientConnectionManager}.
@@ -55,21 +59,24 @@ public class SharedHttpClientConnectionManager
       final List<SSLContextSelector> sslContextSelectors,
       @Named("${nexus.httpclient.connectionpool.size:-20}") final int connectionPoolSize,
       @Named("${nexus.httpclient.connectionpool.maxSize:-200}") final int connectionPoolMaxSize,
-      @Named("${nexus.httpclient.connectionpool.idleTime:-30s") final Time connectionPoolIdleTime)
+      @Named("${nexus.httpclient.connectionpool.idleTime:-30s}") final Time connectionPoolIdleTime)
   {
     super(createRegistry(sslContextSelectors));
-    log.debug("Connection pool max-size: {}", connectionPoolMaxSize);
+
     setMaxTotal(connectionPoolMaxSize);
-    log.debug("Connection pool size: {}", connectionPoolSize);
+    log.debug("Connection pool max-size: {}", connectionPoolMaxSize);
+
     setDefaultMaxPerRoute(Math.min(connectionPoolSize, connectionPoolMaxSize));
-    log.debug("Connection pool idle-time: {}", connectionPoolIdleTime);
+    log.debug("Connection pool size: {}", connectionPoolSize);
+
     this.connectionPoolIdleTime = checkNotNull(connectionPoolIdleTime);
+    log.debug("Connection pool idle-time: {}", connectionPoolIdleTime);
   }
 
   private static Registry<ConnectionSocketFactory> createRegistry(final List<SSLContextSelector> sslContextSelectors) {
     RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.create();
-    builder.register("http", PlainConnectionSocketFactory.getSocketFactory());
-    builder.register("https", new NexusSSLConnectionSocketFactory(sslContextSelectors));
+    builder.register(HTTP, PlainConnectionSocketFactory.getSocketFactory());
+    builder.register(HTTPS, new NexusSSLConnectionSocketFactory(sslContextSelectors));
     return builder.build();
   }
 

@@ -17,18 +17,13 @@ import javax.inject.Singleton;
 
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
-import org.apache.http.client.HttpClient;
+// FIXME: Remove/adjust to nexus-httpclient api
 
-/**
- * {@link HttpClientFactory} implementation.
- *
- * @since 3.0
- */
 @Named
 @Singleton
 public class HttpClientFactoryImpl
     extends ComponentSupport
-    implements HttpClientFactory
+    //implements HttpClientFactory
 {
   //private org.sonatype.nexus.httpclient.HttpClientFactory httpClientFactory;
   //
@@ -37,18 +32,18 @@ public class HttpClientFactoryImpl
   //  this.httpClientFactory = checkNotNull(httpClientFactory);
   //}
 
-  @Override
-  public HttpClient create(final HttpClientConfig config) {
-    //return httpClientFactory.create(new Customizer()
-    //{
-    //  @Override
-    //  public void customize(final HttpClientBuilder builder) {
-    //    applyConfiguration(builder, config);
-    //    applyRedirectStrategy(builder);
-    //  }
-    //});
-    return null;
-  }
+  //@Override
+  //public HttpClient create(final HttpClientConfig config) {
+  //  //return httpClientFactory.create(new Customizer()
+  //  //{
+  //  //  @Override
+  //  //  public void customize(final HttpClientBuilder builder) {
+  //  //    applyConfiguration(builder, config);
+  //  //    applyRedirectStrategy(builder);
+  //  //  }
+  //  //});
+  //  return null;
+  //}
 
   //private void applyConfiguration(final HttpClientBuilder builder, final HttpClientConfig config) {
   //  // connection/socket timeouts

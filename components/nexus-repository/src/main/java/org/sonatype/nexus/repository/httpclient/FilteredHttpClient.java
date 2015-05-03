@@ -41,6 +41,8 @@ import org.joda.time.Duration;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+// FIXME: Describe what this class is for in javadocs instead of leaving it empty!
+
 /**
  * @since 3.0
  */

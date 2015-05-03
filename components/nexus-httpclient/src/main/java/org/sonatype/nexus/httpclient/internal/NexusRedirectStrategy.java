@@ -29,9 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.net.HttpHeaders.LOCATION;
+import static org.sonatype.nexus.httpclient.HttpSchemes.HTTP;
 
 // FIXME: Sort out where this was used/needed apply or remove
-
 /**
  * This special strategy will kick in only if Nexus performs content retrieval.
  * In every other case (non-GET method or GET method used in remote
@@ -93,7 +93,7 @@ public class NexusRedirectStrategy
 
       // nag about redirection peculiarities, in any case
       if (!Objects.equals(sourceScheme, targetScheme)) {
-        if ("http".equals(targetScheme)) {
+        if (HTTP.equals(targetScheme)) {
           // security risk: HTTPS > HTTP downgrade, you are not safe as you think!
           log.debug("Downgrade from HTTPS to HTTP during redirection {} -> {}", sourceUri, targetUri);
         }

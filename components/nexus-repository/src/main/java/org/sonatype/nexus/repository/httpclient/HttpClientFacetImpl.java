@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.sonatype.nexus.common.stateguard.Guarded;
+import org.sonatype.nexus.httpclient.HttpClientManager;
 import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.config.ConfigurationFacet;
@@ -37,7 +38,7 @@ public class HttpClientFacetImpl
     extends FacetSupport
     implements HttpClientFacet
 {
-  private final HttpClientFactory factory;
+  private final HttpClientManager httpClientManager;
 
   @VisibleForTesting
   static final String CONFIG_KEY = "httpclient";
@@ -47,8 +48,8 @@ public class HttpClientFacetImpl
   private FilteredHttpClient httpClient;
 
   @Inject
-  public HttpClientFacetImpl(final HttpClientFactory factory) {
-    this.factory = checkNotNull(factory);
+  public HttpClientFacetImpl(final HttpClientManager httpClientManager) {
+    this.httpClientManager = checkNotNull(httpClientManager);
   }
 
   @Override
@@ -61,7 +62,10 @@ public class HttpClientFacetImpl
     config = facet(ConfigurationFacet.class).readSection(configuration, CONFIG_KEY, HttpClientConfig.class);
     log.debug("Config: {}", config);
 
-    httpClient = new FilteredHttpClient(factory.create(config), config);
+    // FIXME: Adapt facet configuration
+    HttpClient delegate = httpClientManager.create();
+
+    httpClient = new FilteredHttpClient(delegate, config);
     log.debug("Created HTTP client: {}", httpClient);
   }
 

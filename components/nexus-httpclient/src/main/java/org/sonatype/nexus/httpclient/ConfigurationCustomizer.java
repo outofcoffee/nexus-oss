@@ -44,6 +44,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.http.client.config.AuthSchemes.BASIC;
 import static org.apache.http.client.config.AuthSchemes.DIGEST;
 import static org.apache.http.client.config.AuthSchemes.NTLM;
+import static org.sonatype.nexus.httpclient.HttpSchemes.HTTP;
+import static org.sonatype.nexus.httpclient.HttpSchemes.HTTPS;
 
 /**
  * Applies {@link HttpClientConfiguration} to {@link HttpClientPlan}.
@@ -106,8 +108,8 @@ public class ConfigurationCustomizer
       if (http.getAuthentication() != null) {
         apply(http.getAuthentication(), plan, host);
       }
-      proxies.put("http", host);
-      proxies.put("https", host);
+      proxies.put(HTTP, host);
+      proxies.put(HTTPS, host);
     }
 
     // HTTPS proxy
@@ -117,7 +119,7 @@ public class ConfigurationCustomizer
       if (https.getAuthentication() != null) {
         apply(https.getAuthentication(), plan, host);
       }
-      proxies.put("https", host);
+      proxies.put(HTTPS, host);
     }
 
     // Non-proxy hosts (nexus-specific regular expression implementation)
