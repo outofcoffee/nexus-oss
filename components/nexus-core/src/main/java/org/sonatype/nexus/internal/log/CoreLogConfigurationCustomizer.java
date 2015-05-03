@@ -44,9 +44,6 @@ public class CoreLogConfigurationCustomizer
     configuration.setLoggerLevel("javax.management", LoggerLevel.INFO);
     configuration.setLoggerLevel("sun.rmi", LoggerLevel.INFO);
 
-    // Nexus loggers
-    configuration.setLoggerLevel("org.sonatype.nexus.rest.NexusApplication", LoggerLevel.WARN);
-
     // Useful loggers (level will be calculated as effective level)
     configuration.setLoggerLevel("org.sonatype.nexus", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.security", LoggerLevel.DEFAULT);
