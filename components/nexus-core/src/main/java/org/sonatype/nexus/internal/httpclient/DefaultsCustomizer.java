@@ -32,6 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Named
 @Singleton
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 public class DefaultsCustomizer
   extends ComponentSupport
   implements HttpClientPlan.Customizer
