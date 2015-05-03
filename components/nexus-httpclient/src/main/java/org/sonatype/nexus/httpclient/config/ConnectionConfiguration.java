@@ -22,9 +22,11 @@ import javax.annotation.Nullable;
 public class ConnectionConfiguration
     implements Cloneable
 {
-  private int timeout;
+  @Nullable
+  private Integer timeout;
 
-  private int maximumRetries;
+  @Nullable
+  private Integer maximumRetries;
 
   @Nullable
   private String userAgent;
@@ -33,19 +35,21 @@ public class ConnectionConfiguration
 
   // TODO: SSL trust-store?
 
-  public int getTimeout() {
+  @Nullable
+  public Integer getTimeout() {
     return timeout;
   }
 
-  public void setTimeout(final int timeout) {
+  public void setTimeout(@Nullable final Integer timeout) {
     this.timeout = timeout;
   }
 
-  public int getMaximumRetries() {
+  @Nullable
+  public Integer getMaximumRetries() {
     return maximumRetries;
   }
 
-  public void setMaximumRetries(final int maximumRetries) {
+  public void setMaximumRetries(@Nullable final Integer maximumRetries) {
     this.maximumRetries = maximumRetries;
   }
 

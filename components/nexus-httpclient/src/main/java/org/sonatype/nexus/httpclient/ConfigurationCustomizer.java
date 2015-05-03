@@ -81,12 +81,16 @@ public class ConfigurationCustomizer
    * Apply connection configuration to plan.
    */
   private void apply(final ConnectionConfiguration connection, final HttpClientPlan plan) {
-    int timeout = connection.getTimeout();
-    plan.getSocket().setSoTimeout(timeout);
-    plan.getRequest().setConnectTimeout(timeout);
-    plan.getRequest().setSocketTimeout(timeout);
+    if (connection.getTimeout() != null) {
+      int timeout = connection.getTimeout();
+      plan.getSocket().setSoTimeout(timeout);
+      plan.getRequest().setConnectTimeout(timeout);
+      plan.getRequest().setSocketTimeout(timeout);
+    }
 
-    plan.getClient().setRetryHandler(new StandardHttpRequestRetryHandler(connection.getMaximumRetries(), false));
+    if (connection.getMaximumRetries() != null) {
+      plan.getClient().setRetryHandler(new StandardHttpRequestRetryHandler(connection.getMaximumRetries(), false));
+    }
 
     // TODO: user-agent (and/or custom headers?)
 
@@ -148,12 +152,12 @@ public class ConfigurationCustomizer
     List<String> authSchemes;
 
     if (authentication instanceof UsernameAuthenticationConfiguration) {
-      UsernameAuthenticationConfiguration auth = (UsernameAuthenticationConfiguration)authentication;
+      UsernameAuthenticationConfiguration auth = (UsernameAuthenticationConfiguration) authentication;
       authSchemes = ImmutableList.of(DIGEST, BASIC);
       credentials = new UsernamePasswordCredentials(auth.getUsername(), auth.getPassword());
     }
     else if (authentication instanceof NtlmAuthenticationConfiguration) {
-      NtlmAuthenticationConfiguration auth = (NtlmAuthenticationConfiguration)authentication;
+      NtlmAuthenticationConfiguration auth = (NtlmAuthenticationConfiguration) authentication;
       authSchemes = ImmutableList.of(NTLM, DIGEST, BASIC);
       credentials = new NTCredentials(auth.getUsername(), auth.getPassword(), auth.getHost(), auth.getDomain());
     }
