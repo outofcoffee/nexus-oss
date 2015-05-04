@@ -30,9 +30,6 @@ public class HttpClientConfig
   @JsonDeserialize(using=AuthenticationConfigDeserializer.class)
   private AuthenticationConfig authentication;
 
-  @Valid
-  private ProxyConfig proxy;
-
   public ConnectionConfig getConnection() {
     return connection;
   }
@@ -49,20 +46,11 @@ public class HttpClientConfig
     this.authentication = authentication;
   }
 
-  public ProxyConfig getProxy() {
-    return proxy;
-  }
-
-  public void setProxy(final ProxyConfig proxy) {
-    this.proxy = proxy;
-  }
-
   @Override
   public String toString() {
     return getClass().getSimpleName() + "{" +
         "connection=" + connection +
         ", authentication=" + authentication +
-        ", proxy=" + proxy +
         '}';
   }
 }
