@@ -14,15 +14,14 @@ package org.sonatype.nexus.httpclient;
 
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 
-import org.apache.http.client.HttpClient;
-
-// TODO: Revisit use where Provider<HttpClient> would be more appropriate instead of wider api manager exposes
+import org.apache.http.impl.client.CloseableHttpClient;
 
 /**
  * HTTP-client manager.
  *
  * @since 3.0
  */
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 public interface HttpClientManager
 {
   /**
@@ -38,10 +37,12 @@ public interface HttpClientManager
   /**
    * Create customized HTTP-client.
    */
-  HttpClient create(HttpClientPlan.Customizer customizer);
+  CloseableHttpClient create(HttpClientPlan.Customizer customizer);
 
   /**
    * Create HTTP-client with defaults.
+   *
+   * Consider using {@code Provider<HttpClient>} instead.
    */
-  HttpClient create();
+  CloseableHttpClient create();
 }

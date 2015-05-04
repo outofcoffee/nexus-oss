@@ -37,7 +37,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 
@@ -180,7 +180,7 @@ public class HttpClientManagerImpl
 
   @Override
   @Guarded(by = STARTED)
-  public HttpClient create(final @Nullable HttpClientPlan.Customizer customizer) {
+  public CloseableHttpClient create(final @Nullable HttpClientPlan.Customizer customizer) {
     final HttpClientPlan plan = new HttpClientPlan();
 
     // attach connection manager early, so customizer has chance to replace it if needed
@@ -233,7 +233,7 @@ public class HttpClientManagerImpl
 
   @Override
   @Guarded(by = STARTED)
-  public HttpClient create() {
+  public CloseableHttpClient create() {
     // create with defaults only
     return create(null);
   }
