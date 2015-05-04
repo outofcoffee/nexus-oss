@@ -12,8 +12,10 @@
  */
 package com.sonatype.nexus.ssl.plugin.internal;
 
+import java.io.IOException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,9 +27,29 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.sonatype.nexus.httpclient.HttpClientManager;
+import org.sonatype.nexus.httpclient.HttpClientPlan;
+import org.sonatype.nexus.httpclient.HttpClientPlan.Customizer;
+import org.sonatype.nexus.httpclient.HttpSchemes;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.ManagedHttpClientConnection;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
+
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
 /**
  * Certificates retriever from a host:port using Apache Http Client 4.
@@ -36,10 +58,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Singleton
 @Named
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 public class CertificateRetriever
     extends ComponentSupport
 {
-
   private final HttpClientManager httpClientManager;
 
   @Inject
@@ -73,46 +95,55 @@ public class CertificateRetriever
 
     log.info("Retrieving certificate from https://{}:{}", host, port);
 
-    //Builder httpClientBuilder = null;
-    //HttpClientConnectionManager connectionManager = null;
-    //try {
-    //  final AtomicReference<Certificate[]> chain = new AtomicReference<Certificate[]>();
-    //  final SSLContext sc = SSLContext.getInstance("TLS");
-    //  sc.init(null, new TrustManager[]{ACCEPT_ALL_TRUST_MANAGER}, null);
-    //
-    //  final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sc, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-    //  final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-    //      .register("http", PlainConnectionSocketFactory.getSocketFactory())
-    //      .register("https", sslSocketFactory).build();
-    //
-    //  httpClientBuilder = httpClientFactory.prepare(new RemoteStorageContextCustomizer(context));
-    //  connectionManager = new BasicHttpClientConnectionManager(registry);
-    //  httpClientBuilder.getHttpClientBuilder().setConnectionManager(connectionManager);
-    //  httpClientBuilder.getHttpClientBuilder().addInterceptorFirst(
-    //      new HttpResponseInterceptor()
-    //      {
-    //        @Override
-    //        public void process(final HttpResponse response, final HttpContext context)
-    //            throws HttpException, IOException
-    //        {
-    //          final ManagedHttpClientConnection connection = HttpCoreContext.adapt(context).getConnection(ManagedHttpClientConnection.class);
-    //          if (connection != null) {
-    //            SSLSession session = connection.getSSLSession();
-    //            if (session != null) {
-    //              chain.set(session.getPeerCertificates());
-    //            }
-    //          }
-    //        }
-    //      });
-    //  httpClientBuilder.build().execute(new HttpGet("https://" + host + ":" + port));
-    //  return chain.get();
-    //}
-    //finally {
-    //  if (connectionManager != null) {
-    //    connectionManager.shutdown();
-    //  }
-    //}
-    return null;
+    // setup custom connection manager so we can configure SSL to trust-all
+    SSLContext sc = SSLContext.getInstance("TLS");
+    sc.init(null, new TrustManager[]{ACCEPT_ALL_TRUST_MANAGER}, null);
+    SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sc, ALLOW_ALL_HOSTNAME_VERIFIER);
+    Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+        .register(HttpSchemes.HTTP, PlainConnectionSocketFactory.getSocketFactory())
+        .register(HttpSchemes.HTTPS, sslSocketFactory).build();
+    final HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry);
+
+    try {
+      final AtomicReference<Certificate[]> certificates = new AtomicReference<>();
+
+      HttpClient httpClient = httpClientManager.create(new Customizer()
+      {
+        @Override
+        public void customize(final HttpClientPlan plan) {
+          // replace connection-manager with customized version needed to fetch SSL certificates
+          plan.getClient().setConnectionManager(connectionManager);
+
+          // add interceptor to grab peer-certificates
+          plan.getClient().addInterceptorFirst(new HttpRequestInterceptor()
+          {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context)
+                throws HttpException, IOException
+            {
+              ManagedHttpClientConnection connection =
+                  HttpCoreContext.adapt(context).getConnection(ManagedHttpClientConnection.class);
+
+              // grab the peer-certificates from the session
+              if (connection != null) {
+                SSLSession session = connection.getSSLSession();
+                if (session != null) {
+                  certificates.set(session.getPeerCertificates());
+                }
+              }
+            }
+          });
+        }
+      });
+
+      httpClient.execute(new HttpGet("https://" + host + ":" + port));
+
+      return certificates.get();
+    }
+    finally {
+      // shutdown single-use connection manager
+      connectionManager.shutdown();
+    }
   }
 
   /**
@@ -130,13 +161,14 @@ public class CertificateRetriever
 
     SSLSocket socket = null;
     try {
-      final SSLContext sc = SSLContext.getInstance("TLS");
+      SSLContext sc = SSLContext.getInstance("TLS");
       sc.init(null, new TrustManager[]{ACCEPT_ALL_TRUST_MANAGER}, null);
 
-      final javax.net.ssl.SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
+      javax.net.ssl.SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
       socket = (SSLSocket) sslSocketFactory.createSocket(host, port);
       socket.startHandshake();
-      final SSLSession session = socket.getSession();
+
+      SSLSession session = socket.getSession();
       return session.getPeerCertificates();
     }
     finally {
