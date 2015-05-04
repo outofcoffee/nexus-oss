@@ -40,8 +40,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpRequestExecutor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
@@ -185,6 +183,9 @@ public class HttpClientManagerImpl
   public HttpClient create(final @Nullable HttpClientPlan.Customizer customizer) {
     final HttpClientPlan plan = new HttpClientPlan();
 
+    // attach connection manager early, so customizer has chance to replace it if needed
+    plan.getClient().setConnectionManager(sharedConnectionManager);
+
     // apply defaults
     defaultsCustomizer.customize(plan);
 
@@ -199,45 +200,32 @@ public class HttpClientManagerImpl
 
     // apply plan to builder
     HttpClientBuilder builder = plan.getClient();
-    builder.setConnectionManager(sharedConnectionManager);
     builder.setDefaultConnectionConfig(plan.getConnection().build());
     builder.setDefaultSocketConfig(plan.getSocket().build());
     builder.setDefaultRequestConfig(plan.getRequest().build());
     builder.setDefaultCredentialsProvider(plan.getCredentials());
 
-    // FIXME: Sort out why we have an interceptor and a request-executor, will interceptor not work for headers?
-
-    // apply http-context attributes
-    if (!plan.getAttributes().isEmpty()) {
-      builder.addInterceptorFirst(new HttpRequestInterceptor()
+    builder.addInterceptorFirst(new HttpRequestInterceptor()
+    {
+      @Override
+      public void process(final HttpRequest request, final HttpContext context)
+          throws HttpException, IOException
       {
-        @Override
-        public void process(final HttpRequest request, final HttpContext context)
-            throws HttpException, IOException
-        {
-          for (Entry<String,Object> entry : plan.getAttributes().entrySet()) {
+        // add custom http-context attributes
+        if (!plan.getAttributes().isEmpty()) {
+          for (Entry<String, Object> entry : plan.getAttributes().entrySet()) {
             context.setAttribute(entry.getKey(), entry.getValue());
           }
         }
-      });
-    }
 
-    // apply http-request headers
-    if (!plan.getHeaders().isEmpty()) {
-      builder.setRequestExecutor(new HttpRequestExecutor()
-      {
-        @Override
-        public void preProcess(final HttpRequest request, final HttpProcessor processor, final HttpContext context)
-            throws HttpException, IOException
-        {
+        // add custom http-request headers
+        if (!plan.getHeaders().isEmpty()) {
           for (Entry<String,String> entry : plan.getHeaders().entrySet()) {
             request.addHeader(entry.getKey(), entry.getValue());
           }
-
-          super.preProcess(request, processor, context);
         }
-      });
-    }
+      }
+    });
 
     // build instance
     return builder.build();
