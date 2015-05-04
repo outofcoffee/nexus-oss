@@ -23,6 +23,8 @@ import org.apache.http.protocol.HttpContext;
  */
 public interface SSLContextSelector
 {
+  // TODO: If this is only ever used as context attribute name, consider better naming strategy.
+
   /**
    * {@link HttpContext} attribute to be used to enable usage of nexus trust store.
    *
