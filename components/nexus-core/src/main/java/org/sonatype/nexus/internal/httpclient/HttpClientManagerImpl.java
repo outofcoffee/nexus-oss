@@ -212,17 +212,13 @@ public class HttpClientManagerImpl
           throws HttpException, IOException
       {
         // add custom http-context attributes
-        if (!plan.getAttributes().isEmpty()) {
-          for (Entry<String, Object> entry : plan.getAttributes().entrySet()) {
-            context.setAttribute(entry.getKey(), entry.getValue());
-          }
+        for (Entry<String, Object> entry : plan.getAttributes().entrySet()) {
+          context.setAttribute(entry.getKey(), entry.getValue());
         }
 
         // add custom http-request headers
-        if (!plan.getHeaders().isEmpty()) {
-          for (Entry<String,String> entry : plan.getHeaders().entrySet()) {
-            request.addHeader(entry.getKey(), entry.getValue());
-          }
+        for (Entry<String,String> entry : plan.getHeaders().entrySet()) {
+          request.addHeader(entry.getKey(), entry.getValue());
         }
       }
     });
