@@ -24,6 +24,7 @@ import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import static com.google.common.net.HttpHeaders.LOCATION;
 import static org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,6 +46,8 @@ public class NexusRedirectStrategyTest
 
   private HttpGet request;
 
+  // FIXME: Need to mock header request w/o case as "Location" and "location" don't match, but are valid for upstream usage
+
   @Test
   public void doNotFollowRedirectsToDirIndex() throws Exception {
     when(response.getStatusLine()).thenReturn(statusLine);
@@ -64,7 +67,7 @@ public class NexusRedirectStrategyTest
     httpContext = new BasicHttpContext();
     httpContext.setAttribute(CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
     when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
-    when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://localhost/dir/fileB"));
+    when(response.getFirstHeader(LOCATION)).thenReturn(new BasicHeader(LOCATION, "http://localhost/dir/fileB"));
     assertThat(underTest.isRedirected(request, response, httpContext), is(true));
 
     // redirect to dir
@@ -72,7 +75,7 @@ public class NexusRedirectStrategyTest
     httpContext = new BasicHttpContext();
     httpContext.setAttribute(CONTENT_RETRIEVAL_MARKER_KEY, Boolean.TRUE);
     when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
-    when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://localhost/dir/"));
+    when(response.getFirstHeader(LOCATION)).thenReturn(new BasicHeader(LOCATION, "http://localhost/dir/"));
     assertThat(underTest.isRedirected(request, response, httpContext), is(false));
   }
 
@@ -85,13 +88,13 @@ public class NexusRedirectStrategyTest
     // simple cross redirect
     request = new HttpGet("http://hostA/dir");
     when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
-    when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://hostB/dir"));
+    when(response.getFirstHeader(LOCATION)).thenReturn(new BasicHeader(LOCATION, "http://hostB/dir"));
     assertThat(underTest.isRedirected(request, response, new BasicHttpContext()), is(true));
 
     // cross redirect to dir (failed coz NEXUS-5744)
     request = new HttpGet("http://hostA/dir/");
     when(statusLine.getStatusCode()).thenReturn(SC_MOVED_TEMPORARILY);
-    when(response.getFirstHeader("location")).thenReturn(new BasicHeader("location", "http://hostB/dir/"));
+    when(response.getFirstHeader(LOCATION)).thenReturn(new BasicHeader(LOCATION, "http://hostB/dir/"));
     assertThat(underTest.isRedirected(request, response, new BasicHttpContext()), is(true));
   }
 }
