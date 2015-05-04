@@ -32,8 +32,7 @@ public class CoreLogConfigurationCustomizer
   public void customize(final Configuration configuration) {
     // non Nexus loggers
     configuration.setLoggerLevel("org.apache.commons", LoggerLevel.WARN);
-    configuration.setLoggerLevel("org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter", LoggerLevel.INFO);
-    configuration.setLoggerLevel("org.apache.shiro.web.filter.mgt.DefaultFilterChainManager", LoggerLevel.INFO);
+
     configuration.setLoggerLevel("org.eclipse.jetty", LoggerLevel.INFO);
     configuration.setLoggerLevel("eu.medsea.mimeutil.MimeUtil2", LoggerLevel.INFO);
 
@@ -46,7 +45,7 @@ public class CoreLogConfigurationCustomizer
 
     // Useful loggers (level will be calculated as effective level)
     configuration.setLoggerLevel("org.sonatype.nexus", LoggerLevel.DEFAULT);
-    configuration.setLoggerLevel("org.sonatype.nexus.security", LoggerLevel.DEFAULT);
+
     configuration.setLoggerLevel("org.sonatype.nexus.jmx", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.internal.log", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.plugins", LoggerLevel.DEFAULT);
