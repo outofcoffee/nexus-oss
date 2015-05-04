@@ -23,8 +23,8 @@ import org.sonatype.nexus.log.LoggerLevel;
  *
  * @since 3.0
  */
-@Singleton
 @Named
+@Singleton
 public class LogConfigurationCustomizerImpl
     implements LogConfigurationCustomizer
 {
