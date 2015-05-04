@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.common.stateguard.Guarded;
 import org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport;
 import org.sonatype.nexus.events.EventSubscriber;
-import org.sonatype.nexus.events.NexusStartedEvent;
+import org.sonatype.nexus.events.NexusInitializedEvent;
 import org.sonatype.nexus.events.NexusStoppedEvent;
 import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
 import org.sonatype.nexus.httpclient.HttpClientManager;
@@ -99,7 +99,7 @@ public class HttpClientManagerImpl
   }
 
   @Subscribe
-  public void on(final NexusStartedEvent event) throws Exception {
+  public void on(final NexusInitializedEvent event) throws Exception {
     start();
   }
 
