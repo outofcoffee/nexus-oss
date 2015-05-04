@@ -26,12 +26,14 @@ import org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport;
 import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.events.NexusInitializedEvent;
 import org.sonatype.nexus.events.NexusStoppedEvent;
+import org.sonatype.nexus.httpclient.GlobalHttpClientConfigurationChanged;
 import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
 import org.sonatype.nexus.httpclient.HttpClientManager;
 import org.sonatype.nexus.httpclient.HttpClientPlan;
 import org.sonatype.nexus.httpclient.config.ConfigurationCustomizer;
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.sisu.goodies.common.Mutex;
+import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.http.HttpException;
@@ -56,6 +58,8 @@ public class HttpClientManagerImpl
     extends StateGuardLifecycleSupport
     implements HttpClientManager, EventSubscriber
 {
+  private final EventBus eventBus;
+
   private final HttpClientConfigurationStore store;
 
   private final Provider<HttpClientConfiguration> defaults;
@@ -69,11 +73,14 @@ public class HttpClientManagerImpl
   private HttpClientConfiguration configuration;
 
   @Inject
-  public HttpClientManagerImpl(final HttpClientConfigurationStore store,
+  public HttpClientManagerImpl(final EventBus eventBus,
+                               final HttpClientConfigurationStore store,
                                @Named("initial") final Provider<HttpClientConfiguration> defaults,
                                final SharedHttpClientConnectionManager sharedConnectionManager,
                                final DefaultsCustomizer defaultsCustomizer)
   {
+    this.eventBus = checkNotNull(eventBus);
+
     this.store = checkNotNull(store);
     log.debug("Store: {}", store);
 
@@ -157,10 +164,6 @@ public class HttpClientManagerImpl
     return getConfigurationInternal().copy();
   }
 
-  //
-  // TODO: Add events to expose when httpclient configuration has changed?
-  //
-
   @Override
   @Guarded(by = STARTED)
   public void setConfiguration(final HttpClientConfiguration configuration) {
@@ -172,6 +175,9 @@ public class HttpClientManagerImpl
       store.save(model);
       this.configuration = model;
     }
+
+    // fire event to inform that the global configuration changed
+    eventBus.post(new GlobalHttpClientConfigurationChanged());
   }
 
   //
