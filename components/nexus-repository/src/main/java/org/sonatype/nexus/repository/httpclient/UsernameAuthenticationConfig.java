@@ -14,13 +14,7 @@ package org.sonatype.nexus.repository.httpclient;
 
 import org.sonatype.nexus.common.text.Strings2;
 
-import com.google.common.collect.Lists;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.hibernate.validator.constraints.NotBlank;
-
-import static org.apache.http.client.config.AuthSchemes.BASIC;
-import static org.apache.http.client.config.AuthSchemes.DIGEST;
 
 /**
  * Username authentication configuration.
@@ -39,7 +33,7 @@ public class UsernameAuthenticationConfig
   private String password;
 
   public UsernameAuthenticationConfig() {
-    super(TYPE, Lists.newArrayList(DIGEST, BASIC));
+    super(TYPE);
   }
 
   public String getUsername() {
@@ -56,11 +50,6 @@ public class UsernameAuthenticationConfig
 
   public void setPassword(final String password) {
     this.password = password;
-  }
-
-  @Override
-  public Credentials getCredentials() {
-    return new UsernamePasswordCredentials(username, password);
   }
 
   @Override

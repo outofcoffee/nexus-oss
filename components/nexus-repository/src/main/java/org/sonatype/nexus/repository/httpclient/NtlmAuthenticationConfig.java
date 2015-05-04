@@ -16,14 +16,7 @@ import javax.annotation.Nullable;
 
 import org.sonatype.nexus.common.text.Strings2;
 
-import com.google.common.collect.Lists;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.NTCredentials;
 import org.hibernate.validator.constraints.NotBlank;
-
-import static org.apache.http.client.config.AuthSchemes.BASIC;
-import static org.apache.http.client.config.AuthSchemes.DIGEST;
-import static org.apache.http.client.config.AuthSchemes.NTLM;
 
 /**
  * NTLM authentication configuration.
@@ -48,7 +41,7 @@ public class NtlmAuthenticationConfig
   private String ntlmDomain;
 
   public NtlmAuthenticationConfig() {
-    super(TYPE, Lists.newArrayList(NTLM, DIGEST, BASIC));
+    super(TYPE);
   }
 
   public String getUsername() {
@@ -83,11 +76,6 @@ public class NtlmAuthenticationConfig
 
   public void setNtlmDomain(final @Nullable String ntlmDomain) {
     this.ntlmDomain = ntlmDomain;
-  }
-
-  @Override
-  public Credentials getCredentials() {
-    return new NTCredentials(username, password, ntlmHost, ntlmDomain);
   }
 
   @Override
