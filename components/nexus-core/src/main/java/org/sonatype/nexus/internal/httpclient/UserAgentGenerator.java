@@ -15,6 +15,7 @@ package org.sonatype.nexus.internal.httpclient;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.sonatype.nexus.SystemStatus;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
@@ -27,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Named
+@Singleton
 public class UserAgentGenerator
   extends ComponentSupport
 {
@@ -41,7 +43,7 @@ public class UserAgentGenerator
     this.systemStatus = checkNotNull(systemStatus);
   }
 
-  public String get() {
+  public String generate() {
     SystemStatus status = systemStatus.get();
 
     // Cache platform details or re-cache if the edition has changed

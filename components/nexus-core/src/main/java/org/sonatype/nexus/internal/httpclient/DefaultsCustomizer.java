@@ -69,7 +69,7 @@ public class DefaultsCustomizer
   public void customize(final HttpClientPlan plan) {
     checkNotNull(plan);
 
-    plan.getHeaders().put(HttpHeaders.USER_AGENT, userAgentGenerator.get());
+    plan.getHeaders().put(HttpHeaders.USER_AGENT, userAgentGenerator.generate());
 
     plan.getClient().setKeepAliveStrategy(new NexusConnectionKeepAliveStrategy(keepAliveDuration.toMillis()));
 
