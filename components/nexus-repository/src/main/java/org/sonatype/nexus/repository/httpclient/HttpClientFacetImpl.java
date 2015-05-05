@@ -62,8 +62,10 @@ public class HttpClientFacetImpl
     @Nullable
     public AuthenticationConfiguration authentication;
 
+    @Nullable
     public Boolean blocked;
 
+    @Nullable
     public Boolean autoBlock;
   }
 
