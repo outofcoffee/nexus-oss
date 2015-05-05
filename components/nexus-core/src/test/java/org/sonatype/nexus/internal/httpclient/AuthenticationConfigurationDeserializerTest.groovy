@@ -11,7 +11,11 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 
-package org.sonatype.nexus.repository.httpclient
+package org.sonatype.nexus.internal.httpclient
+
+import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration
+import org.sonatype.nexus.httpclient.config.UsernameAuthenticationConfiguration
+import org.sonatype.sisu.litmus.testsupport.TestSupport
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -19,12 +23,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import groovy.transform.ToString
 import org.junit.Before
 import org.junit.Test
-import org.sonatype.sisu.litmus.testsupport.TestSupport
 
 /**
- * Tests for {@link AuthenticationConfigDeserializer}.
+ * Tests for {@link AuthenticationConfigurationDeserializer}.
  */
-class AuthenticationConfigDeserializerTest
+class AuthenticationConfigurationDeserializerTest
     extends TestSupport
 {
   private ObjectMapper objectMapper
@@ -37,14 +40,14 @@ class AuthenticationConfigDeserializerTest
   @ToString
   static class AuthContainer
   {
-    @JsonDeserialize(using = AuthenticationConfigDeserializer.class)
-    AuthenticationConfig auth
+    @JsonDeserialize(using = AuthenticationConfigurationDeserializer.class)
+    AuthenticationConfiguration auth
   }
 
   @Test
   void 'read username'() {
     def example = new AuthContainer(auth:
-        new UsernameAuthenticationConfig(username: 'admin', password: 'admin123')
+        new UsernameAuthenticationConfiguration(username: 'admin', password: 'admin123')
     )
 
     def json = objectMapper.writeValueAsString(example)
@@ -55,10 +58,10 @@ class AuthenticationConfigDeserializerTest
 
     assert obj != null
     assert obj.auth != null
-    assert obj.auth instanceof UsernameAuthenticationConfig
-    assert obj.auth.type == UsernameAuthenticationConfig.TYPE
+    assert obj.auth instanceof UsernameAuthenticationConfiguration
+    assert obj.auth.type == UsernameAuthenticationConfiguration.TYPE
 
-    UsernameAuthenticationConfig target = obj.auth as UsernameAuthenticationConfig
+    UsernameAuthenticationConfiguration target = obj.auth as UsernameAuthenticationConfiguration
     assert target.username == 'admin'
     assert target.password == 'admin123'
   }

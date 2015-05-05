@@ -13,11 +13,17 @@
 
 package org.sonatype.nexus.repository.httpclient;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 
 import org.sonatype.nexus.common.stateguard.Guarded;
 import org.sonatype.nexus.httpclient.HttpClientManager;
+import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration;
+import org.sonatype.nexus.httpclient.config.ConfigurationCustomizer;
+import org.sonatype.nexus.httpclient.config.ConnectionConfiguration;
+import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.config.ConfigurationFacet;
@@ -34,6 +40,7 @@ import static org.sonatype.nexus.repository.FacetSupport.State.STARTED;
  * @since 3.0
  */
 @Named
+@SuppressWarnings("PackageAccessibility") // FIXME: httpclient usage is producing lots of OSGI warnings in IDEA
 public class HttpClientFacetImpl
     extends FacetSupport
     implements HttpClientFacet
@@ -43,7 +50,24 @@ public class HttpClientFacetImpl
   @VisibleForTesting
   static final String CONFIG_KEY = "httpclient";
 
-  private HttpClientConfig config;
+  @VisibleForTesting
+  static class Config
+  {
+    @Valid
+    @Nullable
+    public ConnectionConfiguration connection;
+
+    // FIXME: Need jackson annotation and/or configuration of objectmapper used here
+    @Valid
+    @Nullable
+    public AuthenticationConfiguration authentication;
+
+    public Boolean blocked;
+
+    public Boolean autoBlock;
+  }
+
+  private Config config;
 
   private FilteredHttpClient httpClient;
 
@@ -54,17 +78,21 @@ public class HttpClientFacetImpl
 
   @Override
   protected void doValidate(final Configuration configuration) throws Exception {
-    facet(ConfigurationFacet.class).validateSection(configuration, CONFIG_KEY, HttpClientConfig.class);
+    facet(ConfigurationFacet.class).validateSection(configuration, CONFIG_KEY, Config.class);
   }
 
   @Override
   protected void doConfigure(final Configuration configuration) throws Exception {
-    config = facet(ConfigurationFacet.class).readSection(configuration, CONFIG_KEY, HttpClientConfig.class);
+    config = facet(ConfigurationFacet.class).readSection(configuration, CONFIG_KEY, Config.class);
     log.debug("Config: {}", config);
 
-    // FIXME: Adapt facet configuration
-    HttpClient delegate = httpClientManager.create();
+    // construct httpclient delegate
+    HttpClientConfiguration delegateConfig = new HttpClientConfiguration();
+    delegateConfig.setConnection(config.connection);
+    delegateConfig.setAuthentication(config.authentication);
+    HttpClient delegate = httpClientManager.create(new ConfigurationCustomizer(delegateConfig));
 
+    // wrap delegate with auto-block aware client
     httpClient = new FilteredHttpClient(delegate, config);
     log.debug("Created HTTP client: {}", httpClient);
   }

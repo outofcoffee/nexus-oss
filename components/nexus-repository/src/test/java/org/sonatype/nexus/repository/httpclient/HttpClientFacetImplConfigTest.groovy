@@ -15,15 +15,16 @@ package org.sonatype.nexus.repository.httpclient
 import javax.validation.Validation
 import javax.validation.Validator
 
+import org.sonatype.nexus.httpclient.config.UsernameAuthenticationConfiguration
 import org.sonatype.sisu.litmus.testsupport.TestSupport
 
 import org.junit.Before
 import org.junit.Test
 
 /**
- * Tests for {@link HttpClientConfig} validation.
+ * Tests for {@link HttpClientFacetImpl.Config}.
  */
-class HttpClientConfigValidationTest
+class HttpClientFacetImplConfigTest
     extends TestSupport
 {
   private Validator validator
@@ -35,8 +36,8 @@ class HttpClientConfigValidationTest
 
   @Test
   void 'authentication username with null password'() {
-    def violations = validator.validate(new HttpClientConfig(
-        authentication: new UsernameAuthenticationConfig(
+    def violations = validator.validate(new HttpClientFacetImpl.Config(
+        authentication: new UsernameAuthenticationConfiguration(
             username: 'admin',
             password: null
         )
@@ -48,8 +49,8 @@ class HttpClientConfigValidationTest
 
   @Test
   void 'authentication password with null username'() {
-    def violations = validator.validate(new HttpClientConfig(
-        authentication: new UsernameAuthenticationConfig(
+    def violations = validator.validate(new HttpClientFacetImpl.Config(
+        authentication: new UsernameAuthenticationConfiguration(
             username: null,
             password: 'pass'
         )
@@ -61,8 +62,8 @@ class HttpClientConfigValidationTest
   
   @Test
   void 'required fields may not be whitespace only'() {
-    def violations = validator.validate(new HttpClientConfig(
-        authentication: new UsernameAuthenticationConfig(
+    def violations = validator.validate(new HttpClientFacetImpl.Config(
+        authentication: new UsernameAuthenticationConfiguration(
             username: ' ',
             password: ' '
         )
