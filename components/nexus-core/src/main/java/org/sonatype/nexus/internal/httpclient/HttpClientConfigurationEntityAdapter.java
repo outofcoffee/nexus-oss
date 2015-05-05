@@ -12,7 +12,6 @@
  */
 package org.sonatype.nexus.internal.httpclient;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.inject.Named;
@@ -29,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
-import com.google.common.base.Throwables;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -43,7 +41,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @Named
 @Singleton
 public class HttpClientConfigurationEntityAdapter
-  extends SingletonEntityAdapter<HttpClientConfiguration>
+    extends SingletonEntityAdapter<HttpClientConfiguration>
 {
   public static final String DB_CLASS = new OClassNameBuilder()
       .type(HttpClientConfiguration.class)
@@ -54,18 +52,16 @@ public class HttpClientConfigurationEntityAdapter
   public HttpClientConfigurationEntityAdapter() {
     super(DB_CLASS);
 
-    this.objectMapper = new ObjectMapper();
-    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-    // add deserialization handling for AuthenticationConfiguration
-    objectMapper.registerModule(new SimpleModule()
-        .addDeserializer(AuthenticationConfiguration.class, new AuthenticationConfigurationDeserializer())
-    );
+    this.objectMapper = new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .registerModule(new SimpleModule()
+            // add deserialization handling for AuthenticationConfiguration
+            .addDeserializer(AuthenticationConfiguration.class, new AuthenticationConfigurationDeserializer()));
   }
 
   @Override
   protected void defineType(final OClass type) {
-    // nop
+    // no schema
   }
 
   @Override
@@ -76,31 +72,26 @@ public class HttpClientConfigurationEntityAdapter
   // TODO: Sort out if this is what we really want, or if we want to define a EMBEDDEDMAP property
 
   @Override
-  protected void readFields(final ODocument document, final HttpClientConfiguration entity) {
+  protected void readFields(final ODocument document, final HttpClientConfiguration entity) throws Exception {
     ObjectReader reader = objectMapper.readerForUpdating(entity);
     TokenBuffer buff = new TokenBuffer(objectMapper, false);
-    try {
-      Map<String,Object> fields = document.toMap();
+    Map<String, Object> fields = document.toMap();
 
-      // strip out id/class synthetics
-      fields.remove("@rid");
-      fields.remove("@class");
+    // strip out id/class synthetics
+    fields.remove("@rid");
+    fields.remove("@class");
 
-      log.trace("Reading fields: {}", fields);
-      objectMapper.writeValue(buff, fields);
-      reader.readValue(buff.asParser());
-    }
-    catch (IOException e) {
-      throw Throwables.propagate(e);
-    }
+    log.trace("Reading fields: {}", fields);
+    objectMapper.writeValue(buff, fields);
+    reader.readValue(buff.asParser());
   }
 
-  private static final TypeReference<Map<String,Object>> MAP_STRING_OBJECT =
+  private static final TypeReference<Map<String, Object>> MAP_STRING_OBJECT =
       new TypeReference<Map<String, Object>>() {};
 
   @Override
-  protected void writeFields(final ODocument document, final HttpClientConfiguration entity) {
-    Map<String,Object> fields = objectMapper.convertValue(entity, MAP_STRING_OBJECT);
+  protected void writeFields(final ODocument document, final HttpClientConfiguration entity) throws Exception {
+    Map<String, Object> fields = objectMapper.convertValue(entity, MAP_STRING_OBJECT);
     log.trace("Writing fields: {}", fields);
     document.fromMap(fields);
   }
