@@ -28,12 +28,7 @@ public class ConnectionConfiguration
   @Nullable
   private Integer maximumRetries;
 
-  @Nullable
-  private String userAgent;
-
-  // TODO: queryString?  This may be more harmful than helpful, omitting for now
-
-  // TODO: SSL trust-store?
+  // TODO: user-agent, query-string, trust-store
 
   @Nullable
   public Integer getTimeout() {
@@ -53,21 +48,11 @@ public class ConnectionConfiguration
     this.maximumRetries = maximumRetries;
   }
 
-  @Nullable
-  public String getUserAgent() {
-    return userAgent;
-  }
-
-  public void setUserAgent(@Nullable final String userAgent) {
-    this.userAgent = userAgent;
-  }
-
   @Override
   public String toString() {
     return getClass().getSimpleName() + "{" +
         "timeout=" + timeout +
         ", maximumRetries=" + maximumRetries +
-        ", userAgent='" + userAgent + '\'' +
         '}';
   }
 }
