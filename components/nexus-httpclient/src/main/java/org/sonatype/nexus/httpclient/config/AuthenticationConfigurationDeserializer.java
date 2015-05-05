@@ -10,14 +10,10 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.internal.httpclient;
+package org.sonatype.nexus.httpclient.config;
 
 import java.io.IOException;
 import java.util.Map;
-
-import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration;
-import org.sonatype.nexus.httpclient.config.NtlmAuthenticationConfiguration;
-import org.sonatype.nexus.httpclient.config.UsernameAuthenticationConfiguration;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

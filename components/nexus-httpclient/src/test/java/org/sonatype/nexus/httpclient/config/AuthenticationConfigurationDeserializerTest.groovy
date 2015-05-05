@@ -11,10 +11,8 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 
-package org.sonatype.nexus.internal.httpclient
+package org.sonatype.nexus.httpclient.config
 
-import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration
-import org.sonatype.nexus.httpclient.config.UsernameAuthenticationConfiguration
 import org.sonatype.sisu.litmus.testsupport.TestSupport
 
 import com.fasterxml.jackson.databind.JsonMappingException

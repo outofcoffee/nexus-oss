@@ -21,6 +21,7 @@ import javax.validation.Valid;
 import org.sonatype.nexus.common.stateguard.Guarded;
 import org.sonatype.nexus.httpclient.HttpClientManager;
 import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration;
+import org.sonatype.nexus.httpclient.config.AuthenticationConfigurationDeserializer;
 import org.sonatype.nexus.httpclient.config.ConfigurationCustomizer;
 import org.sonatype.nexus.httpclient.config.ConnectionConfiguration;
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
@@ -28,6 +29,7 @@ import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.config.ConfigurationFacet;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.client.HttpClient;
 
@@ -57,9 +59,9 @@ public class HttpClientFacetImpl
     @Nullable
     public ConnectionConfiguration connection;
 
-    // FIXME: Need jackson annotation and/or configuration of objectmapper used here
     @Valid
     @Nullable
+    @JsonDeserialize(using=AuthenticationConfigurationDeserializer.class)
     public AuthenticationConfiguration authentication;
 
     @Nullable

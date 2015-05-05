@@ -17,6 +17,7 @@ import javax.validation.Valid;
 
 import org.sonatype.nexus.common.entity.Entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Throwables;
 
 /**
@@ -38,6 +39,7 @@ public class HttpClientConfiguration
 
   @Valid
   @Nullable
+  @JsonDeserialize(using=AuthenticationConfigurationDeserializer.class)
   private AuthenticationConfiguration authentication;
 
   @Nullable

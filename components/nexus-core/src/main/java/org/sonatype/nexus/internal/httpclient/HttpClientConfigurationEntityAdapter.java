@@ -17,7 +17,6 @@ import java.util.Map;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration;
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.nexus.orient.OClassNameBuilder;
 import org.sonatype.nexus.orient.entity.SingletonEntityAdapter;
@@ -26,7 +25,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -53,10 +51,7 @@ public class HttpClientConfigurationEntityAdapter
     super(DB_CLASS);
 
     this.objectMapper = new ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .registerModule(new SimpleModule()
-            // add deserialization handling for AuthenticationConfiguration
-            .addDeserializer(AuthenticationConfiguration.class, new AuthenticationConfigurationDeserializer()));
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
   @Override
