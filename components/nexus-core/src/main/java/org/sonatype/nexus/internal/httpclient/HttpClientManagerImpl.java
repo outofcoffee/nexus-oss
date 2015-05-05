@@ -198,11 +198,10 @@ public class HttpClientManagerImpl
     // apply globals
     new ConfigurationCustomizer(getConfigurationInternal()).customize(plan);
 
+    // apply instance customization
     if (customizer != null) {
       customizer.customize(plan);
     }
-
-    // TODO: apply overrides
 
     // apply plan to builder
     HttpClientBuilder builder = plan.getClient();
