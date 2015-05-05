@@ -266,17 +266,14 @@ Ext.define('NX.view.drilldown.Drilldown', {
         items[i].getLayout().setActiveItem(me.BLANK_INDEX);
       }
 
-      // Reset successive forms
+      // Reset forms and filters on successive drilldown items
       if (i > index) {
         Ext.each(items[i].query('nx-settingsform'), function(panel) {
           if (panel.getForm().isDirty()) {
             panel.getForm().reset();
           }
         });
-      }
 
-      // Clear successive filters
-      if (i > index) {
         Ext.each(items[i].query('nx-drilldown-master'), function(master) {
           if (master.getStore()) {
             master.getStore().clearFilter();
