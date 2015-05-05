@@ -18,6 +18,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.sonatype.nexus.events.EventSubscriber;
 import org.sonatype.nexus.events.NexusInitializedEvent;
 import org.sonatype.nexus.events.NexusStoppingEvent;
 import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
@@ -39,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Singleton
 public class OrientHttpClientConfigurationStore
   extends LifecycleSupport
-  implements HttpClientConfigurationStore
+  implements HttpClientConfigurationStore, EventSubscriber
 {
   private final Provider<DatabaseInstance> databaseInstance;
 

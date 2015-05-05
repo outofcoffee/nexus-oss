@@ -15,7 +15,6 @@ package org.sonatype.nexus.internal.httpclient;
 import javax.inject.Named;
 
 import org.sonatype.nexus.httpclient.HttpClientConfigurationStore;
-import org.sonatype.nexus.httpclient.MemoryHttpClientConfigurationStore;
 
 import com.google.inject.AbstractModule;
 
@@ -30,8 +29,6 @@ public class HttpClientModule
 {
   @Override
   protected void configure() {
-    // FIXME: Enable once we have orient-based store functional, until then use memory impl
-    //bind(HttpClientConfigurationStore.class).to(OrientHttpClientConfigurationStore.class);
-    bind(HttpClientConfigurationStore.class).to(MemoryHttpClientConfigurationStore.class);
+    bind(HttpClientConfigurationStore.class).to(OrientHttpClientConfigurationStore.class);
   }
 }

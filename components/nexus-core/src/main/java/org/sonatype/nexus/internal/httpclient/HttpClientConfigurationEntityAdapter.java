@@ -12,19 +12,36 @@
  */
 package org.sonatype.nexus.internal.httpclient;
 
+import java.io.IOException;
+import java.util.Map;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.sonatype.nexus.httpclient.config.AuthenticationConfiguration;
 import org.sonatype.nexus.httpclient.config.HttpClientConfiguration;
 import org.sonatype.nexus.orient.OClassNameBuilder;
 import org.sonatype.nexus.orient.entity.SingletonEntityAdapter;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
+import com.google.common.base.Throwables;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link HttpClientConfiguration} entity-adapter.
  *
+ * Maps entity directly to document fields via Jackson.
+ *
  * @since 3.0
  */
+@Named
+@Singleton
 public class HttpClientConfigurationEntityAdapter
   extends SingletonEntityAdapter<HttpClientConfiguration>
 {
@@ -32,22 +49,23 @@ public class HttpClientConfigurationEntityAdapter
       .type(HttpClientConfiguration.class)
       .build();
 
-  public static final String P_CONNECTION = "connection";
-
-  public static final String P_PROXY = "proxy";
-
-  public static final String P_AUTHENTICATION = "authentication";
+  private final ObjectMapper objectMapper;
 
   public HttpClientConfigurationEntityAdapter() {
     super(DB_CLASS);
+
+    this.objectMapper = new ObjectMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    // add deserialization handling for AuthenticationConfiguration
+    objectMapper.registerModule(new SimpleModule()
+        .addDeserializer(AuthenticationConfiguration.class, new AuthenticationConfigurationDeserializer())
+    );
   }
 
   @Override
   protected void defineType(final OClass type) {
-    // TODO: May consider special handling for entire entity as a single map property?
-    type.createProperty(P_CONNECTION, OType.EMBEDDEDMAP);
-    type.createProperty(P_PROXY, OType.EMBEDDEDMAP);
-    type.createProperty(P_AUTHENTICATION, OType.EMBEDDEDMAP);
+    // nop
   }
 
   @Override
@@ -55,13 +73,35 @@ public class HttpClientConfigurationEntityAdapter
     return new HttpClientConfiguration();
   }
 
+  // TODO: Sort out if this is what we really want, or if we want to define a EMBEDDEDMAP property
+
   @Override
   protected void readFields(final ODocument document, final HttpClientConfiguration entity) {
-    // TODO:
+    ObjectReader reader = objectMapper.readerForUpdating(entity);
+    TokenBuffer buff = new TokenBuffer(objectMapper, false);
+    try {
+      Map<String,Object> fields = document.toMap();
+
+      // strip out id/class synthetics
+      fields.remove("@rid");
+      fields.remove("@class");
+
+      log.trace("Reading fields: {}", fields);
+      objectMapper.writeValue(buff, fields);
+      reader.readValue(buff.asParser());
+    }
+    catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
+
+  private static final TypeReference<Map<String,Object>> MAP_STRING_OBJECT =
+      new TypeReference<Map<String, Object>>() {};
 
   @Override
   protected void writeFields(final ODocument document, final HttpClientConfiguration entity) {
-    // TODO:
+    Map<String,Object> fields = objectMapper.convertValue(entity, MAP_STRING_OBJECT);
+    log.trace("Writing fields: {}", fields);
+    document.fromMap(fields);
   }
 }
