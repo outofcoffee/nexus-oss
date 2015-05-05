@@ -104,6 +104,8 @@ public class HttpClientFacetImpl
     config = null;
   }
 
+  // TODO: Cope with GlobalHttpClientConfigurationChanged event?
+
   @Override
   @Guarded(by = STARTED)
   public HttpClient getHttpClient() {
